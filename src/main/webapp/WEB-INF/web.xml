@@ -4,4 +4,13 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+    <servlet-name>user</servlet-name>
+    <servlet-class>org.ucsc.enmo.User_Controler</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>user</servlet-name>
+    <url-pattern>/user</url-pattern>
+  </servlet-mapping>
 </web-app>
