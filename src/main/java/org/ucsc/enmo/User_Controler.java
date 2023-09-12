@@ -1,5 +1,7 @@
 package org.ucsc.enmo;
 
+
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +25,14 @@ public class User_Controler extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        // function [Validuser] parameters => (Username ,password) Return {true false}
+
+
+
+        // function [Validuser] parameters => (User) Return {true false}
 
         //if(Validuser(usrname,password)){
         //////*   response=> validuser*////
+
         //OutputStream outputStream = resp.getOutputStream();
         //        BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputStream));
         //        bufferedWriter.write("Valid user");
@@ -36,7 +42,7 @@ public class User_Controler extends HttpServlet {
         //else{
         // response => invalid user
         // }
-        super.doPost(req, resp);
+
         //1
         //1
         //1
