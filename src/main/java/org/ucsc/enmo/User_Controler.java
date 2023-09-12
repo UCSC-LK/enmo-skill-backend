@@ -22,7 +22,20 @@ public class User_Controler extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+
+        // function [Validuser] parameters => (Username ,password) Return {true false}
+
+        //if(Validuser(usrname,password)){
+        //////*   response=> validuser*////
+        //OutputStream outputStream = resp.getOutputStream();
+        //        BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputStream));
+        //        bufferedWriter.write("Valid user");
+        //        bufferedWriter.flush();
+        //        bufferedWriter.close();
+        //}
+        //else{
+        // response => invalid user
+        // }
     }
 
     @Override
