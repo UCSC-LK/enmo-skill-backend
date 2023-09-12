@@ -36,6 +36,15 @@ public class User_Controler extends HttpServlet {
         //else{
         // response => invalid user
         // }
+        super.doPost(req, resp);
+        //1
+        //1
+        //1
+        //1
+        //1
+        //1v
+        //1
+
     }
 
     @Override
