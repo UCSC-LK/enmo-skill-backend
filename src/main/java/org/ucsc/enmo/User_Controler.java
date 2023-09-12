@@ -23,6 +23,14 @@ public class User_Controler extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doPost(req, resp);
+        //1
+        //1
+        //1
+        //1
+        //1
+        //1v
+        //1
+
     }
 
     @Override
