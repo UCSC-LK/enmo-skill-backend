@@ -14,7 +14,10 @@ public class User {
         this.username = username;
         this.password = password;
     }
-
+    public User(HttpServletRequest request) {
+        this.username = request.getParameter("username");
+        this.password = request.getParameter("password");
+    }
     public String getUsername() {
         return username;
     }

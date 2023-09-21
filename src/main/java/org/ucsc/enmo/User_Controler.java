@@ -2,6 +2,10 @@ package org.ucsc.enmo;
 
 
 
+import Classes.DatabaseConnectionManager;
+import Classes.Validate_user;
+import Models.User;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +14,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class User_Controler extends HttpServlet {
     @Override
@@ -24,8 +31,15 @@ public class User_Controler extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-
+        User user = new User(req);
+//        Validate_user.Validate(user);
+        if(Validate_user.Validate(user)){
+//            System.out.println("abc");
+            resp.getWriter().write("User Signed In!");
+        }else {
+//            System.out.println("xyz");
+            resp.getWriter().write("User not Signed In!");
+        }
 
 
         // function [Validuser] parameters => (User) Return {true false}
