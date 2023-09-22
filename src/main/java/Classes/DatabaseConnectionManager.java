@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnectionManager {
+    private static  Connection connection= null;
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/enmo_database";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "hpljp1102";
@@ -16,19 +17,33 @@ public class DatabaseConnectionManager {
             e.printStackTrace();
             throw new RuntimeException("JDBC Driver not found. Include the MySQL JDBC driver in your project's classpath.");
         }
-    }
-    public static Connection getConnection() {
-        Connection connection = null;
-        try {
 
+        try {
             connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
-//            System.out.println("connection");
+            System.out.println("connection");
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.toString());
             // Handle database connection errors here
         }
-        return connection;
+    }
+    public static Connection getConnection() {
+        if(connection==null) {
+        try {
+
+            connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+//            System.out.println("connection");
+            return connection;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.toString());
+            return null;            // Handle database connection errors here
+        }
+
+        }else {
+            return connection;
+        }
+
     }
 
     public static void closeConnection(Connection connection) {

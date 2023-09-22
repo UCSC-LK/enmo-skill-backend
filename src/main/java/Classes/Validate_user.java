@@ -35,9 +35,10 @@ public class Validate_user {
             System.out.println(e.toString());
             return false;
 
-        } finally {
-            // Make sure to close the connection when done
-            DatabaseConnectionManager.closeConnection(connection);
         }
+//        finally {
+//            // Make sure to close the connection when done
+////            DatabaseConnectionManager.closeConnection(connection);
+//        }
     }
 }

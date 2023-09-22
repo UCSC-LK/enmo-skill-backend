@@ -35,35 +35,13 @@ public class User_Controler extends HttpServlet {
 //        Validate_user.Validate(user);
         if(Validate_user.Validate(user)){
 //            System.out.println("abc");
+            resp.setStatus(200);
             resp.getWriter().write("User Signed In!");
         }else {
 //            System.out.println("xyz");
             resp.getWriter().write("User not Signed In!");
         }
 
-
-        // function [Validuser] parameters => (User) Return {true false}
-
-        //if(Validuser(usrname,password)){
-        //////*   response=> validuser*////
-
-        //OutputStream outputStream = resp.getOutputStream();
-        //        BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputStream));
-        //        bufferedWriter.write("Valid user");
-        //        bufferedWriter.flush();
-        //        bufferedWriter.close();
-        //}
-        //else{
-        // response => invalid user
-        // }
-
-        //1
-        //1
-        //1
-        //1
-        //1
-        //1v
-        //1
 
     }
 
