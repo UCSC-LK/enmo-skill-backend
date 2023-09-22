@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnectionManager {
+
+
     private static  Connection connection= null;
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/enmo_database";
     private static final String DB_USER = "root";
@@ -55,4 +57,15 @@ public class DatabaseConnectionManager {
             }
         }
     }
+
+    public static void cleanup() {
+        closeConnection(connection);
+        try {
+            // Deregister the MySQL driver to prevent memory leaks
+            DriverManager.deregisterDriver(DriverManager.getDriver(JDBC_URL));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
