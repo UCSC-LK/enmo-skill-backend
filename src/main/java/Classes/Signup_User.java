@@ -33,10 +33,7 @@ public class Signup_User {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        finally {
-            // Make sure to close the connection when done
-            DatabaseConnectionManager.closeConnection(connection);
-        }
+
 
     }
 }
