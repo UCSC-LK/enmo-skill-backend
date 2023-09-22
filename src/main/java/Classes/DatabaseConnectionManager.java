@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnectionManager {
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/enmo_database";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3307/enmo_database";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "hpljp1102";
+    private static final String DB_PASSWORD = "1234";
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
