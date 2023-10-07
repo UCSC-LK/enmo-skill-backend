@@ -39,9 +39,7 @@ public class LoginSer {
             if (preparedStatement != null) {
                 preparedStatement.close();
             }
-            if (con != null) {
-                con.close();
-            }
+
         }
 
     }

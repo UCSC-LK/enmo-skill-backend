@@ -1,5 +1,6 @@
 package org.ucsc.enmoskill.controller;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.UserTable;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 
@@ -18,11 +19,16 @@ import org.ucsc.enmoskill.model.User;
 import com.google.gson.Gson;
 
 
+
 public class UserController extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
+        Dotenv dotenv = Dotenv.load();
+        String dbUsername = System.getenv("DB_USERNAME");
+        System.out.println("db username is : "+dbUsername);
+
 
         try {
             Connection con = DatabaseConnection.initializeDatabase();
@@ -45,10 +51,8 @@ public class UserController extends HttpServlet {
 
             resultSet.close();
             preparedStatement.close();
-            con.close();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
@@ -61,6 +65,7 @@ public class UserController extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
+            System.out.println(req.getContentType());
             // Create a Gson instance
             Gson gson = new Gson();
 
@@ -90,7 +95,7 @@ public class UserController extends HttpServlet {
                 out.write("Registration unsuccessfully");
                 System.out.println("Registration incorrect");
             }
-            out.write("Data inserted successfully");
+
         } catch (Exception e) {
             e.printStackTrace(); // Print the exception details for debugging
             throw new RuntimeException(e);
