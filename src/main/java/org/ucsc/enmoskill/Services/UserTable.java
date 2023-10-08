@@ -28,7 +28,7 @@ public class UserTable {
 
             // If the execution reaches this point, the insertion was successful
             return true;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             // Handle any exceptions that might occur during the insertion
             e.printStackTrace();
             return false;
@@ -37,9 +37,7 @@ public class UserTable {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                if (con != null) {
-                    con.close();
-                }
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
