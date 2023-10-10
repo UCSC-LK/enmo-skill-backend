@@ -8,6 +8,14 @@ public class Req_BRlist {
         this.role = role;
     }
 
+    public Boolean CheckReqiredFields(){
+        if(role==null||userid==null){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
     public String getUserid() {
         return userid;
     }

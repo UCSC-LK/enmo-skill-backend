@@ -14,13 +14,19 @@ public class Buyer_request extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         BufferedReader reader = req.getReader();
-        try {
-            Req_BRlist reqBRlist = new Gson().fromJson(reader,Req_BRlist.class);
-        }catch (Exception e){
+        Gson gson = new Gson();
 
+        try {
+            Req_BRlist reqBRlist = gson.fromJson(reader, Req_BRlist.class);
+            if (reqBRlist.CheckReqiredFields()){
+
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
             resp.getWriter().write(e.toString());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
         }
     }
 }
