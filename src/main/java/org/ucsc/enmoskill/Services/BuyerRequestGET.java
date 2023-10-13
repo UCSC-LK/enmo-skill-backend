@@ -24,9 +24,9 @@ public class BuyerRequestGET {
     }
 
     public void Run(){
-        if(request.getRole().equals("Client")){
+        if(request.isClient()){
             GetRequestClient();
-        } else if (request.getRole().equals("Designer")) {
+        } else if (request.isDesigner()) {
             GetRequestDesigner();
         }
 
@@ -47,11 +47,15 @@ public class BuyerRequestGET {
                 jsonArray.add(jsonObject);
             }
             response.getWriter().write(jsonArray.toString());
+            response.setStatus(HttpServletResponse.SC_OK);
 
 
         } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
+
         } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
     }

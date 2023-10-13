@@ -1,19 +1,31 @@
 package org.ucsc.enmoskill.model;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class Req_BRlist {
     private String userid,role;
 
-    public Req_BRlist(String userid, String role) {
-        this.userid = userid;
-        this.role = role;
+    public Req_BRlist(HttpServletRequest req) {
+        role = req.getParameter("Role");
+        userid = req.getParameter("UserId");
     }
 
     public Boolean CheckReqiredFields(){
-        if(role==null||userid==null){
+        if(role == null){
             return false;
         }else {
             return true;
         }
+    }
+    public boolean isClient(){
+        if(role.equals("Client")){
+            return true;
+        }else return false;
+    }
+    public boolean isDesigner(){
+        if(role.equals("Designer")){
+            return true;
+        }else return false;
     }
 
     public String getUserid() {
