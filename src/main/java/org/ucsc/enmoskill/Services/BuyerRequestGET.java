@@ -10,6 +10,7 @@ import org.ucsc.enmoskill.model.Req_BRlist;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,21 +24,62 @@ public class BuyerRequestGET {
         request=reqBRlist;
     }
 
-    public void Run(){
+    public void Run() throws IOException {
+        Connection connection = DatabaseConnection.initializeDatabase();
+        if(connection==null){
+            response.getWriter().write("SQL Connection Error");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
         if(request.isClient()){
-            GetRequestClient();
+            GetRequestClient(connection ,request.getUserid());
         } else if (request.isDesigner()) {
-            GetRequestDesigner();
+            GetRequestDesigner(connection );
         }
 
     }
-    private void GetRequestClient(){
+    private void GetRequestClient( Connection connection , String userid){
 
-    }
-    private void GetRequestDesigner(){
-        Connection connection = DatabaseConnection.initializeDatabase();
         try {
-            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status, u.username FROM  `enmo_database`.`buyer_request` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1;").executeQuery();
+            String query = "SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status, u.username FROM  `enmo_database`.`buyer_request` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.userID = ? ORDER BY status DESC , date DESC;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userid);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
+            int Count=0;
+            while (result.next()) {
+                BuyerRequestModel buyerRequest = new BuyerRequestModel(result);
+                if (buyerRequest.getStatus()==1)Count++;
+                JsonObject jsonObject = gson.toJsonTree(buyerRequest).getAsJsonObject();
+                jsonArray.add(jsonObject);
+            }
+
+
+            JsonObject Main = new JsonObject();
+            Main.addProperty("count", Count);
+            Main.add("data",jsonArray);
+
+            response.getWriter().write(Main.toString());
+            response.setStatus(HttpServletResponse.SC_OK);
+
+
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+        }
+    }
+    private void GetRequestDesigner( Connection connection){
+
+        try {
+            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status, u.username FROM  `enmo_database`.`buyer_request` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1 ORDER BY date DESC;").executeQuery();
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
 
