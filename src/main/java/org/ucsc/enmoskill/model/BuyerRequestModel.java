@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -31,6 +33,18 @@ public class BuyerRequestModel {
         this.username = resultSet.getString("username");
 
     }
+
+    public String getQuery(String Type){
+        Date Today= new Date();
+        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+        if(Type.equals("insert")){
+            String quary ="INSERT INTO buyer_request (userID, date, discription, duration, budget, status) VALUES ("+this.userID+", \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1)" ;
+            return quary;
+        }
+        return null;
+    }
+
+
 
     public int getRequestID() {
         return requestID;
