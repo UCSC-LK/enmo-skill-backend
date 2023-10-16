@@ -32,6 +32,11 @@ public class BuyerRequestGET {
             return;
         }
         if(request.isClient()){
+            if (request.getUserid()==null){
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("User ID is Required!");
+                return;
+            }
             GetRequestClient(connection ,request.getUserid());
         } else if (request.isDesigner()) {
             GetRequestDesigner(connection );
@@ -40,8 +45,9 @@ public class BuyerRequestGET {
     }
     private void GetRequestClient( Connection connection , String userid){
 
+
         try {
-            String query = "SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status, u.username FROM  `enmo_database`.`buyer_request` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.userID = ? ORDER BY status DESC , date DESC;";
+            String query = "SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url,  u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.userID = ? ORDER BY status DESC,date DESC,requestID DESC;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userid);
 
@@ -79,7 +85,7 @@ public class BuyerRequestGET {
     private void GetRequestDesigner( Connection connection){
 
         try {
-            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status, u.username FROM  `enmo_database`.`buyer_request` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1 ORDER BY date DESC;").executeQuery();
+            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url, u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1 ORDER BY date DESC;").executeQuery();
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
 

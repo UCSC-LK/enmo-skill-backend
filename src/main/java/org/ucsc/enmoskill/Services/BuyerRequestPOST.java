@@ -28,6 +28,7 @@ public class BuyerRequestPOST {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
+
         String query = this.data.getQuery("insert");
 
         try {

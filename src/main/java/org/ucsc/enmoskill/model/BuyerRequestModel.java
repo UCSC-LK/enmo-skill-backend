@@ -8,9 +8,9 @@ import java.sql.SQLException;
 public class BuyerRequestModel {
 
     private int requestID ,duration , budget , userID,status;
-    private String date , discription,username;
+    private String date , discription,username,sample_work_url;
 
-    public BuyerRequestModel(int requestID, int duration, int budget, int userID, int status, String date, String discription ,String username) {
+    public BuyerRequestModel(int requestID, int duration, int budget, int userID, int status, String date, String discription ,String username,String sample_work_url) {
         this.requestID = requestID;
         this.duration = duration;
         this.budget = budget;
@@ -19,6 +19,7 @@ public class BuyerRequestModel {
         this.date = date;
         this.discription = discription;
         this.username=username;
+        this.sample_work_url=sample_work_url;
     }
 // Constructors, getters, and setters
 
@@ -31,6 +32,7 @@ public class BuyerRequestModel {
         this.userID = resultSet.getInt("userID");
         this.status = resultSet.getInt("status");
         this.username = resultSet.getString("username");
+        this.sample_work_url=resultSet.getString("sample_work_url");
 
     }
 
@@ -38,7 +40,7 @@ public class BuyerRequestModel {
         Date Today= new Date();
         String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
         if(Type.equals("insert")){
-            String quary ="INSERT INTO buyer_request (userID, date, discription, duration, budget, status) VALUES ("+this.userID+", \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1)" ;
+            String quary ="INSERT INTO jobs (userID, date, discription, duration, budget, status,sample_work_url) VALUES ("+this.userID+", \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1,\'"+this.sample_work_url+"\')" ;
             return quary;
         }
         return null;
@@ -108,5 +110,13 @@ public class BuyerRequestModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getSample_work_url() {
+        return sample_work_url;
+    }
+
+    public void setSample_work_url(String sample_work_url) {
+        this.sample_work_url = sample_work_url;
     }
 }
