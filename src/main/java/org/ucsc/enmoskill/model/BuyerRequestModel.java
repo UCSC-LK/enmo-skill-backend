@@ -8,10 +8,11 @@ import java.sql.SQLException;
 public class BuyerRequestModel {
 
     private int requestID ,duration , budget , userID,status;
-    private String date , discription,username,sample_work_url;
+    private String date , discription,username,sample_work_url,title;
 
-    public BuyerRequestModel(int requestID, int duration, int budget, int userID, int status, String date, String discription ,String username,String sample_work_url) {
+    public BuyerRequestModel(int requestID, int duration, int budget, int userID, int status, String date, String discription ,String username,String sample_work_url,String title) {
         this.requestID = requestID;
+        this.title=title;
         this.duration = duration;
         this.budget = budget;
         this.userID = userID;
@@ -33,6 +34,7 @@ public class BuyerRequestModel {
         this.status = resultSet.getInt("status");
         this.username = resultSet.getString("username");
         this.sample_work_url=resultSet.getString("sample_work_url");
+        this.title=resultSet.getString("title");
 
     }
 
@@ -40,10 +42,15 @@ public class BuyerRequestModel {
         Date Today= new Date();
         String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
         if(Type.equals("insert")){
-            String quary ="INSERT INTO jobs (userID, date, discription, duration, budget, status,sample_work_url) VALUES ("+this.userID+", \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1,\'"+this.sample_work_url+"\')" ;
+            String quary ="INSERT INTO jobs (userID,title, date, discription, duration, budget, status,sample_work_url) VALUES ("+this.userID+",\'"+this.title+"\', \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1,\'"+this.sample_work_url+"\')" ;
+            return quary;
+        }
+        if(Type.equals("update")){
+            String quary =" UPDATE enmo_database.jobs t SET t.title = '"+this.title+"',  t.discription = '"+this.discription+"', t.duration = "+this.budget+",t.budget ="+this.budget+", t.sample_work_url=\'"+this.sample_work_url+"\' WHERE t.requestID ="+this.requestID  ;
             return quary;
         }
         return null;
+
     }
 
 
@@ -110,6 +117,14 @@ public class BuyerRequestModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getSample_work_url() {

@@ -47,7 +47,7 @@ public class BuyerRequestGET {
 
 
         try {
-            String query = "SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url,  u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.userID = ? ORDER BY status DESC,date DESC,requestID DESC;";
+            String query = "SELECT br.requestID, br.userID,br.title, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url,  u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.userID = ? ORDER BY status DESC,date DESC,requestID DESC;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userid);
 
@@ -85,7 +85,7 @@ public class BuyerRequestGET {
     private void GetRequestDesigner( Connection connection){
 
         try {
-            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url, u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1 ORDER BY date DESC;").executeQuery();
+            ResultSet result = connection.prepareStatement("SELECT br.requestID, br.userID, br.title, br.date, br.discription, br.duration, br.budget, br.status,br.sample_work_url, u.username FROM  `enmo_database`.`jobs` AS br JOIN `enmo_database`.`users` AS u ON br.userID = u.userid where br.status =1 ORDER BY date DESC;").executeQuery();
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
 

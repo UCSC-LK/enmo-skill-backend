@@ -5,6 +5,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.BuyerRequestDELETE;
 import org.ucsc.enmoskill.Services.BuyerRequestGET;
 import org.ucsc.enmoskill.Services.BuyerRequestPOST;
+import org.ucsc.enmoskill.Services.BuyerRequestPUT;
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
 
@@ -42,7 +43,7 @@ public class Buyer_request_Controller extends HttpServlet {
         resp.setContentType("application/json");
         try (BufferedReader reader = req.getReader()){
             BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
-            if (buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getUserID()!=0&&buyerRequestModel.getBudget()!=0){
+            if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getUserID()!=0&&buyerRequestModel.getBudget()!=0){
                 BuyerRequestPOST service = new BuyerRequestPOST(resp,buyerRequestModel);
                 service.Run();
             }else {
@@ -68,6 +69,24 @@ public class Buyer_request_Controller extends HttpServlet {
         }
         else {
             resp.getWriter().write("Invalid Parameter");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        try (BufferedReader reader = req.getReader()){
+            BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
+            if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getRequestID()!=0&&buyerRequestModel.getBudget()!=0){
+                BuyerRequestPUT service = new BuyerRequestPUT(resp,buyerRequestModel);
+                service.Run();
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
+            resp.getWriter().write(e.toString());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
