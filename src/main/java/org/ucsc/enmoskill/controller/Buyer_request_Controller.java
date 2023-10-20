@@ -1,7 +1,7 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
-import io.github.cdimascio.dotenv.Dotenv;
+
 import org.ucsc.enmoskill.Services.BuyerRequestDELETE;
 import org.ucsc.enmoskill.Services.BuyerRequestGET;
 import org.ucsc.enmoskill.Services.BuyerRequestPOST;
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 
 public class Buyer_request_Controller extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
 
 
         resp.setContentType("application/json");
@@ -38,7 +38,7 @@ public class Buyer_request_Controller extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
 
         resp.setContentType("application/json");
         try (BufferedReader reader = req.getReader()){
@@ -57,7 +57,7 @@ public class Buyer_request_Controller extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         String reqesttid= req.getParameter("requestID");
         if(reqesttid!=null){
             try {
@@ -74,7 +74,7 @@ public class Buyer_request_Controller extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         resp.setContentType("application/json");
         try (BufferedReader reader = req.getReader()){
             BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);

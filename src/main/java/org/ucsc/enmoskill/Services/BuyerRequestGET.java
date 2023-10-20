@@ -73,13 +73,10 @@ public class BuyerRequestGET {
             response.setStatus(HttpServletResponse.SC_OK);
 
 
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
 
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new RuntimeException(e);
         }
     }
     private void GetRequestDesigner( Connection connection){
@@ -98,13 +95,10 @@ public class BuyerRequestGET {
             response.setStatus(HttpServletResponse.SC_OK);
 
 
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
 
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new RuntimeException(e);
         }
     }
 }

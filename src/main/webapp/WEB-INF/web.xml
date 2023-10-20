@@ -5,7 +5,34 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
 
-
+  <filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>http://127.0.0.1:5500</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,HEAD,OPTIONS,DELETE,PUT</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.exposed.headers</param-name>
+      <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <listener>
     <listener-class>org.ucsc.enmoskill.listners.Connection_Cleanup</listener-class>
   </listener>
@@ -21,7 +48,7 @@
   </servlet>
   <servlet>
     <servlet-name>buyer_request</servlet-name>
-    <servlet-class>org.ucsc.enmoskill.controller.Buyer_request</servlet-class>
+    <servlet-class>org.ucsc.enmoskill.controller.Buyer_request_Controller</servlet-class>
   </servlet>
 
 
