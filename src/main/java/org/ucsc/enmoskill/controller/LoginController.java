@@ -2,6 +2,7 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import org.ucsc.enmoskill.Services.LoginSer;
+import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Login;
 import org.ucsc.enmoskill.utils.Hash;
 
@@ -12,11 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 
 public class LoginController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
+
+        Connection connection=DatabaseConnection.initializeDatabase();
+        DatabaseConnection.closeConnection(connection);
+        Connection connection2=DatabaseConnection.initializeDatabase();
+        Connection connection3=DatabaseConnection.initializeDatabase();
 
         try {
             Gson gson = new Gson();

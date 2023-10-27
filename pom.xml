@@ -60,13 +60,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-catalina</artifactId>
-      <version>9.0.80</version>
-      <scope>provided</scope>
-    </dependency>
-
   </dependencies>
 
 
