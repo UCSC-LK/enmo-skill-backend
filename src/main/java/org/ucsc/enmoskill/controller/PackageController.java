@@ -195,21 +195,43 @@ public class PackageController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        int packageId = Integer.parseInt(req.getParameter("packageId"));
+        int designerUserId = 1;
 
-        Package newPackage = new Package(packageId);
+        try {
+            Gson gson = new Gson();
 
-        int result = deletePackageData(newPackage);
+            int packageId = Integer.parseInt(req.getParameter("packageId"));
+            System.out.println(packageId);
 
-        if (result>0){
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write("data deleted successfully");
-            System.out.println("data deleted successfully");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write("data deletion unsuccessful");
-            System.out.println("data deletion unsuccessful");
+            BufferedReader reader = req.getReader();
+            Package newPackage = gson.fromJson(reader,Package.class);
+            newPackage.setPackageId(packageId);
+            newPackage.setDesignerUserId(designerUserId);
+
+            int result = deletePackageData(newPackage);
+
+            if (result>0){
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+                out.write("data deleted successfully");
+                System.out.println("data deleted successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+                out.write("data deletion unsuccessful");
+                System.out.println("data deletion unsuccessful");
+            }
+        } catch (NumberFormatException | IOException | JsonSyntaxException | JsonIOException e) {
+            throw new RuntimeException(e);
         }
+
+//        int packageId = Integer.parseInt(req.getParameter("packageId"));
+//
+//        Package newPackage = new Package(packageId);
+
+
+
+
 
     }
 
