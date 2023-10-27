@@ -18,13 +18,18 @@ public class PackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "UPDATE package SET title=?, description=?, category=?, designer_userID=? WHERE package_id=?;";
+            String query = "UPDATE package SET title=?, description=?, category=?, designer_userID=?, cover_url=?, clicks=?, orders=?, cancellations=?, status=? WHERE package_id=?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, newPackage.getTitle());
             preparedStatement.setString(2, newPackage.getDescription());
             preparedStatement.setString(3, newPackage.getCategory());
             preparedStatement.setInt(4,newPackage.getDesignerUserId());
-            preparedStatement.setInt(5, newPackage.getPackageId());
+            preparedStatement.setString(5, newPackage.getCoverUrl());
+            preparedStatement.setInt(6, newPackage.getClicks());
+            preparedStatement.setInt(7,newPackage.getOrders());
+            preparedStatement.setString(8, newPackage.getCancellations());
+            preparedStatement.setString(9, newPackage.getStatus());
+            preparedStatement.setInt(10, newPackage.getPackageId());
             result = preparedStatement.executeUpdate();
             return result;
         } catch (SQLException e) {
@@ -57,13 +62,18 @@ public class PackageService {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO package (package_id, title, description, category, designer_userID) VALUES (?,?,?,?,?);";
+            String query = "INSERT INTO package (package_id, title, description, category, designer_userID, cover_url, clicks, orders, cancellations, status) VALUES (?,?,?,?,?,?,?,?,?,?);";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, newPackage.getPackageId());
             preparedStatement.setString(2, newPackage.getTitle());
             preparedStatement.setString(3, newPackage.getDescription());
             preparedStatement.setString(4,newPackage.getCategory());
             preparedStatement.setInt(5, newPackage.getDesignerUserId());
+            preparedStatement.setString(6, newPackage.getCoverUrl());
+            preparedStatement.setInt(7, newPackage.getClicks());
+            preparedStatement.setInt(8,newPackage.getOrders());
+            preparedStatement.setString(9, newPackage.getCancellations());
+            preparedStatement.setString(10, newPackage.getStatus());
 
             result = preparedStatement.executeUpdate();
 
