@@ -82,7 +82,7 @@ public class PackageService {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT package_id, title, description, category, designer_userID FROM package WHERE designer_userID = ?;";
+            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID FROM package WHERE designer_userID = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, designerUserId);
 
@@ -112,7 +112,7 @@ public class PackageService {
 //            }
 
             while (resultSet.next()){
-                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getString("category"), resultSet.getInt("designer_userID"));
+                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getString("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"));
                 packages.add(newPackage);
 //
             }

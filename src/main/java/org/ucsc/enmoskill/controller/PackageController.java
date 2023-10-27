@@ -48,6 +48,7 @@ public class PackageController extends HttpServlet {
             Gson gsonPackageList = new Gson();
             String json = gsonPackageList.toJson(packageList);
 
+            resp.addHeader("Access-Control-Allow-Origin", "*");
             resp.setStatus(HttpServletResponse.SC_OK);
             out.write(json); // Write the JSON string as the response
             System.out.println("data loaded successfully");
@@ -71,6 +72,11 @@ public class PackageController extends HttpServlet {
         String title = null;
         String description = null;
         String category = null;
+        String coverUrl = null;
+        int clicks = 0;
+        int orders = 0;
+        String cancellations = "0%";
+        String status = "active";
         int designerUserId = 4;
 
 
@@ -90,7 +96,7 @@ public class PackageController extends HttpServlet {
         description = req.getParameter("description");
         category = req.getParameter("category");
 
-        Package newPackage = new Package(packageID, title, description, category, designerUserId);
+        Package newPackage = new Package(packageID, title, description, category, coverUrl, clicks, orders, cancellations, status, designerUserId);
 
         int result = insertPackageData(newPackage);
 
