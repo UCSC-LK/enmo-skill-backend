@@ -20,10 +20,11 @@ public class UserTable {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+            String query = "INSERT INTO users (email,username, password ) VALUES (?, ?, ?)";
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(1, user.getEmail());
+            preparedStatement.setString(2, user.getUsername());
+            preparedStatement.setString(3, user.getPassword());
             preparedStatement.executeUpdate(); // Execute the INSERT operation
 
             // If the execution reaches this point, the insertion was successful

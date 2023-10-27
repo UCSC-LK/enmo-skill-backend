@@ -16,43 +16,12 @@ import java.sql.SQLException;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
-
+import org.ucsc.enmoskill.utils.Hash;
 
 public class UserController extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
 
-        try {
-            Connection con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT username, password FROM users WHERE username IS NOT NULL AND password IS NOT NULL";
-            PreparedStatement preparedStatement = con.prepareStatement(query);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            out.println("<html><body>");
-            out.println("<h1>User Data</h1>");
-            out.println("<table border='1'><tr><th>Username</th><th>Email</th></tr>");
-
-            while (resultSet.next()) {
-                String username = resultSet.getString("username");
-                String email = resultSet.getString("password");
-                out.println("<tr><td>" + username + "</td><td>" + email + "</td></tr>");
-            }
-
-            out.println("</table>");
-            out.println("</body></html>");
-
-            resultSet.close();
-            preparedStatement.close();
-            con.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        out.close();
     }
 
     @Override
@@ -69,6 +38,7 @@ public class UserController extends HttpServlet {
             User user = gson.fromJson(reader, User.class);
 
             // Debugging statements
+            System.out.println("Email: " + user.getEmail());
             System.out.println("Username: " + user.getUsername());
             System.out.println("Password: " + user.getPassword());
 
@@ -76,19 +46,19 @@ public class UserController extends HttpServlet {
             String hashedPassword = Hash.hashPassword(user.getPassword());
 
             // Create a new User object with the username and hashed password
-            User newUser = new User(user.getUsername(), hashedPassword);
+            User newUser = new User(user.getEmail(),user.getUsername(), hashedPassword);
 
             // Insert data into the database
             boolean isSuccess = UserTable.isInsertionSuccessful(newUser);
             if (isSuccess) {
                 resp.setStatus(HttpServletResponse.SC_OK);
-                out.write("Registration successfully");
-                System.out.println("Registration successful");
+//                out.write("Registration successfully");
+//                System.out.println("Registration successful");
             } else {
                 // Set the status code to 401 (Unauthorized) for an unsuccessful login
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write("Registration unsuccessfully");
-                System.out.println("Registration incorrect");
+//                out.write("Registration unsuccessfully");
+//                System.out.println("Registration incorrect");
             }
             out.write("Data inserted successfully");
         } catch (Exception e) {
