@@ -6,6 +6,9 @@ public class User {
     private String username;
     private String password;
 
+    private  int id;
+    private String user_role;
+
 
         // Constructors (if needed)
     public User(String email , String username, String password) {
@@ -41,7 +44,23 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public int getId() {
+        return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUser_role() {
+        return user_role;
+    }
+
+    public void setUser_role(String user_role) {
+        this.user_role = user_role;
+    }
+}
 
 
 

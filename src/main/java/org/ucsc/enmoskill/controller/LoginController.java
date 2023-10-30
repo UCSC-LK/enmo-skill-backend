@@ -1,12 +1,14 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.Services.LoginSer;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Login;
 import org.ucsc.enmoskill.utils.Hash;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,17 +44,17 @@ public class LoginController extends HttpServlet {
             Login loginDB = loginSer.getLoginData(login);
 //            out.write("Login successfully");
 
-            System.out.println( "loginDB1 " + loginDB);
             System.out.println( "loginDB2 " + loginDB.getPassword());
             System.out.println( "loginDB3 " + loginDB.getEmail());
-            System.out.println( "loginDB4 " + loginDB.getUsername());
+            System.out.println( "loginDB5 " + loginDB.getId());
+            System.out.println( "loginDB6 " + loginDB.getUserLevelID());
             // Check if the provided password matches the stored hashed password
             boolean passwordMatch = Hash.checkPassword(login, loginDB);
 
             if (passwordMatch) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setContentType("application/json");
-                String successMessage = "{\"message\": \"Login successfully\"}";
+                String successMessage = "{\"message\": \"Login successfully\", \"userLevelID\": " + loginDB.getUserLevelID() + " , \"userID\": " + loginDB.getId() + "}";
                 resp.getWriter().write(successMessage);
                 System.out.println("Login successful");
             } else {

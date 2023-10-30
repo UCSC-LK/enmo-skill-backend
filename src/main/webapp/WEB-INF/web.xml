@@ -33,9 +33,9 @@
     <filter-name>CorsFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-<!--  <listener>-->
-<!--    <listener-class>org.ucsc.enmoskill.listners.Connection_Cleanup</listener-class>-->
-<!--  </listener>-->
+  <listener>
+    <listener-class>org.ucsc.enmoskill.listners.Connection_Cleanup</listener-class>
+  </listener>
 
 
   <servlet>
@@ -46,11 +46,12 @@
     <servlet-name>login</servlet-name>
     <servlet-class>org.ucsc.enmoskill.controller.LoginController</servlet-class>
   </servlet>
-<!--  <servlet>-->
-<!--    <servlet-name>buyer_request</servlet-name>-->
-<!--    <servlet-class>org.ucsc.enmoskill.controller.Buyer_request_Controller</servlet-class>-->
-<!--  </servlet>-->
 
+
+  <servlet>
+    <servlet-name>proposal</servlet-name>
+    <servlet-class>org.ucsc.enmoskill.controller.ProposalController</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>user</servlet-name>
@@ -60,10 +61,11 @@
     <servlet-name>login</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
-<!--  <servlet-mapping>-->
-<!--    <servlet-name>buyer_request</servlet-name>-->
-<!--    <url-pattern>/request</url-pattern>-->
-<!--  </servlet-mapping>-->
 
+
+  <servlet-mapping>
+    <servlet-name>proposal</servlet-name>
+    <url-pattern>/proposal</url-pattern>
+  </servlet-mapping>
 
 </web-app>
