@@ -46,6 +46,11 @@
     <servlet-name>login</servlet-name>
     <servlet-class>org.ucsc.enmoskill.controller.LoginController</servlet-class>
   </servlet>
+  
+  <servlet>
+    <servlet-name>package</servlet-name>
+    <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
+  </servlet>
 
 
   <servlet>
@@ -61,6 +66,12 @@
     <servlet-name>login</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>package</servlet-name>
+    <url-pattern>/package/*</url-pattern>
+  </servlet-mapping>
+  
 
 
   <servlet-mapping>
