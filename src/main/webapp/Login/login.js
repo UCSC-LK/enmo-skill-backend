@@ -3,6 +3,7 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const messageDiv = document.getElementById("messageDiv");
 
     // Create a JavaScript object representing the user data
     const userData = {
@@ -23,10 +24,19 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     })
         .then(response => {
             if (response.ok) {
+                // Successful login (status code 200), parse the JSON response and display the success message
+                response.json().then((data) => {
+                    console.log('Message content:', data.message);
+                    messageDiv.innerHTML  = 'Login successful: ' + data.message;
+                });
                 // Successful login (status code 200), redirect to UserRegister.js
                 window.location.href = '/enmo_skill_backend_war_exploded/Register/register.html';
             } else if (response.status === 401) {
                 // Unauthorized login (status code 401), display an error message
+                response.json().then((data) => {
+                    console.log('Error message content:', data.message);
+                    messageDiv.innerHTML  = 'Login unsuccessful: ' + data.message;
+                });
                 console.log('Login unsuccessful');
             } else {
                 // Handle other status codes or errors
@@ -35,5 +45,6 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         })
         .catch(error => {
             console.error('Error:', error);
+            messageDiv.innerHTML =  error;
         });
 });
