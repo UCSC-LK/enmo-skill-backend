@@ -22,10 +22,7 @@ public class LoginController extends HttpServlet {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 
-        Connection connection=DatabaseConnection.initializeDatabase();
-        DatabaseConnection.closeConnection(connection);
-        Connection connection2=DatabaseConnection.initializeDatabase();
-        Connection connection3=DatabaseConnection.initializeDatabase();
+
 
         try {
             Gson gson = new Gson();
