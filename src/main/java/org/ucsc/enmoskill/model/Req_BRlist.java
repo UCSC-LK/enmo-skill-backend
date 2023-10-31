@@ -27,11 +27,13 @@ public class Req_BRlist {
             return true;
         }else return false;
     }
+
     public boolean isAgent(){
         if(role.equals("Support")){
             return true;
         }else return false;
     }
+
 
     public String getUserid() {
         return userid;
