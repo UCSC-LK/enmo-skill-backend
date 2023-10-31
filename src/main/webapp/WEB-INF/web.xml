@@ -1,6 +1,6 @@
 <!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
@@ -46,11 +46,23 @@
     <servlet-name>login</servlet-name>
     <servlet-class>org.ucsc.enmoskill.controller.LoginController</servlet-class>
   </servlet>
+
   <servlet>
     <servlet-name>buyer_request</servlet-name>
     <servlet-class>org.ucsc.enmoskill.controller.Buyer_request_Controller</servlet-class>
+ </servlet>
+  
+  <servlet>
+    <servlet-name>package</servlet-name>
+    <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
+
   </servlet>
 
+
+  <servlet>
+    <servlet-name>proposal</servlet-name>
+    <servlet-class>org.ucsc.enmoskill.controller.ProposalController</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>user</servlet-name>
@@ -60,13 +72,24 @@
     <servlet-name>login</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>buyer_request</servlet-name>
     <url-pattern>/request</url-pattern>
   </servlet-mapping>
 
+  
+  <servlet-mapping>
+    <servlet-name>package</servlet-name>
+    <url-pattern>/package/*</url-pattern>
+  </servlet-mapping>
+  
+
+
+
+  <servlet-mapping>
+    <servlet-name>proposal</servlet-name>
+    <url-pattern>/proposal</url-pattern>
+  </servlet-mapping>
 
 </web-app>
-
-
-
