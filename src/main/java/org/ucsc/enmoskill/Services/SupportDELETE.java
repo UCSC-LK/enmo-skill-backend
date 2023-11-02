@@ -12,7 +12,7 @@ public class SupportDELETE {
     private String requesterID;
     public SupportDELETE(String requesterID, HttpServletResponse response) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
-        String quary = "DELETE FROM enmo_Skill.ticket WHERE ref_no = " + requesterID;
+        String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + requesterID;
         PreparedStatement preparedStatement = connection.prepareStatement(quary);
 
         int rowsAffected = preparedStatement.executeUpdate();

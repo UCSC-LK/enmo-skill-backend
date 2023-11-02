@@ -48,7 +48,7 @@ public class SupportGET {
 
 
         try {
-            String query = "SELECT t.* FROM enmo_skill.ticket t WHERE requesterID = ? ORDER BY status DESC";
+            String query = "SELECT t.* FROM enmo_database.ticket t WHERE requesterID = ? ORDER BY status DESC";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userid);
 

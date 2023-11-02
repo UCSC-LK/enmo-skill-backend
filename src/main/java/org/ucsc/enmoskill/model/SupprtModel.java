@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no;
-    private String description,subject;
+    private int requesterID,ref_no,status;
+    private String description,subject,date;
 
     public SupprtModel(int requesterID, int ref_no, String description, String subject) {
         this.requesterID = requesterID;
@@ -20,6 +20,9 @@ public class SupprtModel {
         this.ref_no = result.getInt("ref_no");
         this.description = result.getString("description");
         this.subject = result.getString("subject");
+        this.date = result.getString("date");
+        this.status = result.getInt("status");
+
     }
 
 
@@ -27,14 +30,14 @@ public class SupprtModel {
     public String getQuery(){
         Date Today= new Date();
         String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-        String query="INSERT INTO enmo_skill.ticket (description, date, requesterID, subject,status) VALUES (\'"+description+"\', \'"+Date+"\',"+ requesterID+", \'"+subject+"\',1)";
+        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,status) VALUES (\'"+description+"\', \'"+Date+"\',"+ requesterID+", \'"+subject+"\',1)";
         return query;
 
     }
 
     public String getUpdatedQuery(){
 
-        String query="UPDATE enmo_skill.ticket t SET t.description = \'"+description+"\', t.subject = \'"+subject+"\' WHERE t.ref_no = "+ref_no;
+        String query="UPDATE enmo_database.ticket t SET t.description = \'"+description+"\', t.subject = \'"+subject+"\' WHERE t.ref_no = "+ref_no;
         return query;
 
     }
