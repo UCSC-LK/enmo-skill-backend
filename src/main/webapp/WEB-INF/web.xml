@@ -5,34 +5,48 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
 
-  <filter>
-    <filter-name>CorsFilter</filter-name>
-    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-    <init-param>
-      <param-name>cors.allowed.origins</param-name>
-        <param-value>http://127.0.0.1:5501</param-value>
-    </init-param>
-    <init-param>
-      <param-name>cors.allowed.methods</param-name>
-      <param-value>GET,POST,HEAD,OPTIONS,DELETE,PUT</param-value>
-    </init-param>
-    <init-param>
-      <param-name>cors.allowed.headers</param-name>
-      <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection</param-value>
-    </init-param>
-    <init-param>
-      <param-name>cors.exposed.headers</param-name>
-      <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection</param-value>
-    </init-param>
-    <init-param>
-      <param-name>cors.support.credentials</param-name>
-      <param-value>true</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>CorsFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.origins</param-name>
+            <param-value>https://enmoskill.codingblinders.com</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.support.credentials</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>cors.allowed.methods</param-name>
+            <param-value>GET,HEAD,POST,PUT,DELETE,OPTIONS</param-value>
+        </init-param>
+
+        <!-- List of the response headers other than simple response headers that the browser should expose to
+          the author of the cross-domain request through the XMLHttpRequest.getResponseHeader() method.
+          The CORS filter supplies this information through the Access-Control-Expose-Headers header. -->
+        <init-param>
+            <param-name>cors.exposed.headers</param-name>
+            <param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials,X-Bonita-API-Token</param-value>
+        </init-param>
+
+        <!-- The names of the supported author request headers. These are advertised through the Access-Control-Allow-Headers header.
+          The CORS Filter implements this by simply echoing the requested value back to the browser.
+        -->
+        <init-param>
+            <param-name>cors.allowed.headers</param-name>
+            <param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,X-Bonita-API-Token</param-value>
+        </init-param>
+
+    </filter>
+    ...
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
   <listener>
     <listener-class>org.ucsc.enmoskill.listners.Connection_Cleanup</listener-class>
   </listener>
