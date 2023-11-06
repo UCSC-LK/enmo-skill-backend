@@ -10,7 +10,7 @@
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
     <init-param>
       <param-name>cors.allowed.origins</param-name>
-        <param-value>http://127.0.0.1:5500</param-value>
+        <param-value>https://enmoskill.codingblinders.com</param-value>
 
     </init-param>
     <init-param>
