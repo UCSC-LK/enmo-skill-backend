@@ -11,8 +11,7 @@
     <init-param>
       <param-name>cors.allowed.origins</param-name>
         <param-value>
-            http://127.0.0.1:5500,
-            https://enmoskill.codingblinders.com
+            http://127.0.0.1:5500
         </param-value>
 
     </init-param>
