@@ -48,7 +48,7 @@ public class PackageController extends HttpServlet {
             Gson gsonPackageList = new Gson();
             String json = gsonPackageList.toJson(packageList);
 
-            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
             resp.setStatus(HttpServletResponse.SC_OK);
             out.write(json); // Write the JSON string as the response
             System.out.println("data loaded successfully");
@@ -56,7 +56,7 @@ public class PackageController extends HttpServlet {
         } else {
             // Handle the case where the "userId" cookie is not found
             // You might want to redirect the user to a login page or take some other action.
-            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write("Data not found");
             System.out.println("Data not found");
@@ -113,12 +113,12 @@ public class PackageController extends HttpServlet {
 
             if (result>0){
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("data inserted successfully");
                 System.out.println("data inserted successfully");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("data didn't inserted");
                 System.out.println("data didn't inserted");
             }
@@ -162,12 +162,12 @@ public class PackageController extends HttpServlet {
 
             if (result>0){
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("row updated successfully");
                 System.out.println("row updated successfully");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("row update unsuccessful");
                 System.out.println("row update unsuccessful");
             }
@@ -212,12 +212,12 @@ public class PackageController extends HttpServlet {
 
             if (result>0){
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("data deleted successfully");
                 System.out.println("data deleted successfully");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                 out.write("data deletion unsuccessful");
                 System.out.println("data deletion unsuccessful");
             }
@@ -237,10 +237,10 @@ public class PackageController extends HttpServlet {
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-        resp.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-        resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        resp.addHeader("Access-Control-Max-Age", "3600");
+//        resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+//        resp.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
+//        resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//        resp.addHeader("Access-Control-Max-Age", "3600");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 

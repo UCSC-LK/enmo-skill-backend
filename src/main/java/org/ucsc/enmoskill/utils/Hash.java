@@ -1,4 +1,4 @@
-package org.ucsc.enmoskill.controller;
+package org.ucsc.enmoskill.utils;
 
 import org.ucsc.enmoskill.model.Login;
 import org.mindrot.jbcrypt.BCrypt;
