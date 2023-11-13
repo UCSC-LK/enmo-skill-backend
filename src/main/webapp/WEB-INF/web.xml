@@ -76,6 +76,21 @@
         <servlet-class>org.ucsc.enmoskill.controller.FileHandlerControler</servlet-class>
     </servlet>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <servlet-mapping>
     <servlet-name>user</servlet-name>
     <url-pattern>/user/*</url-pattern>
