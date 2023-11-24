@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.ucsc.enmoskill.model.Package;
 
@@ -23,9 +24,11 @@ public class PackageController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        if (req.getParameter("UserId")!=null){
+        int designerUserId = Integer.parseInt(req.getParameter("UserId"));
+
+        if (designerUserId!=0){
             // extract designer rif by query parameters
-            int designerUserId = Integer.parseInt(req.getParameter("UserId"));
+//            int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 
             List<Package> packageList;
             packageList = getPackageData(designerUserId);
@@ -76,8 +79,8 @@ public class PackageController extends HttpServlet {
         int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 //
         // generate a number between 10 and 100000 as packageID
-        packageID = (int)(Math.random()*(100000-10+1)+10);
-        System.out.println(packageID);
+//        packageID = (int)(Math.random()*(100000-10+1)+10);
+//        System.out.println(packageID);
 //
 //        title = req.getParameter("title");
 //        description = req.getParameter("description");
@@ -91,23 +94,32 @@ public class PackageController extends HttpServlet {
             BufferedReader reader =  req.getReader();
             Package newPackage = gson.fromJson(reader,Package.class);
 
-            newPackage.setPackageId(packageID);
+//            newPackage.setPackageId(packageID);
             newPackage.setDesignerUserId(designerUserId);
+
+            System.out.println(newPackage.getPackageId());
 
 
             int result = insertPackageData(newPackage);
 
+            // Create a JSON object to represent the result
+            JsonObject resultJson = new JsonObject();
+            resultJson.addProperty("result", result);
+
+
             if (result>0){
                 resp.setStatus(HttpServletResponse.SC_OK);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-                out.write("data inserted successfully");
-                System.out.println("data inserted successfully");
+                resultJson.addProperty("message", "Data inserted successfully");
+                System.out.println("Data inserted successfully");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-                out.write("data didn't inserted");
-                System.out.println("data didn't inserted");
+                resultJson.addProperty("message", "Data didn't insert");
+                System.out.println("Data didn't insert");
             }
+
+            // Send the JSON object as the response
+            out.print(resultJson.toString());
+
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             throw new RuntimeException(e);
         }
@@ -125,7 +137,7 @@ public class PackageController extends HttpServlet {
 //        int designerUserId = 1;
 
 
-        // extract designer rif by query parameters
+        // extract designer id by query parameters
         int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 
         try{
@@ -184,7 +196,7 @@ public class PackageController extends HttpServlet {
             int packageId = Integer.parseInt(req.getParameter("packageId"));
             System.out.println(packageId);
 
-            // extract designer rif by query parameters
+            // extract designer id by query parameters
             int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 
             BufferedReader reader = req.getReader();

@@ -4,7 +4,7 @@ public class Package {
     private int packageId;
     private String title;
     private String description;
-    private String category;
+    private int category;
     private String coverUrl;
     private int clicks;
     private int orders;
@@ -19,14 +19,14 @@ public class Package {
         this.packageId = packageId;
     }
 
-    public Package(int packageId ,String title, String description, String category){
+    public Package(int packageId , String title, String description, int category){
         this.packageId = packageId;
         this.title = title;
         this.description = description;
         this.category = category;
     }
 
-    public Package(int packageId ,String title, String description, String category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId){
+    public Package(int packageId , String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId){
         this.packageId = packageId;
         this.title = title;
         this.description = description;
@@ -51,7 +51,7 @@ public class Package {
         this.description = description;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category = category;
     }
 
@@ -91,7 +91,7 @@ public class Package {
         return description;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
     }
 

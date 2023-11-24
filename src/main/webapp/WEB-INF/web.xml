@@ -65,6 +65,12 @@
 
     </servlet>
 
+    <servlet>
+        <servlet-name>package_pricing</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PackagePricingController</servlet-class>
+
+    </servlet>
+
 
     <servlet>
         <servlet-name>proposal</servlet-name>
@@ -113,5 +119,11 @@
         <servlet-name>new</servlet-name>
         <url-pattern>/file</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>package_pricing</servlet-name>
+        <url-pattern>/packagepricing</url-pattern>
+    </servlet-mapping>
+
 
 </web-app>
