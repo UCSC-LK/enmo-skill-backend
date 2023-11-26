@@ -7,10 +7,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.google.gson.*;
+import org.*;
+
 import org.ucsc.enmoskill.model.LogoDesignDeliverables;
 import org.ucsc.enmoskill.model.PackagePricing;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.*;
 import static org.ucsc.enmoskill.Services.PricePackageService.*;
@@ -19,7 +25,59 @@ public class PackagePricingController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        int packageId = Integer.parseInt(req.getParameter("packageId"));
+        List<PackagePricing> pricingList;
+        pricingList = getPricePackage(packageId);
+
+
+        if (!pricingList.isEmpty()){
+
+            System.out.println(pricingList.size());
+
+            StringBuilder jsonObj = new StringBuilder("[");
+
+            for (PackagePricing pricing:pricingList) {
+                int pricePackageId = pricing.getPricePackageId();
+
+                LogoDesignDeliverables deliverables = getLDDeliverables(pricePackageId);
+
+                Gson gson = new Gson();
+
+                // Convert pricing object to JSON
+                String jsonPricing = gson.toJson(pricing);
+
+                // Convert deliverables object to JSON
+                String jsonDeliverables = gson.toJson(deliverables);
+
+                // Create a JSON object for pricing
+                StringBuilder jsonResult = new StringBuilder(jsonPricing);
+
+                // Add a new field for deliverables within the pricing JSON object
+                jsonResult.insert(jsonResult.length() - 1, ", \"deliverables\":" + jsonDeliverables);
+
+                jsonObj.append(jsonResult);
+                jsonObj.append(",");
+                System.out.println(jsonResult);
+
+            }
+
+            jsonObj.append("]");
+
+            System.out.println(jsonObj);
+
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.write(String.valueOf(jsonObj));
+            System.out.println("Data loaded successfully");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("Data not found");
+            System.out.println("Data not found");
+        }
+
+
     }
 
     @Override
