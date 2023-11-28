@@ -80,4 +80,31 @@ public class LogoDesDeliverablesService {
             throw new RuntimeException(e);
         }
     }
+
+    public static int updateLDDeliverables(LogoDesignDeliverables deliverables){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            String query = "UPDATE logo_design_deliverables SET logo_transparency=?, vector_file=?, printable_file=?, 3d_mockup=?, source_file=?, social_media_kit=? WHERE price_package_id=?;";
+
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, deliverables.getLogoTransparency());
+            preparedStatement.setInt(2, deliverables.getVectorFile());
+            preparedStatement.setInt(3, deliverables.getPrintableFile());
+            preparedStatement.setInt(4,deliverables.getMockup());
+            preparedStatement.setInt(5, deliverables.getSourceFile());
+            preparedStatement.setInt(6, deliverables.getSocialMediaKit());
+            preparedStatement.setInt(7, deliverables.getPricePackageId());
+
+            result = preparedStatement.executeUpdate();
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

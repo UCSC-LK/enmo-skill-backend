@@ -10,6 +10,35 @@ import java.util.List;
 
 public class PricePackageService {
 
+    public  static int updatePricePackageData(PackagePricing newPackagePricing){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            String query = "UPDATE package_pricing SET type=?, delivery_duration=?, no_of_revisions=?, price=?, no_of_concepts=?, package_id=? WHERE price_package_id=?;";
+
+            preparedStatement = con.prepareStatement(query);
+
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, newPackagePricing.getType());
+            preparedStatement.setString(2, newPackagePricing.getDeliveryDuration());
+            preparedStatement.setString(3, newPackagePricing.getNoOfRevisions());
+            preparedStatement.setFloat(4, newPackagePricing.getPrice());
+            preparedStatement.setInt(5, newPackagePricing.getNoOfConcepts());
+            preparedStatement.setInt(6, newPackagePricing.getPackageId());
+            preparedStatement.setInt(7, newPackagePricing.getPricePackageId());
+
+            result = preparedStatement.executeUpdate();
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static int insertPricePackageData(PackagePricing newPackagePricing){
 
         Connection con = null;
