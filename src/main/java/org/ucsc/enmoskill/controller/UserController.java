@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.controller;
 
+import org.ucsc.enmoskill.Services.BuyerRequestPUT;
+import org.ucsc.enmoskill.Services.ClientDetailsPUT;
 import org.ucsc.enmoskill.Services.UserSer;
 
 import javax.servlet.ServletException;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
+import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
@@ -67,7 +70,20 @@ public class UserController extends HttpServlet {
     }
 
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        resp.setContentType("application/json");
+        try (BufferedReader reader = req.getReader()){
+            User usermodel = new Gson().fromJson(reader, User.class);
+            if (usermodel.checkRequired()){
+                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
+                service.Run();
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
+            resp.getWriter().write(e.toString());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     @Override
