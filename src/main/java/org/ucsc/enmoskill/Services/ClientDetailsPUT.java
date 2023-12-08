@@ -16,7 +16,24 @@ public class ClientDetailsPUT {
         this.response = response;
         this.data = data;
     }
+    public void  Validate() throws IOException, SQLException {
+        Connection connection = DatabaseConnection.initializeDatabase();
+        if(connection==null){
+            response.getWriter().write("SQL Connection Error");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT t.clientID FROM enmo_database.client t WHERE userid="+data.getId());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()){
+            response.getWriter().write("You have Already Filled This Form");
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        }else {
+            response.getWriter().write("OK");
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+        }
+    }
     public void Run() throws IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){

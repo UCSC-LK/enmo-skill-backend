@@ -91,4 +91,22 @@ public class UserController extends HttpServlet {
         super.doDelete(req, resp);
     }
 
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        try (BufferedReader reader = req.getReader()){
+            User usermodel = new Gson().fromJson(reader, User.class);
+            if (usermodel.getId()!=0){
+                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
+                service.Validate();
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
+            resp.getWriter().write(e.toString());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
 }
