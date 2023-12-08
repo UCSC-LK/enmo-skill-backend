@@ -10,6 +10,7 @@ import java.util.List;
 
 public class PricePackageService {
 
+
     public  static int updatePricePackageData(PackagePricing newPackagePricing){
         Connection con = null;
         PreparedStatement preparedStatement = null;
@@ -36,6 +37,14 @@ public class PricePackageService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
         }
     }
 

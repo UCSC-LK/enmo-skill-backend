@@ -93,6 +93,60 @@ public class PackageService {
         }
     }
 
+    public static Package getPackage(int packageId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID FROM package WHERE package_id = ?;";
+
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, packageId);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet != null){
+                Package newPackage = new Package();
+
+                while (resultSet.next()){
+                    newPackage.setPackageId(resultSet.getInt("package_id"));
+                    newPackage.setDesignerUserId(resultSet.getInt("designer_userID"));
+                    newPackage.setStatus(resultSet.getString("status"));
+                    newPackage.setCategory(resultSet.getInt("category"));
+                    newPackage.setClicks(resultSet.getInt("clicks"));
+                    newPackage.setCancellations(resultSet.getString("cancellations"));
+                    newPackage.setCoverUrl(resultSet.getString("cover_url"));
+                    newPackage.setDescription(resultSet.getString("description"));
+                    newPackage.setOrders(resultSet.getInt("orders"));
+                    newPackage.setTitle(resultSet.getString("title"));
+
+                }
+
+                return newPackage;
+            } else
+                return null;
+
+
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }finally {
+            // Close the database connections in a finally block
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
+
     public static List<Package> getPackageData(int designerUserId) {
 
         Connection con = null;
