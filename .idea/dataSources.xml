@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:mysql://database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com:3306/database-enmo</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="@localhost" uuid="921c6b43-0e33-49bd-9996-ddbcf08575e3">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

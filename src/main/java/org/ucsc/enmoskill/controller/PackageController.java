@@ -20,42 +20,43 @@ import static org.ucsc.enmoskill.Services.PackageService.*;
 public class PackageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("hello world 1");
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
         int designerUserId = Integer.parseInt(req.getParameter("UserId"));
+        int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        if (designerUserId!=0){
-            // extract designer rif by query parameters
-//            int designerUserId = Integer.parseInt(req.getParameter("UserId"));
-
-            List<Package> packageList;
-            packageList = getPackageData(designerUserId);
-
-            if (!packageList.isEmpty()) {
-                 Gson gsonPackageList = new Gson();
-                String json = gsonPackageList.toJson(packageList);
-
-//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5501");
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.write(json); // Write the JSON string as the response
-                System.out.println("data loaded successfully");
-
-            } else {
-                // Handle the case where the "userId" cookie is not found
-                // You might want to redirect the user to a login page or take some other action.
-//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5501");
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Data not found");
-                System.out.println("Data not found");
-            }
-        }else {
-            System.out.println("not implemented");
+        if (designerUserId != 0 && packageId == 0) {
+            // Fetch data based on designerUserId
+            List<Package> packageList = getPackageData(designerUserId);
+            handleGetResponse(packageList, out, resp);
+        } else if (packageId != 0 && designerUserId == 0) {
+            // Fetch data based on packageId
+            Package newPackage = getPackage(packageId);
+            handleGetResponse(newPackage, out, resp);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("Invalid request parameters");
+            System.out.println("Invalid request parameters");
         }
 
 
 
+    }
+
+    private void handleGetResponse(Object data, PrintWriter out, HttpServletResponse resp) {
+        if (data != null) {
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(data);
+
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.write(jsonData);
+            System.out.println("Data loaded successfully");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.write("Data not found");
+            System.out.println("Data not found");
+        }
     }
 
     @Override
