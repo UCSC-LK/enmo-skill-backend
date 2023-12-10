@@ -71,6 +71,13 @@
     <servlet-class>org.ucsc.enmoskill.controller.ProposalController</servlet-class>
   </servlet>
 
+    <servlet>
+        <servlet-name>profile</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ProfileController</servlet-class>
+    </servlet>
+
+
+
   <servlet-mapping>
     <servlet-name>user</servlet-name>
     <url-pattern>/user/*</url-pattern>
@@ -104,5 +111,10 @@
     <servlet-name>proposal</servlet-name>
     <url-pattern>/proposal</url-pattern>
   </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>profile</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
 
 </web-app>
