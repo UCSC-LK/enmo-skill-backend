@@ -1,11 +1,12 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.nimbusds.jwt.JWTClaimsSet;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.LoginSer;
-import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Login;
 import org.ucsc.enmoskill.utils.Hash;
+import org.ucsc.enmoskill.utils.JwtGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -15,14 +16,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
+
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.EncryptedJWT;
 
 public class LoginController extends HttpServlet {
+    static Dotenv dotenv = Dotenv.load();
+
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
-
-
 
         try {
             Gson gson = new Gson();
@@ -35,25 +41,51 @@ public class LoginController extends HttpServlet {
             System.out.println("Username: " + login.getEmail());
             System.out.println("Password: " + login.getPassword());
 
-
             // Insert data into the database
             LoginSer loginSer = new LoginSer();
             Login loginDB = loginSer.getLoginData(login);
-//            out.write("Login successfully");
 
             System.out.println( "loginDB2 " + loginDB.getPassword());
             System.out.println( "loginDB3 " + loginDB.getEmail());
             System.out.println( "loginDB5 " + loginDB.getId());
             System.out.println( "loginDB6 " + loginDB.getUserLevelID());
+
             // Check if the provided password matches the stored hashed password
             boolean passwordMatch = Hash.checkPassword(login, loginDB);
 
             if (passwordMatch) {
+
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setContentType("application/json");
                 String successMessage = "{\"message\": \"Login successfully\", \"userLevelID\": " + loginDB.getUserLevelID() + " , \"userID\": " + loginDB.getId() + "}";
                 resp.getWriter().write(successMessage);
                 System.out.println("Login successful");
+
+                // Include the JWT in the response headers
+                // Generate JWT token
+                String secretKey = dotenv.get("JWT_SECRET_KEY");
+
+                JwtGenerator jwtGenerator = new JwtGenerator();
+                String jwtToken = jwtGenerator.generateJWTToken(loginDB, secretKey);
+                System.out.println("Generated JWT Token: " + jwtToken);
+
+                JWT parsedJWT = JWTParser.parse(jwtToken);
+                JWTClaimsSet claimsSet = parsedJWT.getJWTClaimsSet();
+
+                // Access individual claims
+                String subject = claimsSet.getSubject();
+                String userLevelID = claimsSet.getStringClaim("userLevelID");
+                String userID = claimsSet.getStringClaim("userID");
+
+
+                resp.setHeader("Set-Cookie", "JWTToken=" + jwtToken + "; SameSite=None; Secure; Domain=127.0.0.1; path=/");
+
+                // Print the claims
+                System.out.println("Subject: " + subject);
+                System.out.println("User Level ID: " + userLevelID);
+                System.out.println("User ID: " + userID);
+
+//                resp.addHeader("Authorization", "Bearer " + jwtToken);
             } else {
                 // Set the status code to 401 (Unauthorized) for an unsuccessful login
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -62,14 +94,14 @@ public class LoginController extends HttpServlet {
                 resp.getWriter().write(errorMessage);
                 System.out.println("Login incorrect");
             }
-
-
         } catch (Exception e) {
             System.out.println("Hiiii");
             e.printStackTrace(); // Print the exception details for debugging
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         } finally {
             out.close();
         }
     }
+
 }

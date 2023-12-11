@@ -10,7 +10,7 @@
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
     <init-param>
       <param-name>cors.allowed.origins</param-name>
-        <param-value>http://127.0.0.1:5501</param-value>
+        <param-value>http://127.0.0.1:5500</param-value>
     </init-param>
     <init-param>
       <param-name>cors.allowed.methods</param-name>
@@ -18,7 +18,7 @@
     </init-param>
     <init-param>
       <param-name>cors.allowed.headers</param-name>
-      <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection</param-value>
+      <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection,Cookie</param-value>
     </init-param>
     <init-param>
       <param-name>cors.exposed.headers</param-name>
@@ -28,6 +28,10 @@
       <param-name>cors.support.credentials</param-name>
       <param-value>true</param-value>
     </init-param>
+      <init-param>
+          <param-name>cors.allowed.credentials</param-name>
+          <param-value>true</param-value>
+      </init-param>
   </filter>
   <filter-mapping>
     <filter-name>CorsFilter</filter-name>
@@ -37,8 +41,7 @@
     <listener-class>org.ucsc.enmoskill.listners.Connection_Cleanup</listener-class>
   </listener>
 
-
-  <servlet>
+    <servlet>
     <servlet-name> user </servlet-name>
     <servlet-class>org.ucsc.enmoskill.controller.UserController</servlet-class>
   </servlet>
