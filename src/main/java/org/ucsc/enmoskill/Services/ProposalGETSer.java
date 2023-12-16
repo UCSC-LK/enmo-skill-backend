@@ -22,6 +22,7 @@ public class ProposalGETSer {
         PreparedStatement preparedStatement = null;
         ResultSet result = null; // Add this line to initialize the result set
 
+        System.out.println("User ID: " + userID);
         try{
             String query = "SELECT * FROM proposals WHERE userID = ? ";
             preparedStatement = connection.prepareStatement(query);
@@ -39,6 +40,7 @@ public class ProposalGETSer {
 
             resp.getWriter().write(jsonArray.toString());
             resp.setStatus(HttpServletResponse.SC_OK);
+            System.out.println("Proposals : " + jsonArray);
 
         }catch (SQLException | IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
