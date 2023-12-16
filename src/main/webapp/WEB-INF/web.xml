@@ -76,6 +76,11 @@
         <servlet-class>org.ucsc.enmoskill.controller.ProfileController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>skill</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.skillController</servlet-class>
+    </servlet>
+
 
 
   <servlet-mapping>
@@ -115,6 +120,11 @@
     <servlet-mapping>
         <servlet-name>profile</servlet-name>
         <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>skill</servlet-name>
+        <url-pattern>/skill</url-pattern>
     </servlet-mapping>
 
 </web-app>
