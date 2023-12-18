@@ -29,7 +29,7 @@ public class SkillGET {
             return;
         }
 
-        String query = "SELECT (skill) FROM enmo_database.skills";
+        String query = "SELECT * FROM enmo_database.skills";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         ResultSet result = preparedStatement.executeQuery();
