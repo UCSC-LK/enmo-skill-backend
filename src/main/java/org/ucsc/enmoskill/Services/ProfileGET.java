@@ -26,32 +26,57 @@ public class ProfileGET {
     public void Run() throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
-        if(connection==null){
+        if (connection == null) {
             resp.getWriter().write("SQL Connection Error");
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-         if(profileModel.isDesigner()){
-             if(profileModel.getUserId()==null){
-                 resp.getWriter().write("User ID is Required!");
-                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-             }else{
-                String query="SELECT u.username,u.email,u.name,d.description,GROUP_CONCAT(DISTINCT l.language) AS languages, GROUP_CONCAT(DISTINCT s.skill) AS skills FROM users u JOIN designer d ON u.userid = d.userid LEFT JOIN language_mapping lm ON d.userID = lm.userID LEFT JOIN languages l ON lm.language_id = l.language_id LEFT JOIN skill_mapping sm ON d.designerID = sm.designerID LEFT JOIN skills s ON sm.skill_id = s.skill_id WHERE u.userid = "+ profileModel.getUserId();
-                 PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery();
+        if (profileModel.isDesigner()) {
 
-                 JsonObject jsonObject=null;
-                 while(resultSet.next()){
-                     DesignerProfileModel designerProfileModel = new DesignerProfileModel(resultSet);
-                     jsonObject = new Gson().toJsonTree(designerProfileModel).getAsJsonObject();
-                 }
-                 resp.getWriter().write(jsonObject.toString());
-             }
-         }
+           String query = "SELECT  designer.userid,designer.display_name, designer.description,GROUP_CONCAT(DISTINCT skills.skill) AS skills,GROUP_CONCAT(DISTINCT languages.language) AS language FROM  designer LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id LEFT JOIN language_mapping ON designer.userId = language_mapping.userId LEFT JOIN languages ON language_mapping.language_id = languages.language_id WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
+//            "SELECT designer.fname, designer.description, " +
+//                    "GROUP_CONCAT(DISTINCT skills.skill) AS skills, " +
+//                    "GROUP_CONCAT(DISTINCT languages.language) AS languages " +
+//                    "FROM designer " +
+//                    "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
+//                    "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
+//                    "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
+//                    "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
+//                    "WHERE designer.userId = "+ profileModel.getUserId()+" GROUP BY designer.userId";
 
+//                PreparedStatement preparedStatement = connection.prepareStatement(query);
+//                ResultSet resultSet = preparedStatement.executeQuery();
+//
+//                 System.out.println(resultSet);
+//                 JsonObject jsonObject=null;
+//                 while(resultSet.next()){
+//                     DesignerProfileModel designerProfileModel = new DesignerProfileModel(resultSet);
+//                     jsonObject = new Gson().toJsonTree(designerProfileModel).getAsJsonObject();
+//                 }
+//                 resp.getWriter().write(jsonObject.toString());
+//                 System.out.println(resp);
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+//                preparedStatement.setInt(1, profileModel.getUserId());
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                JsonObject jsonObject = new JsonObject();
+
+                while (resultSet.next()) {
+
+                    ProfileModel profileModel = new ProfileModel(resultSet);
+                    jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
+
+                }
+
+                resp.getWriter().write(jsonObject.toString());
+                System.out.println(resp);
+            }
+
+
+
+        }
 
 
     }
-
-
 }

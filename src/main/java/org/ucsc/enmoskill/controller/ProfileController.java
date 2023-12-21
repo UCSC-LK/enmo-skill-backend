@@ -25,7 +25,7 @@ public class ProfileController extends HttpServlet {
 
 
             System.out.println("ssssssssssss");
-            if(profileModel.getUserId() != null && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
+            if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
                 ProfilePOST service = new ProfilePOST(profileModel,res);
                 service.Run();
 

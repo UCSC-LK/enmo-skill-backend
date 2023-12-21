@@ -106,7 +106,7 @@
 
   <servlet-mapping>
     <servlet-name>package</servlet-name>
-    <url-pattern>/package/*</url-pattern>
+    <url-pattern>/package</url-pattern>
   </servlet-mapping>
   
 

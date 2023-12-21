@@ -1,16 +1,21 @@
 package org.ucsc.enmoskill.model;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 public class ProfileModel {
-    private String userId, role, fname, lname, display_name, description;
+    private String  role, fname, lname, display_name, description;
+    private int userId;
     private List<String> skills;
     private List<String> language;
 
     // Constructors, getters, setters, and other methods remain unchanged
 
     // Modify the constructor to use List instead of Array
-    public ProfileModel(String userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language) {
+    public ProfileModel(int userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language) {
         this.userId = userId;
         this.role = role;
         this.fname = fname;
@@ -23,7 +28,17 @@ public class ProfileModel {
 
     public ProfileModel(HttpServletRequest req) {
         role = req.getParameter("role");
-        userId = req.getParameter("UserId");
+        userId = Integer.parseInt(req.getParameter("userId"));
+    }
+
+    public ProfileModel(ResultSet result) throws SQLException {
+        this.userId = result.getInt("userid");
+        this.description = result.getString("description");
+        this.display_name = result.getString("display_name");
+        this.skills = Arrays.asList(result.getString("skills").split(","));
+        this.language = Arrays.asList(result.getString("language").split(","));
+
+
     }
 
     public String getQuery1(){
@@ -48,7 +63,7 @@ public class ProfileModel {
 
 
     public boolean CheckReqiredFields(){
-        if(userId == null){
+        if(userId == 0){
             return false;
         }else{
             return true;
@@ -62,11 +77,11 @@ public class ProfileModel {
     }
 
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
