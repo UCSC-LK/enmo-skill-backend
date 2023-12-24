@@ -33,28 +33,15 @@ public class ProfileGET {
         }
         if (profileModel.isDesigner()) {
 
-           String query = "SELECT  designer.userid,designer.display_name, designer.description,GROUP_CONCAT(DISTINCT skills.skill) AS skills,GROUP_CONCAT(DISTINCT languages.language) AS language FROM  designer LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id LEFT JOIN language_mapping ON designer.userId = language_mapping.userId LEFT JOIN languages ON language_mapping.language_id = languages.language_id WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
-//            "SELECT designer.fname, designer.description, " +
-//                    "GROUP_CONCAT(DISTINCT skills.skill) AS skills, " +
-//                    "GROUP_CONCAT(DISTINCT languages.language) AS languages " +
-//                    "FROM designer " +
-//                    "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
-//                    "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
-//                    "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
-//                    "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
-//                    "WHERE designer.userId = "+ profileModel.getUserId()+" GROUP BY designer.userId";
-
-//                PreparedStatement preparedStatement = connection.prepareStatement(query);
-//                ResultSet resultSet = preparedStatement.executeQuery();
-//
-//                 System.out.println(resultSet);
-//                 JsonObject jsonObject=null;
-//                 while(resultSet.next()){
-//                     DesignerProfileModel designerProfileModel = new DesignerProfileModel(resultSet);
-//                     jsonObject = new Gson().toJsonTree(designerProfileModel).getAsJsonObject();
-//                 }
-//                 resp.getWriter().write(jsonObject.toString());
-//                 System.out.println(resp);
+          String query = "SELECT  designer.userid,designer.display_name, designer.description," +
+                  "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
+                  "GROUP_CONCAT(DISTINCT languages.language) AS language " +
+                  "FROM  designer " +
+                  "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
+                  "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
+                  "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
+                  "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
+                  "WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 //                preparedStatement.setInt(1, profileModel.getUserId());
