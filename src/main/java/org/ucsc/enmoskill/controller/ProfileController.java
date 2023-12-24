@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.Gson;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.Services.ProfilePOST;
+import org.ucsc.enmoskill.Services.ProfilePUT;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
 
@@ -38,6 +39,25 @@ public class ProfileController extends HttpServlet {
             e.printStackTrace();
             throw new RuntimeException(e);
 
+        }
+    }
+
+    protected void doPut(HttpServletRequest req,HttpServletResponse res){
+        try(BufferedReader reader = req.getReader()) {
+            ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
+
+            if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
+                ProfilePUT service = new ProfilePUT(profileModel,res);
+                service.Run();
+
+            }else {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.getWriter().write("Required Field Missing");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

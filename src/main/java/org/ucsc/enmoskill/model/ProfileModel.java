@@ -57,6 +57,23 @@ public class ProfileModel {
         return query3;
     }
 
+    public String getUpdateQuery1(){
+        String updateQuery1 = "UPDATE enmo_database.designer SET description = \'" + description + "\', fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  getUserId();
+        System.out.println(updateQuery1);
+        return updateQuery1;
+    }
+
+    public String deleteSkills(){
+        String queryDeleteSkils = "DELETE FROM enmo_database.skill_mapping WHERE userId =" + getUserId();
+        return queryDeleteSkils;
+    }
+
+
+    public String deleteLanguages(){
+        String queryDeleteLanguage = "DELETE FROM enmo_database.language_mapping WHERE userId ="+ getUserId();
+        return queryDeleteLanguage;
+    }
+
 
 
 
