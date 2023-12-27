@@ -33,7 +33,7 @@ public class ProfileGET {
         }
         if (profileModel.isDesigner()) {
 
-          String query = "SELECT  designer.userid,designer.display_name, designer.description," +
+          String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
                   "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
                   "GROUP_CONCAT(DISTINCT languages.language) AS language " +
                   "FROM  designer " +

@@ -33,6 +33,8 @@ public class ProfileModel {
 
     public ProfileModel(ResultSet result) throws SQLException {
         this.userId = result.getInt("userid");
+        this.fname = result.getString("fname");
+        this.lname = result.getString("lname");
         this.description = result.getString("description");
         this.display_name = result.getString("display_name");
         this.skills = Arrays.asList(result.getString("skills").split(","));
@@ -43,7 +45,7 @@ public class ProfileModel {
 
     public String getQuery1(){
 
-        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\'"+description+"\',\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30','200012321569')";
+        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30','200012321569')";
         return query1;
     }
 
@@ -58,7 +60,7 @@ public class ProfileModel {
     }
 
     public String getUpdateQuery1(){
-        String updateQuery1 = "UPDATE enmo_database.designer SET description = \'" + description + "\', fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  getUserId();
+        String updateQuery1 = "UPDATE enmo_database.designer SET description = \"" + description + "\", fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  getUserId();
         System.out.println(updateQuery1);
         return updateQuery1;
     }
