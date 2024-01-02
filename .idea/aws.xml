@@ -15,9 +15,6 @@
       </list>
     </option>
   </component>
-  <component name="connectionManager">
-    <option name="activeConnectionId" value="AwsConnectionManagerConnection" />
-  </component>
   <component name="explorerToolWindow">
     <option name="selectedTab" value="Explorer" />
   </component>

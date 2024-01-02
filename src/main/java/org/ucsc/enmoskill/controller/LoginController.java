@@ -78,14 +78,14 @@ public class LoginController extends HttpServlet {
                 String userID = claimsSet.getStringClaim("userID");
 
 
-                resp.setHeader("Set-Cookie", "JWTToken=" + jwtToken + "; SameSite=None; Secure; Domain=127.0.0.1; path=/");
+//                resp.setHeader("Set-Cookie", "JWTToken=" + jwtToken + "; SameSite=None; Secure; Domain=127.0.0.1; path=/");
 
                 // Print the claims
                 System.out.println("Subject: " + subject);
                 System.out.println("User Level ID: " + userLevelID);
                 System.out.println("User ID: " + userID);
 
-//                resp.addHeader("Authorization", "Bearer " + jwtToken);
+                resp.addHeader("Authorization", "Bearer " + jwtToken);
             } else {
                 // Set the status code to 401 (Unauthorized) for an unsuccessful login
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
