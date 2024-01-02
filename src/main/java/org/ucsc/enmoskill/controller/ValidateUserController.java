@@ -16,13 +16,14 @@ public class ValidateUserController extends HttpServlet {
         if (req.getParameter("key")!=null){
             String key =req.getParameter("key");
             if (key.length()<15){
+                resp.setStatus(HttpServletResponse.SC_GONE);
                 resp.getWriter().write("This Is not a Valid Link");
             }else {
                 ValidateUserPOST validateUserPOST =new ValidateUserPOST(resp,key);
 
                 if(!validateUserPOST.Validate()){
 
-                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.setStatus(HttpServletResponse.SC_GONE);
                     resp.getWriter().write("Critical Issue With Your Link. Reach Contact Support.");
                 }
             }
