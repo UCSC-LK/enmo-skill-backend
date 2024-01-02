@@ -1,0 +1,85 @@
+package org.ucsc.enmoskill.model;
+
+public class PackagePricing {
+
+    private int pricePackageId;
+    private String type;
+    private String deliveryDuration;
+    private String noOfRevisions;
+
+    private float price;
+
+    private int packageId;
+
+    private int noOfConcepts;
+
+    public PackagePricing(){
+    }
+
+    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId){
+        this.pricePackageId = pricePackageId;
+        this.type = type;
+        this.deliveryDuration = deliveryDuration;
+        this.noOfRevisions = noOfRevisions;
+        this.price = price;
+        this.noOfConcepts = noOfConcepts;
+        this.packageId = packageId;
+
+    }
+
+    public void setPricePackageId(int pricePackageId) {
+        this.pricePackageId = pricePackageId;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setDeliveryDuration(String deliveryDuration) {
+        this.deliveryDuration = deliveryDuration;
+    }
+
+    public void setNoOfRevisions(String noOfRevisions) {
+        this.noOfRevisions = noOfRevisions;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public void setNoOfConcepts(int noOfConcepts) {
+        this.noOfConcepts = noOfConcepts;
+    }
+
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
+    }
+
+    public int getPricePackageId() {
+        return pricePackageId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getDeliveryDuration() {
+        return deliveryDuration;
+    }
+
+    public String getNoOfRevisions() {
+        return noOfRevisions;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public int getNoOfConcepts() {
+        return noOfConcepts;
+    }
+
+    public int getPackageId() {
+        return packageId;
+    }
+}

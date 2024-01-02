@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.ucsc.enmoskill.model.Package;
 
@@ -19,49 +20,43 @@ import static org.ucsc.enmoskill.Services.PackageService.*;
 public class PackageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println("hello world 1");
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        // create an array using all the cookies
-        Cookie[] cookies = req.getCookies();
-        int designerUserId = 1;
+        int designerUserId = Integer.parseInt(req.getParameter("UserId"));
+        int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        // // getting the designer id form the cookie
-//            for (Cookie cookie:
-//                 cookies) {
-//                if (cookie.getName().equals("user")){
-//                    designerUserId = Integer.parseInt(cookie.getValue());
-//                }
-//            }
-
-        List<Package> packageList;
-        packageList = getPackageData(designerUserId);
-
-        if (!packageList.isEmpty()) {
-            // You have successfully retrieved the userId from the cookie
-            // Now, you can use it as needed.
-
-
-
-
-            Gson gsonPackageList = new Gson();
-            String json = gsonPackageList.toJson(packageList);
-
-//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write(json); // Write the JSON string as the response
-            System.out.println("data loaded successfully");
-
+        if (designerUserId != 0 && packageId == 0) {
+            // Fetch data based on designerUserId
+            List<Package> packageList = getPackageData(designerUserId);
+            handleGetResponse(packageList, out, resp);
+        } else if (packageId != 0 && designerUserId == 0) {
+            // Fetch data based on packageId
+            Package newPackage = getPackage(packageId);
+            handleGetResponse(newPackage, out, resp);
         } else {
-            // Handle the case where the "userId" cookie is not found
-            // You might want to redirect the user to a login page or take some other action.
-//            resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("Invalid request parameters");
+            System.out.println("Invalid request parameters");
+        }
+
+
+
+    }
+
+    private void handleGetResponse(Object data, PrintWriter out, HttpServletResponse resp) {
+        if (data != null) {
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(data);
+
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.write(jsonData);
+            System.out.println("Data loaded successfully");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             out.write("Data not found");
             System.out.println("Data not found");
         }
-
     }
 
     @Override
@@ -78,20 +73,15 @@ public class PackageController extends HttpServlet {
 //        int orders = 0;
 //        String cancellations = "0%";
 //        String status = "active";
-        int designerUserId = 1;
+//        int designerUserId = 1;
 //
 //
-//        // // getting the designer id form the cookie
-////            for (Cookie cookie:
-////                 cookies) {
-////                if (cookie.getName().equals("user")){
-////                    designerUserId = Integer.parseInt(cookie.getValue());
-////                }
-////            }
+        // extract designer rif by query parameters
+        int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 //
         // generate a number between 10 and 100000 as packageID
-        packageID = (int)(Math.random()*(100000-10+1)+10);
-        System.out.println(packageID);
+//        packageID = (int)(Math.random()*(100000-10+1)+10);
+//        System.out.println(packageID);
 //
 //        title = req.getParameter("title");
 //        description = req.getParameter("description");
@@ -105,23 +95,32 @@ public class PackageController extends HttpServlet {
             BufferedReader reader =  req.getReader();
             Package newPackage = gson.fromJson(reader,Package.class);
 
-            newPackage.setPackageId(packageID);
+//            newPackage.setPackageId(packageID);
             newPackage.setDesignerUserId(designerUserId);
+
+            System.out.println(newPackage.getPackageId());
 
 
             int result = insertPackageData(newPackage);
 
+            // Create a JSON object to represent the result
+            JsonObject resultJson = new JsonObject();
+            resultJson.addProperty("result", result);
+
+
             if (result>0){
                 resp.setStatus(HttpServletResponse.SC_OK);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-                out.write("data inserted successfully");
-                System.out.println("data inserted successfully");
+                resultJson.addProperty("message", "Data inserted successfully");
+                System.out.println("Data inserted successfully");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-                out.write("data didn't inserted");
-                System.out.println("data didn't inserted");
+                resultJson.addProperty("message", "Data didn't insert");
+                System.out.println("Data didn't insert");
             }
+
+            // Send the JSON object as the response
+            out.print(resultJson.toString());
+
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             throw new RuntimeException(e);
         }
@@ -136,16 +135,11 @@ public class PackageController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        int designerUserId = 1;
+//        int designerUserId = 1;
 
 
-        // // getting the designer id form the cookie
-//            for (Cookie cookie:
-//                 cookies) {
-//                if (cookie.getName().equals("user")){
-//                    designerUserId = Integer.parseInt(cookie.getValue());
-//                }
-//            }
+        // extract designer id by query parameters
+        int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 
         try{
             Gson gson = new Gson();
@@ -195,13 +189,16 @@ public class PackageController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        int designerUserId = 1;
+//        int designerUserId = 1;
 
         try {
             Gson gson = new Gson();
 
             int packageId = Integer.parseInt(req.getParameter("packageId"));
             System.out.println(packageId);
+
+            // extract designer id by query parameters
+            int designerUserId = Integer.parseInt(req.getParameter("UserId"));
 
             BufferedReader reader = req.getReader();
             Package newPackage = gson.fromJson(reader,Package.class);
@@ -235,14 +232,14 @@ public class PackageController extends HttpServlet {
 
     }
 
-    @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-//        resp.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-//        resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//        resp.addHeader("Access-Control-Max-Age", "3600");
-        resp.setStatus(HttpServletResponse.SC_OK);
-    }
+//    @Override
+//    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+////        resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+////        resp.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
+////        resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+////        resp.addHeader("Access-Control-Max-Age", "3600");
+//        resp.setStatus(HttpServletResponse.SC_OK);
+//    }
 
 
 
