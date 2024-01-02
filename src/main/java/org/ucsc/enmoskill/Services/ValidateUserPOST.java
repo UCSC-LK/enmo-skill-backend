@@ -85,12 +85,14 @@ public class ValidateUserPOST {
                         int RowAffected = preparedStatement.executeUpdate();
                         if (RowAffected>0){
                             response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().write("Successfully Verified!");
+                            JsonObject jsonObject =new JsonObject();
+                            jsonObject.addProperty("UserId",UserId);
+                            response.getWriter().write(jsonObject.toString());
                             return true;
                         }
                     }
                     else if(status==1) {
-                        response.setStatus(HttpServletResponse.SC_OK);
+                        response.setStatus(HttpServletResponse.SC_CONFLICT);
                         response.getWriter().write("Email has already been verified");
                         return true;
                     }
@@ -149,7 +151,7 @@ public class ValidateUserPOST {
                 String to =email;
                 String fromName = "Enmo Skill Platform";
                 String template = "email validate";
-                String mergeCode = "http://127.0.0.1:5500/HTML/validateEmail.html?key="+code;
+                String mergeCode = "http://127.0.0.1:5501/HTML/validateEmail.html?key="+code;
                 String mergeUsername = Username;
 
 
