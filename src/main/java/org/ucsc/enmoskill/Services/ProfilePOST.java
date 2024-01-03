@@ -28,6 +28,12 @@ public class ProfilePOST {
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
+        //update user role---------------------------------------------------------------------------
+        String queryRoleLevelUp = profileModel.getQueryLevelUp();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRoleLevelUp);
+        int rows = preparedStatement.executeUpdate();
+        preparedStatement.close();
+
         //set designer table details-----------------------------------------------------------------------------
         String query1 = profileModel.getQuery1();
 

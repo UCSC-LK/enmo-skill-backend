@@ -54,6 +54,8 @@ public class ProfileGET {
                     ProfileModel profileModel = new ProfileModel(resultSet);
                     jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
 
+
+
                 }
 
                 resp.getWriter().write(jsonObject.toString());
