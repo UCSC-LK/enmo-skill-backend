@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class ProposalPOSTSer {
 
-    public boolean isInsertionSuccessful(ProposalModel proposal , Pro_CR proBRlist){
+    public boolean isInsertionSuccessful(ProposalModel proposal , Pro_CR proBRlist ,String userID){
 
         Connection con = null;
         PreparedStatement preparedStatement = null;
@@ -22,7 +22,7 @@ public class ProposalPOSTSer {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, proposal.getDuration());
             preparedStatement.setString(2, proposal.getBudget());
-            preparedStatement.setString(3, proposal.getUserID());
+            preparedStatement.setString(3, userID);
 //            preparedStatement.setString(4, proposal.getDate());
             preparedStatement.setString(4, proposal.getDescription());
             preparedStatement.setString(5, proBRlist.getRequestid());
