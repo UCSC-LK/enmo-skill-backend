@@ -23,7 +23,10 @@ public class BuyerRequestGET {
         this.response=response;
         request=reqBRlist;
     }
-
+    public BuyerRequestGET(HttpServletResponse response) {
+        this.response=response;
+        request= null;
+    }
     public void Run() throws IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
