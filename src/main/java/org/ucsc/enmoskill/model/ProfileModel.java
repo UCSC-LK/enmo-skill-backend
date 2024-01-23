@@ -43,6 +43,14 @@ public class ProfileModel {
 
     }
 
+    public String getQueryLevelUp(){
+        String queryRoleLevelUp = "UPDATE enmo_database.user_level_mapping t " +
+                                    "SET t.userlevelID = 2 " +
+                                    "WHERE t.userID = " + this.userId ;
+
+        return queryRoleLevelUp;
+
+    }
     public String getQuery1(){
 
         String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30','200012321569')";
@@ -58,6 +66,7 @@ public class ProfileModel {
         String query3="INSERT INTO enmo_database.language_mapping(userId, language_id) VALUES ";
         return query3;
     }
+
 
     public String getUpdateQuery1(){
         String updateQuery1 = "UPDATE enmo_database.designer SET description = \"" + description + "\", fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  getUserId();

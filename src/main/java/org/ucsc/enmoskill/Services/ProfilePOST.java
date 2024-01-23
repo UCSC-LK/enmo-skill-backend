@@ -30,6 +30,12 @@ public class ProfilePOST {
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
+        //update user role---------------------------------------------------------------------------
+        String queryRoleLevelUp = profileModel.getQueryLevelUp();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRoleLevelUp);
+        int rows = preparedStatement.executeUpdate();
+        preparedStatement.close();
+
         //set designer table details-----------------------------------------------------------------------------
         String query1 = profileModel.getQuery1();
 
