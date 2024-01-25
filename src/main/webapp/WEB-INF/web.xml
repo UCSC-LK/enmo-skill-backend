@@ -100,6 +100,11 @@
         <servlet-class>org.ucsc.enmoskill.controller.skillController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>PackageViewClient</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PackageViewController</servlet-class>
+    </servlet>
+
 
     <servlet-mapping>
         <servlet-name>user</servlet-name>
@@ -161,6 +166,10 @@
         <url-pattern>/skill</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>PackageViewClient</servlet-name>
+        <url-pattern>/packageview</url-pattern>
+    </servlet-mapping>
 
 
 </web-app>
