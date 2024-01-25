@@ -39,7 +39,7 @@ public class SupprtModel {
         String query = "INSERT INTO enmo_database.ticket_history (ticket_id, description, date, requesterID, subject)\n" +
                 "SELECT ref_no, description, date, requesterID, subject\n" +
                 "FROM ticket\n" +
-                "WHERE ref_no = " + ref_no ;
+                "WHERE ref_no = \'" + ref_no+"\' AND status = 1" ;
         return query;
     }
 

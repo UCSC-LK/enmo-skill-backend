@@ -30,8 +30,8 @@ public class SupportPUT {
 
 
         }else {
-            String query1 = this.supportObj.setHistoryData();
-            String query2 = this.supportObj.getUpdatedQuery();
+            String query1 = this.supportObj.setHistoryData();//insert data form ticket table to ticket_history table
+            String query2 = this.supportObj.getUpdatedQuery();//update ticket table
 
             try {
                 PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
