@@ -25,6 +25,13 @@ public class SupprtModel {
 
     }
 
+    public SupprtModel(ResultSet result, String popup) throws SQLException {
+        this.requesterID = result.getInt("requesterID");
+        this.ref_no = result.getInt("ticketID");
+        this.description = result.getString("description");
+        this.subject = result.getString("subject");
+        this.date = result.getString("date");
+    }
 
 
     public String getQuery(){
@@ -36,7 +43,7 @@ public class SupprtModel {
     }
 
     public String setHistoryData(){
-        String query = "INSERT INTO enmo_database.ticket_history (ticket_id, description, date, requesterID, subject)\n" +
+        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID, subject)\n" +
                 "SELECT ref_no, description, date, requesterID, subject\n" +
                 "FROM ticket\n" +
                 "WHERE ref_no = \'" + ref_no+"\' AND status = 1" ;

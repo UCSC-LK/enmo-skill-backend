@@ -85,12 +85,23 @@ public class Support_Controller extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
 
+        String popup=null;
+        if(req.getParameter("popup")!=null){
+            popup= req.getParameter("popup");
+        }
+
+
         Req_BRlist reqBRlist =new Req_BRlist(req);
         if (reqBRlist.CheckReqiredFields()){
             SupportGET service = new SupportGET(reqBRlist);
 
 //            service.Run();
-            ResponsModel responsModel = service.Run();
+            ResponsModel responsModel = null;
+            try {
+                responsModel = service.Run(popup);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             resp.getWriter().write(responsModel.getResMassage());
             resp.setStatus(responsModel.getResStatus());
 

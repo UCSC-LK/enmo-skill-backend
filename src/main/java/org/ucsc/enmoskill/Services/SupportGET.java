@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
-import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
@@ -25,21 +24,26 @@ public class SupportGET {
         //this.response = response;
     }
 
-    public ResponsModel Run() throws IOException {
+    public ResponsModel Run(String popup) throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
+
         if(connection==null){
+
 //            response.getWriter().write("SQL Connection Error");
 //            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         }else {
             if (request.isClient() || request.isDesigner()) {
-//            System.out.println(request.getUserid()+request.getRole());
+
                 if (request.getUserid() == null) {
+//
 //                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 //                    response.getWriter().write("User ID is Required!");
                     return new ResponsModel("User ID is Required!",HttpServletResponse.SC_BAD_REQUEST);
                 }
-                ResponsModel responsModel = GetRequestClient(connection, request.getUserid());
+
+                ResponsModel responsModel = GetRequestClient(connection, request.getUserid(), popup);
                 return responsModel;
 
             } else if (request.isAgent()) {
@@ -51,37 +55,47 @@ public class SupportGET {
         return new ResponsModel("rong user ID",HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    private ResponsModel GetRequestClient( Connection connection , String userid){
+    private ResponsModel GetRequestClient(Connection connection , String userid, String popup) throws SQLException {
 
 
-        try {
-            String query1 = "SELECT t.* FROM enmo_database.ticket t WHERE requesterID = ? ORDER BY status DESC";
-            PreparedStatement preparedStatement = connection.prepareStatement(query1);
-            preparedStatement.setString(1, userid);
+            String query;
+            PreparedStatement preparedStatement = null;
 
-            ResultSet result1 = preparedStatement.executeQuery();
+            if(popup != null){
 
-//            String query2 ="SELECT update_id, ref_no, description, subject, date, requesterID, status\n" +
-//                    "FROM update_ticket\n" +
-//                    "WHERE requesterID = ? \n" +
-//                    "GROUP BY ref_no\n" +
-//                    "ORDER BY date DESC;";
-//
-//            PreparedStatement preparedStatement2 = connection.prepareStatement(query1);
-//            preparedStatement2.setString(1, userid);
-//
-//            ResultSet result2 = preparedStatement.executeQuery();
-//
-//            System.out.println(result2);
+                query = "SELECT t.* ,t.ticketID FROM enmo_database.ticket_history t WHERE ticketID = ? ORDER BY updateID DESC";
 
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, popup);
+                System.out.println(query);
+
+
+            } else{
+                query = "SELECT t.* FROM enmo_database.ticket t WHERE requesterID = ? ORDER BY status DESC";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, userid);
+                System.out.println(query);
+
+            }
+
+            ResultSet result = preparedStatement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
 
-            while (result1.next()) {
-                SupprtModel supprtModel = new SupprtModel(result1);
-                JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
-                jsonArray.add(jsonObject);
+            if(popup != null){
+                while (result.next()) {
+                    SupprtModel supprtModel = new SupprtModel(result,popup);
+                    JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
+                    jsonArray.add(jsonObject);
+                }
+
+            }else{
+                while (result.next()) {
+                    SupprtModel supprtModel = new SupprtModel(result);
+                    JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
+                    jsonArray.add(jsonObject);
+                }
             }
 
 
@@ -90,9 +104,6 @@ public class SupportGET {
             return new ResponsModel(jsonArray.toString(),HttpServletResponse.SC_OK);
 
 
-        } catch (SQLException e) {
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return new ResponsModel("SC INTERNAL SERVER ERROR",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+
     }
 }
