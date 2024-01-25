@@ -18,11 +18,11 @@ import java.sql.SQLException;
 
 public class SupportGET {
     private Req_BRlist request;
-    private HttpServletResponse response;
 
-    public SupportGET(Req_BRlist request, HttpServletResponse response) {
+
+    public SupportGET(Req_BRlist request) {
         this.request = request;
-        this.response = response;
+        //this.response = response;
     }
 
     public ResponsModel Run() throws IOException {
@@ -55,18 +55,31 @@ public class SupportGET {
 
 
         try {
-            String query = "SELECT t.* FROM enmo_database.ticket t WHERE requesterID = ? ORDER BY status DESC";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String query1 = "SELECT t.* FROM enmo_database.ticket t WHERE requesterID = ? ORDER BY status DESC";
+            PreparedStatement preparedStatement = connection.prepareStatement(query1);
             preparedStatement.setString(1, userid);
 
-            ResultSet result = preparedStatement.executeQuery();
+            ResultSet result1 = preparedStatement.executeQuery();
+
+//            String query2 ="SELECT update_id, ref_no, description, subject, date, requesterID, status\n" +
+//                    "FROM update_ticket\n" +
+//                    "WHERE requesterID = ? \n" +
+//                    "GROUP BY ref_no\n" +
+//                    "ORDER BY date DESC;";
+//
+//            PreparedStatement preparedStatement2 = connection.prepareStatement(query1);
+//            preparedStatement2.setString(1, userid);
+//
+//            ResultSet result2 = preparedStatement.executeQuery();
+//
+//            System.out.println(result2);
 
 
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
 
-            while (result.next()) {
-                SupprtModel supprtModel = new SupprtModel(result);
+            while (result1.next()) {
+                SupprtModel supprtModel = new SupprtModel(result1);
                 JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
                 jsonArray.add(jsonObject);
             }

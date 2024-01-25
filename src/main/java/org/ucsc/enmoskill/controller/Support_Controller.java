@@ -24,7 +24,7 @@ public class Support_Controller extends HttpServlet {
 
             if (supportmodel.getRequesterID()!=0&&supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
 
-                SupportPOST service = new SupportPOST(supportmodel,resp);
+                SupportPOST service = new SupportPOST(supportmodel);
 
 //                service.Run();
                 ResponsModel responsModel = service.Run();
@@ -49,7 +49,7 @@ public class Support_Controller extends HttpServlet {
 
             if (supportmodel.getRef_no()!=0&&supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
 
-                SupportPUT service = new SupportPUT(supportmodel,resp);
+                SupportPUT service = new SupportPUT(supportmodel);
 
 //                service.Run();
                 ResponsModel responsModel = service.Run();
@@ -87,7 +87,7 @@ public class Support_Controller extends HttpServlet {
 
         Req_BRlist reqBRlist =new Req_BRlist(req);
         if (reqBRlist.CheckReqiredFields()){
-            SupportGET service = new SupportGET(reqBRlist,resp);
+            SupportGET service = new SupportGET(reqBRlist);
 
 //            service.Run();
             ResponsModel responsModel = service.Run();

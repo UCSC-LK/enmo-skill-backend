@@ -12,11 +12,11 @@ import java.sql.SQLException;
 
 public class SupportPOST {
     private SupprtModel supportObj;
-    private HttpServletResponse response;
 
-    public SupportPOST(SupprtModel supportObj, HttpServletResponse response) {
+
+    public SupportPOST(SupprtModel supportObj) {
         this.supportObj = supportObj;
-        this.response = response;
+        //this.response = response;
     }
 
     public ResponsModel Run() throws IOException {

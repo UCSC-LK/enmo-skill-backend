@@ -1,5 +1,6 @@
 package org.ucsc.enmoskill.Services;
 
+import com.google.gson.stream.JsonToken;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
@@ -9,14 +10,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class SupportPUT {
     private SupprtModel supportObj;
-    private HttpServletResponse response;
 
-    public SupportPUT(SupprtModel supportObj, HttpServletResponse response) {
+
+    public SupportPUT(SupprtModel supportObj) {
         this.supportObj = supportObj;
-        this.response = response;
+       // this.response = response;
     }
 
     public ResponsModel Run() throws IOException {
@@ -28,17 +30,32 @@ public class SupportPUT {
 
 
         }else {
-            String query = this.supportObj.getUpdatedQuery();
+            String query1 = this.supportObj.setHistoryData();
+            String query2 = this.supportObj.getUpdatedQuery();
 
             try {
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                int rowsAffected = preparedStatement.executeUpdate();
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+                int rowsAffected1 = preparedStatement1.executeUpdate();
+                int rowsAffected2=0;
 
-                if (rowsAffected > 0) {
+                if(rowsAffected1>0){
+                    PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                    rowsAffected2 = preparedStatement2.executeUpdate();
+                }
+
+
+                if (rowsAffected2 > 0) {
+
 //                    response.getWriter().write("Data Updated successfully!");
 //                    response.setStatus(HttpServletResponse.SC_CREATED);
                     return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);
+
                 } else {
+
+                    String deleteQuery = "DELETE FROM enmo_database.ticket_history WHERE ticket_id = " + supportObj.getRef_no();
+                    Statement deleteStatement = connection.createStatement();
+                    deleteStatement.executeUpdate(deleteQuery);
+
 //                    response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 //                    response.getWriter().write("Data Updating Failed!");
                     return new ResponsModel("Data Updating Failed!",HttpServletResponse.SC_NOT_IMPLEMENTED);

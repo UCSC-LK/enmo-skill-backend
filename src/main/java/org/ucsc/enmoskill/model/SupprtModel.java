@@ -35,13 +35,24 @@ public class SupprtModel {
 
     }
 
-    public String getUpdatedQuery(){
-
-        String query="UPDATE enmo_database.ticket t SET t.description = \'"+description+"\', t.subject = \'"+subject+"\' WHERE t.ref_no = "+ref_no;
+    public String setHistoryData(){
+        String query = "INSERT INTO enmo_database.ticket_history (ticket_id, description, date, requesterID, subject)\n" +
+                "SELECT ref_no, description, date, requesterID, subject\n" +
+                "FROM ticket\n" +
+                "WHERE ref_no = " + ref_no ;
         return query;
-
     }
 
+    public String getUpdatedQuery(){
+
+        Date Today= new Date();
+        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
+        String query ="UPDATE enmo_database.ticket t SET t.description = \'" + description + "\', t.subject = \'" + subject + "\', t.date = \'" + Date + "\'\n" +
+                        "WHERE t.ref_no="+ref_no;
+
+        return query;
+    }
 
     public int getRequesterID() {
         return requesterID;
