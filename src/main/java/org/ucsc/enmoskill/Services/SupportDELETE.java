@@ -24,6 +24,7 @@ public class SupportDELETE {
         } else {
 
             response.getWriter().write("No row found .");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 }

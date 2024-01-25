@@ -6,6 +6,7 @@ import org.ucsc.enmoskill.Services.ProfilePOST;
 import org.ucsc.enmoskill.Services.ProfilePUT;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
+import org.ucsc.enmoskill.model.ResponsModel;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,10 @@ public class ProfileController extends HttpServlet {
             System.out.println("ssssssssssss");
             if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
                 ProfilePOST service = new ProfilePOST(profileModel,res);
-                service.Run();
+
+                ResponsModel responsModel= service.Run();
+                res.getWriter().write(responsModel.getResMassage());
+                res.setStatus(responsModel.getResStatus());
 
             }else {
                 res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -48,7 +52,10 @@ public class ProfileController extends HttpServlet {
 
             if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
                 ProfilePUT service = new ProfilePUT(profileModel,res);
-                service.Run();
+
+                ResponsModel responsModel= service.Run();
+                res.getWriter().write(responsModel.getResMassage());
+                res.setStatus(responsModel.getResStatus());
 
             }else {
                 res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -70,7 +77,9 @@ public class ProfileController extends HttpServlet {
         if(profile.CheckReqiredFields()){
             ProfileGET servise = new ProfileGET(profile,resp);
             try {
-                servise.Run();
+                ResponsModel responsModel= servise.Run();
+                resp.getWriter().write(responsModel.getResMassage());
+                resp.setStatus(responsModel.getResStatus());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

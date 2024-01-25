@@ -1,6 +1,7 @@
 package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
+import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,29 +19,34 @@ public class SupportPUT {
         this.response = response;
     }
 
-    public void Run() throws IOException {
+    public ResponsModel Run() throws IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
-            response.getWriter().write("SQL Connection Error");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            response.getWriter().write("SQL Connection Error");
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        }
-        String query = this.supportObj.getUpdatedQuery();
 
-        try {
-            PreparedStatement preparedStatement  = connection.prepareStatement(query);
-            int rowsAffected = preparedStatement.executeUpdate();
+        }else {
+            String query = this.supportObj.getUpdatedQuery();
 
-            if (rowsAffected > 0) {
-                response.getWriter().write("Data Updated successfully!");
-                response.setStatus(HttpServletResponse.SC_CREATED);
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-                response.getWriter().write("Data Updating Failed!");
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                int rowsAffected = preparedStatement.executeUpdate();
 
+                if (rowsAffected > 0) {
+//                    response.getWriter().write("Data Updated successfully!");
+//                    response.setStatus(HttpServletResponse.SC_CREATED);
+                    return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);
+                } else {
+//                    response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+//                    response.getWriter().write("Data Updating Failed!");
+                    return new ResponsModel("Data Updating Failed!",HttpServletResponse.SC_NOT_IMPLEMENTED);
+
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

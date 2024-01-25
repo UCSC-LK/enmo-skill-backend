@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.DesignerProfileModel;
 import org.ucsc.enmoskill.model.ProfileModel;
+import org.ucsc.enmoskill.model.ResponsModel;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,13 +24,13 @@ public class ProfileGET {
         this.resp = resp;
     }
 
-    public void Run() throws IOException, SQLException {
+    public ResponsModel Run() throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
         if (connection == null) {
-            resp.getWriter().write("SQL Connection Error");
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
+//            resp.getWriter().write("SQL Connection Error");
+//            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         if (profileModel.isDesigner()) {
 
@@ -49,6 +50,7 @@ public class ProfileGET {
 
                 JsonObject jsonObject = new JsonObject();
 
+
                 while (resultSet.next()) {
 
                     ProfileModel profileModel = new ProfileModel(resultSet);
@@ -56,13 +58,20 @@ public class ProfileGET {
 
                 }
 
-                resp.getWriter().write(jsonObject.toString());
-                System.out.println(resp);
+//                resp.getWriter().write(jsonObject.toString());
+//                System.out.println(resp);
+                if (!jsonObject.toString().isEmpty()){
+                    return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
+                }else{
+                    return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
+                }
+
             }
 
 
 
         }
+        return new ResponsModel("This is not Valid Request",HttpServletResponse.SC_BAD_REQUEST);
 
 
     }

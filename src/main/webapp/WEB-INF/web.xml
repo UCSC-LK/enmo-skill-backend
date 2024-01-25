@@ -76,9 +76,35 @@
     </servlet>
 
     <servlet>
-        <servlet-name>new</servlet-name>
+        <servlet-name>file</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.FileHandlerControler</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>validate</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ValidateUserController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>massage</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.MassageController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>chats</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ChatsController</servlet-class>
+    </servlet>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <servlet>
         <servlet-name>package_pricing</servlet-name>
@@ -141,9 +167,25 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>new</servlet-name>
+        <servlet-name>file</servlet-name>
         <url-pattern>/file</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>validate</servlet-name>
+        <url-pattern>/validate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>massage</servlet-name>
+        <url-pattern>/messages</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>chats</servlet-name>
+        <url-pattern>/chats</url-pattern>
+    </servlet-mapping>
+
+
+
+
 
 
     <servlet-mapping>
