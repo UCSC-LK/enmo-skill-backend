@@ -66,17 +66,17 @@ public class Support_Controller extends HttpServlet {
     }
 
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
-        String requesterID= req.getParameter("TicketID");
-        if(requesterID!=null){
+        String TicketID= req.getParameter("TicketID");
+        if(TicketID!=null){
             try {
-                new SupportDELETE(requesterID,resp);
+                new SupportDELETE(TicketID,resp);
             } catch (SQLException e) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 throw new RuntimeException(e);
             }
         }
         else {
-            resp.getWriter().write("Invalid Parameter");
+            resp.getWriter().write("Ticket ID required");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }

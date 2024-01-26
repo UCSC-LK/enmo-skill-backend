@@ -9,21 +9,26 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SupportDELETE {
-    private String requesterID;
-    public SupportDELETE(String requesterID, HttpServletResponse response) throws SQLException, IOException {
+    private String TicketID;
+    private HttpServletResponse response;
+    public SupportDELETE(String TicketID, HttpServletResponse response) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
-        String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + requesterID;
+
+        System.out.println(TicketID);
+
+        String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + TicketID;
+
         PreparedStatement preparedStatement = connection.prepareStatement(quary);
 
         int rowsAffected = preparedStatement.executeUpdate();
 
         if (rowsAffected > 0) {
 
-            response.getWriter().write("Row is deleted successfully.");
+            response.getWriter().write("Ticket deleted successfully");
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
 
-            response.getWriter().write("No row found .");
+            response.getWriter().write("Not found ticket.");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
