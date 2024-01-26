@@ -100,7 +100,7 @@ public class PackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID FROM package WHERE package_id = ?;";
+            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID, insertion_time FROM package WHERE package_id = ?;";
 
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, packageId);
@@ -121,6 +121,7 @@ public class PackageService {
                     newPackage.setDescription(resultSet.getString("description"));
                     newPackage.setOrders(resultSet.getInt("orders"));
                     newPackage.setTitle(resultSet.getString("title"));
+                    newPackage.setInsertionTime(resultSet.getTimestamp("insertion_time"));
 
                 }
 
@@ -155,7 +156,7 @@ public class PackageService {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID FROM package WHERE designer_userID = ?;";
+            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID, insertion_time FROM package WHERE designer_userID = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, designerUserId);
 
@@ -185,7 +186,7 @@ public class PackageService {
 //            }
 
             while (resultSet.next()){
-                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"));
+                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"), resultSet.getTimestamp("insertion_time"));
                 packages.add(newPackage);
 //
             }

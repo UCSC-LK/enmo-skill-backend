@@ -39,88 +39,32 @@ public class PackagePricingController extends HttpServlet {
         int category = pkgObj.getCategory();
         System.out.println("Category is :"+category);
 
-        List<PackagePricing> pricingList;
-        pricingList = getPricePackage(packageId);
+        StringBuilder sb = fetchData(packageId, category);
 
-
-        if (!pricingList.isEmpty()){
-
-            System.out.println(pricingList.size());
-
-            StringBuilder jsonObj = new StringBuilder("[");
-
-            for (PackagePricing pricing:pricingList) {
-                int pricePackageId = pricing.getPricePackageId();
-
-                System.out.println(pricePackageId);
-                Gson gson = new Gson();
-
-                // Convert pricing object to JSON
-                String jsonPricing = gson.toJson(pricing);
-                String jsonDeliverables = null;
-
-
-                switch (category){
-                    case 1:
-                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
-
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables1);
-
-                        break;
-
-                    case 2:
-                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables2);
-                        break;
-
-                    case 3:
-                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables3);
-                        break;
-
-                    default:
-                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables4);
-                        break;
-                }
-
-
-
-
-
-                // Create a JSON object for pricing
-                StringBuilder jsonResult = new StringBuilder(jsonPricing);
-
-                // Add a new field for deliverables within the pricing JSON object
-                jsonResult.insert(jsonResult.length() - 1, ", \"deliverables\":" + jsonDeliverables);
-
-                jsonObj.append(jsonResult);
-                jsonObj.append(",");
-                System.out.println(jsonResult);
-
-            }
-
-            int lastIndex = jsonObj.length()-1;
-            jsonObj.deleteCharAt(lastIndex);
-            jsonObj.append("]");
-
-            System.out.println(jsonObj);
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write(String.valueOf(jsonObj));
-            System.out.println("Data loaded successfully");
-        } else {
+        if (sb == null){
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write("Data not found");
             System.out.println("Data not found");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.write(String.valueOf(sb));
+            System.out.println("Data loaded successfully");
         }
 
 
+
+//            resp.setStatus(HttpServletResponse.SC_OK);
+//            out.write(String.valueOf(jsonObj));
+//            System.out.println("Data loaded successfully");
+//        } else {
+//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            out.write("Data not found");
+//            System.out.println("Data not found");
+//        }
+
+
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

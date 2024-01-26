@@ -1,14 +1,96 @@
 package org.ucsc.enmoskill.Services;
 
+import com.google.gson.Gson;
 import org.ucsc.enmoskill.database.DatabaseConnection;
-import org.ucsc.enmoskill.model.PackagePricing;
+import org.ucsc.enmoskill.model.*;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ucsc.enmoskill.Services.BannerDesDeliverablesService.getBDDeliverables;
+import static org.ucsc.enmoskill.Services.FlyerDesDeliverablesService.getFDDeliverables;
+import static org.ucsc.enmoskill.Services.IllustrationDeliverablesService.getIllusDeliverables;
+import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDeliverables;
+
 public class PricePackageService {
+
+    public static StringBuilder fetchData(int packageId, int category){
+        List<PackagePricing> pricingList;
+        pricingList = getPricePackage(packageId);
+
+
+        // fetch the pricing details
+        if (!pricingList.isEmpty()) {
+
+            System.out.println(pricingList.size());
+
+            StringBuilder jsonObj = new StringBuilder("[");
+
+            for (PackagePricing pricing : pricingList) {
+                int pricePackageId = pricing.getPricePackageId();
+
+                System.out.println(pricePackageId);
+                Gson gson = new Gson();
+
+                // Convert pricing object to JSON
+                String jsonPricing = gson.toJson(pricing);
+                String jsonDeliverables = null;
+
+
+                switch (category) {
+                    case 1:
+                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
+
+                        // Convert deliverables object to JSON
+                        jsonDeliverables = gson.toJson(deliverables1);
+
+                        break;
+
+                    case 2:
+                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
+                        // Convert deliverables object to JSON
+                        jsonDeliverables = gson.toJson(deliverables2);
+                        break;
+
+                    case 3:
+                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
+                        // Convert deliverables object to JSON
+                        jsonDeliverables = gson.toJson(deliverables3);
+                        break;
+
+                    default:
+                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
+                        // Convert deliverables object to JSON
+                        jsonDeliverables = gson.toJson(deliverables4);
+                        break;
+                }
+
+
+                // Create a JSON object for pricing
+                StringBuilder jsonResult = new StringBuilder(jsonPricing);
+
+                // Add a new field for deliverables within the pricing JSON object
+                jsonResult.insert(jsonResult.length() - 1, ", \"deliverables\":" + jsonDeliverables);
+
+                jsonObj.append(jsonResult);
+                jsonObj.append(",");
+                System.out.println(jsonResult);
+
+            }
+
+            int lastIndex = jsonObj.length() - 1;
+            jsonObj.deleteCharAt(lastIndex);
+            jsonObj.append("]");
+
+            System.out.println(jsonObj);
+            return jsonObj;
+
+        } else{
+            return null;
+        }
+    }
 
     public static float getBronzePrice(int packageId){
         Connection con = null;
