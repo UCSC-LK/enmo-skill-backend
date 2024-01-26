@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SupportPOST {
     private SupprtModel supportObj;
@@ -30,7 +32,15 @@ public class SupportPOST {
             String query = this.supportObj.getQuery();
 
             try {
+                Date Today= new Date();
+                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, supportObj.getDescription());
+                preparedStatement.setString(2, Date);
+                preparedStatement.setInt(3, supportObj.getRequesterID());
+                preparedStatement.setString(4, supportObj.getSubject());
+
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
