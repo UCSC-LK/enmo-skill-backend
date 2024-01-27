@@ -15,6 +15,7 @@ import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
 import org.ucsc.enmoskill.utils.Hash;
+import org.ucsc.enmoskill.utils.TokenService;
 
 public class UserController extends HttpServlet {
 
@@ -109,4 +110,15 @@ public class UserController extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        System.out.println(token);
+        System.out.println("validity : "+tokenService.isTokenValid(token));
+        TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+        System.out.println("info : "+tokenInfo.getUserId()+" role " +tokenInfo.getRole());
+    }
 }
+
+
