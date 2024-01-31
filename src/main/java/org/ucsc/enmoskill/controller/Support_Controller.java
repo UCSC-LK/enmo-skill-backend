@@ -86,8 +86,13 @@ public class Support_Controller extends HttpServlet {
         resp.setContentType("application/json");
 
         String popup=null;
+        String TicketId=null;
+
         if(req.getParameter("popup")!=null){
             popup= req.getParameter("popup");
+        }
+        if(req.getParameter("TicketId")!=null){
+            TicketId= req.getParameter("TicketId");
         }
 
 
@@ -98,7 +103,7 @@ public class Support_Controller extends HttpServlet {
 //            service.Run();
             ResponsModel responsModel = null;
             try {
-                responsModel = service.Run(popup);
+                responsModel = service.Run(popup,TicketId);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -108,6 +113,52 @@ public class Support_Controller extends HttpServlet {
         }else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Role is Required!");
+        }
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String agentID = null;
+        String decision=null;
+        String ticketId=null;
+
+        Req_BRlist request =new Req_BRlist(req);
+
+        if(request.isAgent()){
+            SupportOptions service = new SupportOptions(request);
+
+            ResponsModel responsModel = null;
+            if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
+                agentID= req.getParameter("AgentID");
+                ticketId= req.getParameter("TicketId");
+                try {
+                    responsModel = service.Run(agentID,ticketId,decision);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                resp.getWriter().write(responsModel.getResMassage());
+                resp.setStatus(responsModel.getResStatus());
+
+            }else if(req.getParameter("Decision")!=null && req.getParameter("TicketId")!=null){
+                decision= req.getParameter("Decision");
+                ticketId= req.getParameter("TicketId");
+
+                try {
+                    responsModel = service.Run(agentID,ticketId,decision);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                resp.getWriter().write(responsModel.getResMassage());
+                resp.setStatus(responsModel.getResStatus());
+            }
+
+
+        }else{
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("You can't access");
         }
     }
 }
