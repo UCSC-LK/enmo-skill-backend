@@ -33,6 +33,13 @@ public class SupprtModel {
         this.date = result.getString("date");
     }
 
+    public SupprtModel(ResultSet result, String TicketID,int a) throws SQLException {
+        this.description = result.getString("description");
+        this.subject = result.getString("subject");
+        this.date = result.getString("date");
+        this.status = result.getInt("status");
+    }
+
 
     public String getQuery(){
 //        Date Today= new Date();
