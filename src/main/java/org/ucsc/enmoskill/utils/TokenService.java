@@ -19,7 +19,6 @@ public class TokenService {
 
 
     public  String generateToken(String userId, String role) {
-        System.out.println(SIGNING_KEY);
         return  Jwts.builder()
                 .setSubject(userId)
                 .claim("role", role)
@@ -69,6 +68,40 @@ public class TokenService {
         public TokenInfo(String userId, String role) {
             this.userId = userId;
             this.role = role;
+        }
+
+
+        public boolean isClient() {
+            if(role.equals("1")){
+                return true;
+            }else {
+                return false;
+            }
+
+        }
+        public boolean isDesigner() {
+            if(role.equals("2")){
+                return true;
+            }else {
+                return false;
+            }
+
+        }
+        public boolean isAgent() {
+            if(role.equals("4")){
+                return true;
+            }else {
+                return false;
+            }
+
+        }
+        public boolean isAdmin() {
+            if(role.equals("3")){
+                return true;
+            }else {
+                return false;
+            }
+
         }
 
         public String getUserId() {

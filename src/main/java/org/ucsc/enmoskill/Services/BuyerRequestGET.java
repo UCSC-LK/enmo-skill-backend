@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.BuyerRequestModel;
-import org.ucsc.enmoskill.model.Req_BRlist;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -13,20 +13,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BuyerRequestGET {
-    private Req_BRlist request;
+    private TokenService.TokenInfo tokenInfo;
     private HttpServletResponse response;
-    public BuyerRequestGET(HttpServletResponse response, Req_BRlist reqBRlist) {
+    public BuyerRequestGET(HttpServletResponse response, TokenService.TokenInfo TokenInfo) {
         this.response=response;
-        request=reqBRlist;
+        tokenInfo =TokenInfo;
     }
-    public BuyerRequestGET(HttpServletResponse response) {
-        this.response=response;
-        request= null;
-    }
+
     public void Run() throws IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
@@ -34,14 +29,9 @@ public class BuyerRequestGET {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-        if(request.isClient()){
-            if (request.getUserid()==null){
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("User ID is Required!");
-                return;
-            }
-            GetRequestClient(connection ,request.getUserid());
-        } else if (request.isDesigner()) {
+        if(tokenInfo.isClient()){
+            GetRequestClient(connection , tokenInfo.getUserId());
+        } else if (tokenInfo.isDesigner()) {
             GetRequestDesigner(connection );
         }
 
