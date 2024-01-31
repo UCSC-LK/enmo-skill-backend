@@ -6,7 +6,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.LoginSer;
 import org.ucsc.enmoskill.model.Login;
 import org.ucsc.enmoskill.utils.Hash;
-import org.ucsc.enmoskill.utils.JwtGenerator;
+import org.ucsc.enmoskill.utils.TokenService;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -17,11 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.EncryptedJWT;
 
 public class LoginController extends HttpServlet {
     static Dotenv dotenv = Dotenv.load();
@@ -54,38 +50,24 @@ public class LoginController extends HttpServlet {
             boolean passwordMatch = Hash.checkPassword(login, loginDB);
 
             if (passwordMatch) {
-
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.setContentType("application/json");
-                String successMessage = "{\"message\": \"Login successfully\", \"userLevelID\": " + loginDB.getUserLevelID() + " , \"userID\": " + loginDB.getId() + "}";
-                resp.getWriter().write(successMessage);
-                System.out.println("Login successful");
-
-                // Include the JWT in the response headers
-                // Generate JWT token
-                String secretKey = dotenv.get("JWT_SECRET_KEY");
-
-                JwtGenerator jwtGenerator = new JwtGenerator();
-                String jwtToken = jwtGenerator.generateJWTToken(loginDB, secretKey);
-                System.out.println("Generated JWT Token: " + jwtToken);
-
-                JWT parsedJWT = JWTParser.parse(jwtToken);
-                JWTClaimsSet claimsSet = parsedJWT.getJWTClaimsSet();
-
-                // Access individual claims
-                String subject = claimsSet.getSubject();
-                String userLevelID = claimsSet.getStringClaim("userLevelID");
-                String userID = claimsSet.getStringClaim("userID");
+                try {
+                    TokenService tokenService = new TokenService();
+                    String token = tokenService.generateToken(loginDB.getId(), loginDB.getUserLevelID());
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.setContentType("application/json");
+                    String successMessage = "{\"message\": \"Login successfully\",\"userLevelID\":"+loginDB.getUserLevelID()+" ,\"JWT\": \"" + token+ "\"}";
+                    resp.getWriter().write(successMessage);
+                    System.out.println("Login successful");
+                    System.out.println(token);
+               } catch (Exception e) {
+                    e.printStackTrace();
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    resp.getWriter().write("Internal Server Error");
+                }
 
 
-                resp.setHeader("Set-Cookie", "JWTToken=" + jwtToken + "; SameSite=None; Secure; Domain=127.0.0.1; path=/");
 
-                // Print the claims
-                System.out.println("Subject: " + subject);
-                System.out.println("User Level ID: " + userLevelID);
-                System.out.println("User ID: " + userID);
 
-//                resp.addHeader("Authorization", "Bearer " + jwtToken);
             } else {
                 // Set the status code to 401 (Unauthorized) for an unsuccessful login
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -95,7 +77,7 @@ public class LoginController extends HttpServlet {
                 System.out.println("Login incorrect");
             }
         } catch (Exception e) {
-            System.out.println("Hiiii");
+
             e.printStackTrace(); // Print the exception details for debugging
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);

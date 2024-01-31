@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,9 +17,11 @@ import static java.lang.System.out;
 public class BuyerRequestPOST {
     private HttpServletResponse response;
     private BuyerRequestModel data;
-    public BuyerRequestPOST(HttpServletResponse response, BuyerRequestModel data){
+    private TokenService.TokenInfo tokenInfo;
+    public BuyerRequestPOST(HttpServletResponse response, BuyerRequestModel data, TokenService.TokenInfo TokenInfo){
         this.response=response;
         this.data=data;
+        tokenInfo= TokenInfo;
     }
 
     public void Run() throws IOException {
@@ -29,6 +32,12 @@ public class BuyerRequestPOST {
             return;
         }
 
+        if(!tokenInfo.isClient()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token Invalid!");
+            return;
+        }
+        this.data.setUserID(Integer.parseInt(tokenInfo.getUserId()));
         String query = this.data.getQuery("insert");
 
         try {

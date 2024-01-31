@@ -8,6 +8,7 @@ import org.ucsc.enmoskill.Services.BuyerRequestPOST;
 import org.ucsc.enmoskill.Services.BuyerRequestPUT;
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,13 +26,15 @@ public class Buyer_request_Controller extends HttpServlet {
 
         resp.setContentType("application/json");
 
-        Req_BRlist reqBRlist =new Req_BRlist(req);
-        if (reqBRlist.CheckReqiredFields()){
-            BuyerRequestGET service = new BuyerRequestGET(resp,reqBRlist);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        if (tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            BuyerRequestGET service = new BuyerRequestGET(resp,tokenInfo);
             service.Run();
         }else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Role is Required!");
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
 
@@ -41,19 +44,29 @@ public class Buyer_request_Controller extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
 
         resp.setContentType("application/json");
-        try (BufferedReader reader = req.getReader()){
-            BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
-            if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getUserID()!=0&&buyerRequestModel.getBudget()!=0){
-                BuyerRequestPOST service = new BuyerRequestPOST(resp,buyerRequestModel);
-                service.Run();
-            }else {
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        if(tokenService.isTokenValid(token)){
+
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            try (BufferedReader reader = req.getReader()){
+                BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
+                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getBudget()!=0){
+                    BuyerRequestPOST service = new BuyerRequestPOST(resp,buyerRequestModel,tokenInfo);
+                    service.Run();
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("Required Field Missing");
+                }
+            } catch (Exception e) {
+                resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
             }
-        } catch (Exception e) {
-            resp.getWriter().write(e.toString());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+        else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
     }
 
     @Override
