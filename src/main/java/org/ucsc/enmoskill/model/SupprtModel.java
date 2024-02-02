@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class SupprtModel {
     private int requesterID,ref_no,status;
+
     private String description,subject,date;
 
     public SupprtModel(int requesterID, int ref_no, String description, String subject) {

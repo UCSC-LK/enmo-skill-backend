@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,10 +15,12 @@ import java.util.Date;
 
 public class SupportPOST {
     private SupprtModel supportObj;
+    private TokenService.TokenInfo tokenInfo;
 
 
-    public SupportPOST(SupprtModel supportObj) {
+    public SupportPOST(SupprtModel supportObj,TokenService.TokenInfo TokenInfo) {
         this.supportObj = supportObj;
+        tokenInfo= TokenInfo;
         //this.response = response;
     }
 
@@ -29,6 +32,9 @@ public class SupportPOST {
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         }else {
+
+            supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+
             String query = this.supportObj.getQuery();
 
             try {
@@ -57,7 +63,5 @@ public class SupportPOST {
             }
         }
     }
-
-
 
 }

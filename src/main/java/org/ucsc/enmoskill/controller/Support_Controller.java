@@ -5,6 +5,7 @@ import org.ucsc.enmoskill.Services.*;
 import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,27 +19,37 @@ public class Support_Controller extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (BufferedReader reader = req.getReader()){
 
-            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-            if (supportmodel.getRequesterID()!=0&&supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            try (BufferedReader reader = req.getReader()){
 
-                SupportPOST service = new SupportPOST(supportmodel);
+                SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+
+                if (supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+
+                    SupportPOST service = new SupportPOST(supportmodel,tokenInfo);
 
 //                service.Run();
-                ResponsModel responsModel = service.Run();
-                resp.getWriter().write(responsModel.getResMassage());
-                resp.setStatus(responsModel.getResStatus());
+                    ResponsModel responsModel = service.Run();
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
 
-            }else {
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("Missing subject or description");
+                }
+            } catch (Exception e) {
+                resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
             }
-        } catch (Exception e) {
-            resp.getWriter().write(e.toString());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
     }
 
     @Override
