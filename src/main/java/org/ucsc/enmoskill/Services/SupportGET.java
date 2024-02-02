@@ -74,10 +74,10 @@ public class SupportGET {
 
             if(popup != null){
 
-                query = "SELECT t.* FROM enmo_database.ticket_history t WHERE ticketID = ? ORDER BY updateID DESC";
+                query = "SELECT t.* FROM enmo_database.ticket_history t WHERE ticketID = ? AND requesterID = ? ORDER BY updateID DESC";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, popup);
-
+                //preparedStatement.setString(2, so.getRequesterID());
             } else if(TicketId != null){
 
                 query = "SELECT t.description, t.subject,t.date,t.status FROM enmo_database.ticket t WHERE ref_no = ? ";

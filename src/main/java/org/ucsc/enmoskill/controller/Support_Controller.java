@@ -54,26 +54,36 @@ public class Support_Controller extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (BufferedReader reader = req.getReader()){
 
-            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-            if (supportmodel.getRef_no()!=0&&supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+        if(tokenService.isTokenValid(token)){
 
-                SupportPUT service = new SupportPUT(supportmodel);
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            try (BufferedReader reader = req.getReader()){
+
+                SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+
+                if (supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+
+                    SupportPUT service = new SupportPUT(supportmodel,tokenInfo);
 
 //                service.Run();
-                ResponsModel responsModel = service.Run();
-                resp.getWriter().write(responsModel.getResMassage());
-                resp.setStatus(responsModel.getResStatus());
-            }else {
+                    ResponsModel responsModel = service.Run();
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("Required Field Missing");
+                }
+            } catch (Exception e) {
+                resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
             }
-        } catch (Exception e) {
-            resp.getWriter().write(e.toString());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+
+
     }
 
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {

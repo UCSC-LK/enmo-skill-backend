@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonToken;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,10 +17,12 @@ import java.util.Date;
 
 public class SupportPUT {
     private SupprtModel supportObj;
+    private TokenService.TokenInfo tokenInfo;
 
 
-    public SupportPUT(SupprtModel supportObj) {
+    public SupportPUT(SupprtModel supportObj,TokenService.TokenInfo TokenInfo) {
         this.supportObj = supportObj;
+        tokenInfo= TokenInfo;
        // this.response = response;
     }
 
@@ -32,6 +35,8 @@ public class SupportPUT {
 
 
         }else {
+            supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+
             String query1 = this.supportObj.setHistoryData();//insert data form ticket table to ticket_history table
             String query2 = this.supportObj.getUpdatedQuery();//update ticket table
 
