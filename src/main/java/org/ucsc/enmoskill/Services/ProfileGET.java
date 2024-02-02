@@ -6,6 +6,7 @@ import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.DesignerProfileModel;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,11 +18,13 @@ import java.sql.SQLException;
 public class ProfileGET {
 
     private ProfileModel profileModel;
-    private HttpServletResponse resp;
+    private TokenService.TokenInfo tokenInfo;
+//    private HttpServletResponse resp;
 
-    public ProfileGET(ProfileModel profileModel, HttpServletResponse resp) {
+    public ProfileGET(ProfileModel profileModel,TokenService.TokenInfo tokenInfo) {
         this.profileModel = profileModel;
-        this.resp = resp;
+        this.tokenInfo=tokenInfo;
+//        this.resp = resp;
     }
 
     public ResponsModel Run() throws IOException, SQLException {
@@ -32,7 +35,10 @@ public class ProfileGET {
 //            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        if (profileModel.isDesigner()) {
+
+        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
+
+        if (tokenInfo.isDesigner()) {
 
           String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
                   "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
@@ -55,9 +61,6 @@ public class ProfileGET {
 
                     ProfileModel profileModel = new ProfileModel(resultSet);
                     jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
-
-
-
                 }
 
 //                resp.getWriter().write(jsonObject.toString());
@@ -67,14 +70,9 @@ public class ProfileGET {
                 }else{
                     return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
                 }
-
             }
-
-
 
         }
         return new ResponsModel("This is not Valid Request",HttpServletResponse.SC_BAD_REQUEST);
-
-
     }
 }

@@ -9,6 +9,7 @@ import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,52 +26,72 @@ public class ProfileController extends HttpServlet {
 
     protected void doPost(HttpServletRequest req,HttpServletResponse res){
 
-        try(BufferedReader reader = req.getReader()) {
-            System.out.println(reader);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        if(tokenService.isTokenValid(token)){
+
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+
+            try(BufferedReader reader = req.getReader()) {
+
 //            String json = reader.lines().collect(Collectors.joining());
 //            System.out.println(json);
-            ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
+                ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
 
+                if(profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
+                    ProfilePOST service = new ProfilePOST(profileModel,tokenInfo);
 
-            System.out.println("ssssssssssss");
-            if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
-                ProfilePOST service = new ProfilePOST(profileModel,res);
+                    ResponsModel responsModel= service.Run();
+                    res.getWriter().write(responsModel.getResMassage());
+                    res.setStatus(responsModel.getResStatus());
 
-                ResponsModel responsModel= service.Run();
-                res.getWriter().write(responsModel.getResMassage());
-                res.setStatus(responsModel.getResStatus());
+                }else {
+                    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    res.getWriter().write("Required Field Missing");
+                }
 
-            }else {
-                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                res.getWriter().write("Required Field Missing");
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-
+        }else{
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
     }
 
     protected void doPut(HttpServletRequest req,HttpServletResponse res){
-        try(BufferedReader reader = req.getReader()) {
-            ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
 
-            if(profileModel.getUserId() != 0 && profileModel.getRole() != null && profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
-                ProfilePUT service = new ProfilePUT(profileModel,res);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-                ResponsModel responsModel= service.Run();
-                res.getWriter().write(responsModel.getResMassage());
-                res.setStatus(responsModel.getResStatus());
+        if(tokenService.isTokenValid(token)){
 
-            }else {
-                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                res.getWriter().write("Required Field Missing");
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+
+            try(BufferedReader reader = req.getReader()) {
+                ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
+
+                if(profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
+                    ProfilePUT service = new ProfilePUT(profileModel,tokenInfo);
+
+                    ResponsModel responsModel= service.Run();
+                    res.getWriter().write(responsModel.getResMassage());
+                    res.setStatus(responsModel.getResStatus());
+
+                }else {
+                    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    res.getWriter().write("Required Field Missing");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        }else{
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
@@ -78,20 +99,29 @@ public class ProfileController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, IOException {
         resp.setContentType("application/json");
 
-        ProfileModel profile = new ProfileModel(req);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-        if(profile.CheckReqiredFields()){
-            ProfileGET servise = new ProfileGET(profile,resp);
-            try {
-                ResponsModel responsModel= servise.Run();
-                resp.getWriter().write(responsModel.getResMassage());
-                resp.setStatus(responsModel.getResStatus());
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            ProfileModel profile = new ProfileModel(req);
+
+            if(tokenInfo.getRole() != null && tokenInfo.getUserId() != null){
+                ProfileGET servise = new ProfileGET(profile,tokenInfo);
+                try {
+                    ResponsModel responsModel= servise.Run();
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                resp.getWriter().write("User Id is Required!");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
         }else{
-            resp.getWriter().write("User Id is Required!");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
