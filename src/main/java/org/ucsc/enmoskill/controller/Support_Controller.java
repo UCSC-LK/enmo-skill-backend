@@ -75,66 +75,88 @@ public class Support_Controller extends HttpServlet {
                     resp.setStatus(responsModel.getResStatus());
                 }else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write("Required Field Missing");
+                    resp.getWriter().write("Missing subject or description");
                 }
             } catch (Exception e) {
                 resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
 
     }
 
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
-        String TicketID= req.getParameter("TicketID");
-        if(TicketID!=null){
-            try {
-                new SupportDELETE(TicketID,resp);
-            } catch (SQLException e) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                throw new RuntimeException(e);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            String TicketID= req.getParameter("TicketID");
+
+            if(TicketID!=null){
+                try {
+                    new SupportDELETE(TicketID,tokenInfo,resp);
+                } catch (SQLException e) {
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    throw new RuntimeException(e);
+                }
             }
+            else {
+                resp.getWriter().write("Ticket ID required");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        else {
-            resp.getWriter().write("Ticket ID required");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
+
+
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         resp.setContentType("application/json");
 
-        String popup=null;
-        String TicketId=null;
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-        if(req.getParameter("popup")!=null){
-            popup= req.getParameter("popup");
-        }
-        if(req.getParameter("TicketId")!=null){
-            TicketId= req.getParameter("TicketId");
-        }
+        if(tokenService.isTokenValid(token)){
 
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            String popup=null;
+            String TicketId=null;
 
-        Req_BRlist reqBRlist =new Req_BRlist(req);
-        if (reqBRlist.CheckReqiredFields()){
-            SupportGET service = new SupportGET(reqBRlist);
+            if(req.getParameter("popup")!=null){
+                popup= req.getParameter("popup");
+            }
+            if(req.getParameter("TicketId")!=null){
+                TicketId= req.getParameter("TicketId");
+            }
+
+            if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null ){
+                SupportGET service = new SupportGET(tokenInfo);
 
 //            service.Run();
-            ResponsModel responsModel = null;
-            try {
-                responsModel = service.Run(popup,TicketId);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            resp.getWriter().write(responsModel.getResMassage());
-            resp.setStatus(responsModel.getResStatus());
+                ResponsModel responsModel = null;
+                try {
+                    responsModel = service.Run(popup,TicketId);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                resp.getWriter().write(responsModel.getResMassage());
+                resp.setStatus(responsModel.getResStatus());
 
-        }else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Role is Required!");
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Role is Required!");
+            }
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
     }
 
     @Override

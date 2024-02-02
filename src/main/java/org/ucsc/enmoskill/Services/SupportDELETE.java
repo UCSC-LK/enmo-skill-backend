@@ -1,6 +1,7 @@
 package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,12 +12,11 @@ import java.sql.SQLException;
 public class SupportDELETE {
     private String TicketID;
     private HttpServletResponse response;
-    public SupportDELETE(String TicketID, HttpServletResponse response) throws SQLException, IOException {
+    private TokenService.TokenInfo tokenInfo;
+    public SupportDELETE(String TicketID,TokenService.TokenInfo TokenInfo, HttpServletResponse response) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
-        System.out.println(TicketID);
-
-        String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + TicketID;
+        String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + TicketID+" AND requesterID = "+tokenInfo.getUserId();
 
         PreparedStatement preparedStatement = connection.prepareStatement(quary);
 
