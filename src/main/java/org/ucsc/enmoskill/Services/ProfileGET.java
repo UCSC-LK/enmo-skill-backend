@@ -16,13 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ProfileGET {
-
-    private ProfileModel profileModel;
     private TokenService.TokenInfo tokenInfo;
 //    private HttpServletResponse resp;
 
-    public ProfileGET(ProfileModel profileModel,TokenService.TokenInfo tokenInfo) {
-        this.profileModel = profileModel;
+    public ProfileGET(TokenService.TokenInfo tokenInfo) {
         this.tokenInfo=tokenInfo;
 //        this.resp = resp;
     }
@@ -36,7 +33,6 @@ public class ProfileGET {
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
 
         if (tokenInfo.isDesigner()) {
 
@@ -48,7 +44,7 @@ public class ProfileGET {
                   "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
                   "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
                   "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
-                  "WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
+                  "WHERE designer.userId ="+ tokenInfo.getUserId()+  " GROUP BY designer.userId";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 //                preparedStatement.setInt(1, profileModel.getUserId());

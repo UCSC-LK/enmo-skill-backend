@@ -101,13 +101,14 @@ public class ProfileController extends HttpServlet {
 
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
+        System.out.println(token);
 
         if(tokenService.isTokenValid(token)){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
-            ProfileModel profile = new ProfileModel(req);
 
             if(tokenInfo.getRole() != null && tokenInfo.getUserId() != null){
-                ProfileGET servise = new ProfileGET(profile,tokenInfo);
+                ProfileGET servise = new ProfileGET(tokenInfo);
+
                 try {
                     ResponsModel responsModel= servise.Run();
                     resp.getWriter().write(responsModel.getResMassage());
