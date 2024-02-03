@@ -70,7 +70,6 @@ public class ProfileModel {
 
     public String getUpdateQuery1(){
         String updateQuery1 = "UPDATE enmo_database.designer SET description = \"" + description + "\", fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  userId;
-        System.out.println(updateQuery1);
         return updateQuery1;
     }
 

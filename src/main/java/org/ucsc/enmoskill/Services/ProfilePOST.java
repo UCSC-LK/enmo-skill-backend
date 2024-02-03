@@ -51,9 +51,9 @@ public class ProfilePOST {
         //set skills--------------------------------------------------------------------------------------------
         String query2 = profileModel.getQuery2();
         boolean skillFlag = false;
+
+        System.out.println(profileModel.getUserId());
         for(int i = 0; i< profileModel.getSkills().size(); i++){
-
-
             if(skillFlag){
                 query2 = query2+",";
             }

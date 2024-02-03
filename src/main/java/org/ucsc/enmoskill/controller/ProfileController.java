@@ -129,43 +129,48 @@ public class ProfileController extends HttpServlet {
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
 
-        ProfileModel profile = new ProfileModel(req);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-        Connection connection = DatabaseConnection.initializeDatabase();
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
-        if (connection == null) {
-            resp.getWriter().write("SQL Connection Error");
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
+            Connection connection = DatabaseConnection.initializeDatabase();
 
-        if(profile.getUserId()!=0){
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT t.url FROM enmo_database.users t where userID = "+profile.getUserId())) {
-//                preparedStatement.setInt(1, profileModel.getUserId());
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                JsonObject jsonObject = new JsonObject();
-
-                if (resultSet.next()) {
-                   String url = resultSet.getString("url");
-                   jsonObject.addProperty("url",url);
-                }
-
-
-                resp.getWriter().write(jsonObject.toString());
-//                System.out.println(resp);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            if (connection == null) {
+                resp.getWriter().write("SQL Connection Error");
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
             }
 
+            if(tokenInfo.getUserId()!=null){
 
-        }
+                try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT t.url FROM enmo_database.users t where userID = "+tokenInfo.getUserId())) {
+//                preparedStatement.setInt(1, profileModel.getUserId());
+
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    JsonObject jsonObject = new JsonObject();
+
+                    if (resultSet.next()) {
+                        String url = resultSet.getString("url");
+                        jsonObject.addProperty("url",url);
+                    }
 
 
-    else{
-            resp.getWriter().write("User Id is Required!");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write(jsonObject.toString());
+//                System.out.println(resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                resp.getWriter().write("User Id is Required!");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
+
+
 }

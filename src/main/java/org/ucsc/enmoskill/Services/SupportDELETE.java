@@ -13,7 +13,7 @@ public class SupportDELETE {
     private String TicketID;
     private HttpServletResponse response;
     private TokenService.TokenInfo tokenInfo;
-    public SupportDELETE(String TicketID,TokenService.TokenInfo TokenInfo, HttpServletResponse response) throws SQLException, IOException {
+    public SupportDELETE(String TicketID,TokenService.TokenInfo tokenInfo, HttpServletResponse response) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
         String quary = "DELETE FROM enmo_database.ticket WHERE ref_no = " + TicketID+" AND requesterID = "+tokenInfo.getUserId();
