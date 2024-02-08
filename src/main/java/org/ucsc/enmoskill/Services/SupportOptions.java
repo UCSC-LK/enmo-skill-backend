@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
@@ -11,9 +12,9 @@ import java.sql.SQLException;
 
 public class SupportOptions {
 
-    private Req_BRlist request;
-    public SupportOptions(Req_BRlist request) {
-        this.request = request;
+    private TokenService.TokenInfo tokenInfo;
+    public SupportOptions(TokenService.TokenInfo tokenInfo) {
+        this.tokenInfo = tokenInfo;
     }
 
     public ResponsModel Run(String agentID, String ticketId, String decision) throws SQLException {
@@ -57,11 +58,11 @@ public class SupportOptions {
         if(decision.equals("Reject")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 0 \n" +
-                    "WHERE t.agentID=" + request.getUserid() + " AND t.ref_no=" + ticketId +" AND  status=2 ";
+                    "WHERE t.agentID=" + tokenInfo.getUserId() + " AND t.ref_no=" + ticketId +" AND  status=2 ";
         } else if (decision.equals("Clos")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 3 \n" +
-                    "WHERE t.agentID=" + request.getUserid() + " AND t.ref_no=" + ticketId+" AND status = 1";
+                    "WHERE t.agentID=" + tokenInfo.getUserId() + " AND t.ref_no=" + ticketId+" AND status = 2";
         }
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);

@@ -162,46 +162,53 @@ public class Support_Controller extends HttpServlet {
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String agentID = null;
-        String decision=null;
-        String ticketId=null;
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
 
-        Req_BRlist request =new Req_BRlist(req);
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            String agentID = null;
+            String decision=null;
+            String ticketId=null;
 
-        if(request.isAgent()){
-            SupportOptions service = new SupportOptions(request);
+//            Req_BRlist request =new Req_BRlist(req);
 
-            ResponsModel responsModel = null;
-            if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
-                agentID= req.getParameter("AgentID");
-                ticketId= req.getParameter("TicketId");
-                try {
-                    responsModel = service.Run(agentID,ticketId,decision);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+            if(tokenInfo.isAgent()){
+                SupportOptions service = new SupportOptions(tokenInfo);
+
+                ResponsModel responsModel = null;
+                if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
+                    agentID=req.getParameter("AgentID");
+                    ticketId= req.getParameter("TicketId");
+                    try {
+                        responsModel = service.Run(agentID,ticketId,decision);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+
+                }else if(req.getParameter("Decision")!=null && req.getParameter("TicketId")!=null){
+                    decision= req.getParameter("Decision");
+                    ticketId= req.getParameter("TicketId");
+
+                    try {
+                        responsModel = service.Run(agentID,ticketId,decision);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
                 }
 
-                resp.getWriter().write(responsModel.getResMassage());
-                resp.setStatus(responsModel.getResStatus());
 
-            }else if(req.getParameter("Decision")!=null && req.getParameter("TicketId")!=null){
-                decision= req.getParameter("Decision");
-                ticketId= req.getParameter("TicketId");
-
-                try {
-                    responsModel = service.Run(agentID,ticketId,decision);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-
-                resp.getWriter().write(responsModel.getResMassage());
-                resp.setStatus(responsModel.getResStatus());
+            }else{
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("You can't access");
             }
-
-
-        }else{
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("You can't access");
         }
+
     }
 }
