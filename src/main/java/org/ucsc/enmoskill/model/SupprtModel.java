@@ -6,15 +6,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no,status;
+    private int requesterID,ref_no,status,agentID;
 
-    private String description,subject,date;
+    private String description,subject,date,role,email,userName,url;
 
-    public SupprtModel(int requesterID, int ref_no, String description, String subject) {
+    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID) {
         this.requesterID = requesterID;
         this.ref_no = ref_no;
         this.description = description;
         this.subject = subject;
+        this.role = role;
+        this.agentID=agentID;
     }
     public SupprtModel(ResultSet result) throws SQLException {
         this.requesterID = result.getInt("requesterID");
@@ -39,6 +41,21 @@ public class SupprtModel {
         this.subject = result.getString("subject");
         this.date = result.getString("date");
         this.status = result.getInt("status");
+    }
+
+    public SupprtModel(ResultSet result,boolean agent) throws SQLException {
+        this.requesterID = result.getInt("requesterID");
+        this.ref_no = result.getInt("ref_no");
+        this.userName = result.getString("username");
+        this.email = result.getString("email");
+        this.description = result.getString("description");
+        this.subject = result.getString("subject");
+        this.date = result.getString("date");
+        this.status = result.getInt("status");
+        this.role = result.getString("userlevelID");;
+        this.agentID=result.getInt("agentID");
+        this.url=result.getString("url");
+
     }
 
 

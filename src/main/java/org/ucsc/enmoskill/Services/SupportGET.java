@@ -31,6 +31,7 @@ public class SupportGET {
     public ResponsModel Run(String popup, String TicketId) throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
+
         if(connection==null){
 
 //            response.getWriter().write("SQL Connection Error");
@@ -140,7 +141,7 @@ public class SupportGET {
             preparedStatement.setString(1, popup);
 
         }else{
-            query = "SELECT t.* FROM enmo_database.ticket t ORDER BY status DESC";
+            query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID ORDER BY status DESC";
             preparedStatement = connection.prepareStatement(query);
 
         }
@@ -160,7 +161,7 @@ public class SupportGET {
 
         }else{
             while (result.next()) {
-                SupprtModel supprtModel = new SupprtModel(result);
+                SupprtModel supprtModel = new SupprtModel(result,true);
                 JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
                 jsonArray.add(jsonObject);
             }
