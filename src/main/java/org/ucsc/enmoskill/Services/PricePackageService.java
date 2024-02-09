@@ -76,7 +76,7 @@ public class PricePackageService {
 
                 jsonObj.append(jsonResult);
                 jsonObj.append(",");
-                System.out.println(jsonResult);
+//                System.out.println(jsonResult);
 
             }
 
@@ -84,7 +84,7 @@ public class PricePackageService {
             jsonObj.deleteCharAt(lastIndex);
             jsonObj.append("]");
 
-            System.out.println(jsonObj);
+//            System.out.println(jsonObj);
             return jsonObj;
 
         } else{

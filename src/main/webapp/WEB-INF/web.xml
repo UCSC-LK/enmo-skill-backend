@@ -132,6 +132,7 @@
     </servlet>
 
 
+
     <servlet-mapping>
         <servlet-name>user</servlet-name>
         <url-pattern>/user/*</url-pattern>
@@ -212,6 +213,8 @@
         <servlet-name>PackageViewClient</servlet-name>
         <url-pattern>/packageview</url-pattern>
     </servlet-mapping>
+
+
 
 
 </web-app>

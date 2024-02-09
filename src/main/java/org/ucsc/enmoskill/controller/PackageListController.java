@@ -22,7 +22,11 @@ public class PackageListController extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         int category = Integer.parseInt(req.getParameter("category"));
+        int priceCode = Integer.parseInt(req.getParameter("price"));
+        int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
+        int language = Integer.parseInt(req.getParameter("language"));
 
+        List<Package> packageList = null;
 
         if (category>4 || category<0){
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -33,7 +37,17 @@ public class PackageListController extends HttpServlet {
 
             Gson gson = new Gson();
 
-            List<Package> packageList = getAllPackages(category);
+            if (priceCode == 0 && delTimeCode == 0 && language == 0){
+                packageList = getAllPackages(category);
+            } else if (priceCode == 1 && delTimeCode == 0 && language == 0) {
+                packageList = geLowPackages();
+            } else if (priceCode == 2 && delTimeCode == 0 && language == 0){
+                packageList = getMidPackages();
+            } else if (priceCode == 3 && delTimeCode == 0 && language == 0){
+                packageList = getHighPackages();
+            }
+
+//            List<Package> packageList = getAllPackages(category);
             if (!packageList.isEmpty()){
                 for (Package newpackage:packageList) {
                     int packageId = newpackage.getPackageId();
