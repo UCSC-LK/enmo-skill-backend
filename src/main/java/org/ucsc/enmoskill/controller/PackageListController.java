@@ -65,6 +65,18 @@ public class PackageListController extends HttpServlet {
                 packageList = getPkgesMidLang(category, language);
             } else if (priceCode == 2 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
                 packageList = getPkgesMidDelLang(category, delTimeCode, language);
+            } else if (priceCode == 3 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
+                packageList = getPkgesHighDel(category, delTimeCode);
+            } else if (priceCode == 3 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesHighLang(category, language);
+            } else if (priceCode == 3 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesHighDelLang(category, delTimeCode, language);
+            } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0){
+                packageList = getCustPriceDel(category, priceCode, delTimeCode);
+            } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)){
+                packageList = getCustPriceLang(category, priceCode, delTimeCode);
+            } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)){
+                packageList = getCustPriceDelLang(category, priceCode, delTimeCode, language);
             }
 
 
