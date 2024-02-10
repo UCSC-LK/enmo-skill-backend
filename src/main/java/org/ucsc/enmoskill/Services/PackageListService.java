@@ -13,29 +13,7 @@ import java.util.List;
 
 public class PackageListService {
 
-//    public static List<Package> getFilteredPackages(int category, int priceCode, int delTimeCode, int language){
-//        Connection con = null;
-//        PreparedStatement preparedStatement = null;
-//        ResultSet resultSet = null;
-//        String query = null;
-//        List<Package> packageList = null;
-//
-//        try {
-//            con = DatabaseConnection.initializeDatabase();
-//
-//            if (priceCode == 0 && delTimeCode == 0 && language == 0){
-//                packageList = getAllPackages(category);
-//            } else if (priceCode == 1 && delTimeCode == 0 && language == 0) {
-//                System.out.println("hi");
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        return packageList;
-//
-//    }
-
-    public static List<Package> getHighPackages(){
+    public static List<Package> getPkgesByLang(int category, int language){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -44,9 +22,118 @@ public class PackageListService {
         try{
             con = DatabaseConnection.initializeDatabase();
 
-            query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price >= 5000))";
+            if (category == 0){
+                query = "SELECT * FROM package WHERE designer_userID IN ("
+                +"SELECT userID FROM language_mapping WHERE language_id = ?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, language);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND designer_userID IN ("
+                        +"SELECT userID FROM language_mapping WHERE language_id = ?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, language);
 
-            preparedStatement = con.prepareStatement(query);
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesByDuration(int category, int delTimeCode){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, delTimeCode);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, delTimeCode);
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getCustomPricePackages(int category, int price){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?))";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, price);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?))";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, price);
+            }
+
+
+
+            resultSet = preparedStatement.executeQuery();
+
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static List<Package> getHighPackages(int category){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price >= 5000))";
+                preparedStatement = con.prepareStatement(query);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price >= 5000))";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+            }
+
+
 
             resultSet = preparedStatement.executeQuery();
 
@@ -62,7 +149,7 @@ public class PackageListService {
         }
     }
 
-    public static List<Package> getMidPackages(){
+    public static List<Package> getMidPackages(int category){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -73,9 +160,16 @@ public class PackageListService {
         try{
             con = DatabaseConnection.initializeDatabase();
 
-            query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000))";
+            if (category == 0) {
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000))";
+                preparedStatement = con.prepareStatement(query);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000))";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+            }
 
-            preparedStatement = con.prepareStatement(query);
+
 
             resultSet = preparedStatement.executeQuery();
 
@@ -88,7 +182,7 @@ public class PackageListService {
             throw new RuntimeException(e);
         }
     }
-    public static List<Package> geLowPackages(){
+    public static List<Package> geLowPackages(int category){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -97,9 +191,16 @@ public class PackageListService {
         try{
             con = DatabaseConnection.initializeDatabase();
 
-            query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000)";
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000)";
+                preparedStatement = con.prepareStatement(query);
 
-            preparedStatement = con.prepareStatement(query);
+            } else {
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1,category);
+
+            }
 
             resultSet = preparedStatement.executeQuery();
 

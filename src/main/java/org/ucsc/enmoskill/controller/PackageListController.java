@@ -26,6 +26,8 @@ public class PackageListController extends HttpServlet {
         int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
         int language = Integer.parseInt(req.getParameter("language"));
 
+        System.out.println(priceCode);
+
         List<Package> packageList = null;
 
         if (category>4 || category<0){
@@ -40,12 +42,19 @@ public class PackageListController extends HttpServlet {
             if (priceCode == 0 && delTimeCode == 0 && language == 0){
                 packageList = getAllPackages(category);
             } else if (priceCode == 1 && delTimeCode == 0 && language == 0) {
-                packageList = geLowPackages();
+                packageList = geLowPackages(category);
             } else if (priceCode == 2 && delTimeCode == 0 && language == 0){
-                packageList = getMidPackages();
+                packageList = getMidPackages(category);
             } else if (priceCode == 3 && delTimeCode == 0 && language == 0){
-                packageList = getHighPackages();
+                packageList = getHighPackages(category);
+            } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && delTimeCode == 0 && language == 0){
+                packageList = getCustomPricePackages(category, priceCode);
+            } else if (priceCode == 0 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
+                packageList = getPkgesByDuration(category, delTimeCode);
+            } else if (priceCode == 0 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesByLang(category, language);
             }
+
 
 //            List<Package> packageList = getAllPackages(category);
             if (!packageList.isEmpty()){
