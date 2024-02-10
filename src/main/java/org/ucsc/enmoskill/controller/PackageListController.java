@@ -53,6 +53,18 @@ public class PackageListController extends HttpServlet {
                 packageList = getPkgesByDuration(category, delTimeCode);
             } else if (priceCode == 0 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
                 packageList = getPkgesByLang(category, language);
+            } else if (priceCode == 1 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
+                packageList = getPkgesLowDel(category, delTimeCode);
+            } else if (priceCode == 1 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesLowLang(category, language);
+            } else if (priceCode == 1 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesLowDelLang(category, delTimeCode, language);
+            } else if (priceCode == 2 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
+                packageList = getPkgesMidDel(category, delTimeCode);
+            } else if (priceCode == 2 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesMidLang(category, language);
+            } else if (priceCode == 2 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
+                packageList = getPkgesMidDelLang(category, delTimeCode, language);
             }
 
 

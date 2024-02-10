@@ -13,6 +13,292 @@ import java.util.List;
 
 public class PackageListService {
 
+    public static List<Package> getPkgesMidDelLang(int category, int delTimeCode, int language){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE pp.type = 'bronze'" +
+                        "  AND pp.price BETWEEN 2000 AND 5000" +
+                        "  AND pp.delivery_duration <= ?"+
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, delTimeCode);
+                preparedStatement.setInt(2, language);
+
+
+            } else {
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE p.category = ? " +
+                        "  AND pp.type = 'bronze'" +
+                        "  AND pp.price BETWEEN 2000 AND 5000" +
+                        "  AND pp.delivery_duration <= ?"+
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, delTimeCode);
+                preparedStatement.setInt(3, language);
+
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesMidLang(int category, int language){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE pp.type = 'bronze'" +
+                        "  AND pp.price BETWEEN 2000 AND 5000" +
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, language);
+
+            } else {
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE p.category = ? " +
+                        "  AND pp.type = 'bronze'" +
+                        "  AND pp.price BETWEEN 2000 AND 5000" +
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, language);
+
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesMidDel(int category, int delTimeCode){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN ("
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, delTimeCode);
+            } else {
+                query = "SELECT * FROM package WHERE package_id IN ("
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, delTimeCode);
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesLowDelLang(int category, int delTimeCode, int language){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE pp.type = 'bronze'" +
+                        "  AND pp.price <= 2000" +
+                        "  AND pp.delivery_duration <= ?"+
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, delTimeCode);
+                preparedStatement.setInt(2, language);
+
+
+            } else {
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE p.category = ? " +
+                        "  AND pp.type = 'bronze'" +
+                        "  AND pp.price <= 2000" +
+                        "  AND pp.delivery_duration <= ?"+
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, delTimeCode);
+                preparedStatement.setInt(3, language);
+
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesLowLang(int category, int language){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE pp.type = 'bronze'" +
+                        "  AND pp.price <= 2000" +
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, language);
+
+            } else {
+                query = "SELECT p.* " +
+                        "FROM package p " +
+                        "JOIN package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
+                        "WHERE p.category = ? " +
+                        "  AND pp.type = 'bronze'" +
+                        "  AND pp.price <= 2000" +
+                        "  AND lm.language_id = ?;";
+
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, language);
+
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Package> getPkgesLowDel(int category, int delTimeCode){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            if (category == 0){
+                query = "SELECT * FROM package WHERE package_id IN ("
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000 AND delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, delTimeCode);
+            } else {
+                query = "SELECT * FROM package WHERE package_id IN ("
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price<=2000 AND delivery_duration<=?)";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, category);
+                preparedStatement.setInt(2, delTimeCode);
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            List<Package> packages = new ArrayList<>();
+
+            packages = unwrap(resultSet);
+
+            return packages;
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static List<Package> getPkgesByLang(int category, int language){
         Connection con = null;
         PreparedStatement preparedStatement = null;
@@ -192,7 +478,7 @@ public class PackageListService {
             con = DatabaseConnection.initializeDatabase();
 
             if (category == 0){
-                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000)";
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000)";
                 preparedStatement = con.prepareStatement(query);
 
             } else {
