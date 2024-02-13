@@ -33,7 +33,7 @@ public class BuyerRequestPOST {
         }
 
         if(!tokenInfo.isClient()){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             response.getWriter().write("Token Invalid!");
             return;
         }
