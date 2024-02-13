@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.Req_BRlist;
+import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,27 +25,33 @@ public class SupportGET {
         this.response = response;
     }
 
-    public void Run() throws IOException {
+    public ResponsModel Run() throws IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
-            response.getWriter().write("SQL Connection Error");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
-        if(request.isClient()||request.isDesigner()){
+//            response.getWriter().write("SQL Connection Error");
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }else {
+            if (request.isClient() || request.isDesigner()) {
 //            System.out.println(request.getUserid()+request.getRole());
-            if (request.getUserid()==null){
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("User ID is Required!");
-                return;
+                if (request.getUserid() == null) {
+//                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                    response.getWriter().write("User ID is Required!");
+                    return new ResponsModel("User ID is Required!",HttpServletResponse.SC_BAD_REQUEST);
+                }
+                ResponsModel responsModel = GetRequestClient(connection, request.getUserid());
+                return responsModel;
+
+            } else if (request.isAgent()) {
+                ////////////////////////////////////////////////////////////////
+//                return new ResponsModel("Not implemented",HttpServletResponse.SC_NOT_FOUND);
             }
-            GetRequestClient(connection ,request.getUserid());
-        }  else if (request.isAgent()) {
-            ////////////////////////////////////////////////////////////////
         }
+
+        return new ResponsModel("rong user ID",HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    private void GetRequestClient( Connection connection , String userid){
+    private ResponsModel GetRequestClient( Connection connection , String userid){
 
 
         try {
@@ -65,14 +72,14 @@ public class SupportGET {
             }
 
 
-            response.getWriter().write(jsonArray.toString());
-            response.setStatus(HttpServletResponse.SC_OK);
+//            response.getWriter().write(jsonArray.toString());
+//            response.setStatus(HttpServletResponse.SC_OK);
+            return new ResponsModel(jsonArray.toString(),HttpServletResponse.SC_OK);
 
 
-        } catch (SQLException | IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new RuntimeException(e);
-
+        } catch (SQLException e) {
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SC INTERNAL SERVER ERROR",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }
