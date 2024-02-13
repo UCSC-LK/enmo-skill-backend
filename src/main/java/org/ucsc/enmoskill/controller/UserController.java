@@ -1,5 +1,6 @@
 package org.ucsc.enmoskill.controller;
 
+import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.Services.BuyerRequestPUT;
 import org.ucsc.enmoskill.Services.ClientDetailsPUT;
 import org.ucsc.enmoskill.Services.UserSer;
@@ -41,7 +42,13 @@ public class UserController extends HttpServlet {
             System.out.println("Username: " + user.getUsername());
             System.out.println("Password: " + user.getPassword());
             System.out.println("user_role: " + user.getUser_role());
+            if (user.getPassword().length() < 8) {
+                System.out.println("Password length should be at least 8 characters");
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                out.write("Password should be at least 8 characters");
+                return;
 
+            }
             // Hash the password
             String hashedPassword = Hash.hashPassword(user.getPassword());
 //            userID = (int)(Math.random()*(100000-10+1)+10);
@@ -50,18 +57,18 @@ public class UserController extends HttpServlet {
 
             UserSer newuser = new UserSer();
             // Insert data into the database
-            boolean isSuccess = newuser.isInsertionSuccessful(newUser);
-            if (isSuccess) {
+            int isSuccess = newuser.isInsertionSuccessful(newUser);
+            if (isSuccess==1) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 out.write("Registration successfully");
-                System.out.println("Registration successful");
-            } else {
-                // Set the status code to 401 (Unauthorized) for an unsuccessful login
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                out.write("Registration unsuccessfully");
-//                System.out.println("Registration incorrect");
+//                System.out.println("Registration successful");
+            } else if(isSuccess==2){
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Email or Username already exists");
+            }  else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Registration failed");
             }
-            out.write("Data inserted successfully");
         } catch (Exception e) {
             e.printStackTrace(); // Print the exception details for debugging
             throw new RuntimeException(e);
@@ -110,15 +117,7 @@ public class UserController extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);
-        System.out.println(token);
-        System.out.println("validity : "+tokenService.isTokenValid(token));
-        TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
-        System.out.println("info : "+tokenInfo.getUserId()+" role " +tokenInfo.getRole());
-    }
+
 }
 
 
