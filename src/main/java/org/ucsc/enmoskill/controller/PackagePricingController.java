@@ -16,6 +16,7 @@ import org.*;
 
 import org.ucsc.enmoskill.model.*;
 import org.ucsc.enmoskill.model.Package;
+import org.ucsc.enmoskill.utils.TokenService;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import static org.ucsc.enmoskill.Services.BannerDesDeliverablesService.*;
@@ -27,29 +28,38 @@ import static org.ucsc.enmoskill.Services.PricePackageService.*;
 
 public class PackagePricingController extends HttpServlet {
 
+    private TokenService.TokenInfo tokenInfo;
+
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        // fetch the category of the price package
-        Package pkgObj = getPackage(packageId);
-        int category = pkgObj.getCategory();
-        System.out.println("Category is :"+category);
+        if (tokenService.isTokenValid(token)){
+            // fetch the category of the price package
+            Package pkgObj = getPackage(packageId);
+            int category = pkgObj.getCategory();
+            System.out.println("Category is :"+category);
 
-        StringBuilder sb = fetchData(packageId, category);
+            StringBuilder sb = fetchData(packageId, category);
 
-        if (sb == null){
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write("Data not found");
-            System.out.println("Data not found");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write(String.valueOf(sb));
-            System.out.println("Data loaded successfully");
-        }
+            if (sb == null){
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Data not found");
+                System.out.println("Data not found");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write(String.valueOf(sb));
+                System.out.println("Data loaded successfully");
+            }
 
 
 
@@ -61,6 +71,13 @@ public class PackagePricingController extends HttpServlet {
 //            out.write("Data not found");
 //            System.out.println("Data not found");
 //        }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+
+
 
 
     }
@@ -72,54 +89,62 @@ public class PackagePricingController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+
         int category = Integer.parseInt(req.getParameter("category"));
         int packageId = Integer.parseInt(req.getParameter("packageId"));
-//        String type = req.getParameter("type");
 
-        StringBuilder requestBody = new StringBuilder();
-        BufferedReader reader = req.getReader();
+        if (tokenService.isTokenValid(token)){
+            //        String type = req.getParameter("type");
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            requestBody.append(line);
-        }
+            StringBuilder requestBody = new StringBuilder();
+            BufferedReader reader = req.getReader();
 
-        System.out.println(requestBody);
-        JsonObject jsonObject = null;
-        JsonObject deliverables = null;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                requestBody.append(line);
+            }
 
-        // Parse the JSON string
-        JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
+            System.out.println(requestBody);
+            JsonObject jsonObject = null;
+            JsonObject deliverables = null;
 
-        // Check if it's a JSON object
-        if (jsonElement.isJsonObject()) {
-            // Convert to a JsonObject
-            jsonObject = jsonElement.getAsJsonObject();
+            // Parse the JSON string
+            JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
 
-            // Create separate JsonObjects for "deliverables" and the rest
-            deliverables = jsonObject.getAsJsonObject("deliverables");
+            // Check if it's a JSON object
+            if (jsonElement.isJsonObject()) {
+                // Convert to a JsonObject
+                jsonObject = jsonElement.getAsJsonObject();
 
-            // Remove "deliverables" from the original JsonObject
-            jsonObject.remove("deliverables");
+                // Create separate JsonObjects for "deliverables" and the rest
+                deliverables = jsonObject.getAsJsonObject("deliverables");
 
-            // Now, you have two separate JsonObjects
-            System.out.println("Original Object Without Deliverables: " + jsonObject);
-            System.out.println("Deliverables Object: " + deliverables);
-        }
+                // Remove "deliverables" from the original JsonObject
+                jsonObject.remove("deliverables");
+
+                // Now, you have two separate JsonObjects
+                System.out.println("Original Object Without Deliverables: " + jsonObject);
+                System.out.println("Deliverables Object: " + deliverables);
+            }
 //
 //
-        Gson gson = new Gson();
-        PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
+            Gson gson = new Gson();
+            PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
 
-        switch (category) {
-            case 1:
-                try {
+            switch (category) {
+                case 1:
+                    try {
 
 //                    newPackagePricing.setcategory(category);
-                    newPackagePricing.setPackageId(packageId);
+                        newPackagePricing.setPackageId(packageId);
 //                    newPackagePricing.setType(type);
 
-                    System.out.println(newPackagePricing.getType());
+                        System.out.println(newPackagePricing.getType());
 
 //                    System.out.println(newPackagePricing.getPricePackageId());
 //                    System.out.println(newPackagePricing.getType());
@@ -131,180 +156,186 @@ public class PackagePricingController extends HttpServlet {
 //                    System.out.println(newPackagePricing.getPackageId());
 //                    System.out.println(newPackagePricing.getNoOfConcepts());
 
-                    int result1 = insertPricePackageData(newPackagePricing);
+                        int result1 = insertPricePackageData(newPackagePricing);
 
-                    JsonObject resultJson = new JsonObject();
-                    resultJson.addProperty("pricePackageId", result1);
+                        JsonObject resultJson = new JsonObject();
+                        resultJson.addProperty("pricePackageId", result1);
 
-                    System.out.println("price package id : "+result1);
+                        System.out.println("price package id : "+result1);
 
 
-                    if (result1>0){
-                        LogoDesignDeliverables newDeliverables = gson.fromJson(deliverables, LogoDesignDeliverables.class);
+                        if (result1>0){
+                            LogoDesignDeliverables newDeliverables = gson.fromJson(deliverables, LogoDesignDeliverables.class);
 
-                        newDeliverables.setPricePackageId(result1);
-                        int result2 = insertLDDeliverables(newDeliverables);
+                            newDeliverables.setPricePackageId(result1);
+                            int result2 = insertLDDeliverables(newDeliverables);
 
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resultJson.addProperty("message", "price package details inserted successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resultJson.addProperty("message", "price package details inserted successfully");
 //                            out.write("price package details inserted successfully");
-                            System.out.println("price package details inserted successfully");
-                            out.print(resultJson.toString());
+                                System.out.println("price package details inserted successfully");
+                                out.print(resultJson.toString());
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not inserted");
+                                System.out.println("price package details did not inserted");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not inserted");
                             System.out.println("price package details did not inserted");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not inserted");
-                        System.out.println("price package details did not inserted");
+
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
 
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
+                    break;
+                case 2:
 
-
-                break;
-            case 2:
-
-                try {
+                    try {
 
 //                    newPackagePricing.setcategory(category);
-                    newPackagePricing.setPackageId(packageId);
+                        newPackagePricing.setPackageId(packageId);
 //
-                    int result1 = insertPricePackageData(newPackagePricing);
+                        int result1 = insertPricePackageData(newPackagePricing);
 
-                    JsonObject resultJson = new JsonObject();
-                    resultJson.addProperty("pricePackageId", result1);
+                        JsonObject resultJson = new JsonObject();
+                        resultJson.addProperty("pricePackageId", result1);
 
-                    System.out.println("price package id : "+result1);
+                        System.out.println("price package id : "+result1);
 
 
-                    if (result1>0){
-                        IllustrationDeliverables newDeliverables = gson.fromJson(deliverables, IllustrationDeliverables.class);
+                        if (result1>0){
+                            IllustrationDeliverables newDeliverables = gson.fromJson(deliverables, IllustrationDeliverables.class);
 
-                        newDeliverables.setPricePackageID(result1);
+                            newDeliverables.setPricePackageID(result1);
 
-                        System.out.println(newDeliverables.getBackground_Scene());
-                        int result2 = insertIDeliverables(newDeliverables);
+                            System.out.println(newDeliverables.getBackground_Scene());
+                            int result2 = insertIDeliverables(newDeliverables);
 
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resultJson.addProperty("message", "price package details inserted successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resultJson.addProperty("message", "price package details inserted successfully");
 //                            out.write("price package details inserted successfully");
-                            System.out.println("price package details inserted successfully");
-                            out.print(resultJson.toString());
+                                System.out.println("price package details inserted successfully");
+                                out.print(resultJson.toString());
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not inserted");
+                                System.out.println("price package details did not inserted");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not inserted");
                             System.out.println("price package details did not inserted");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not inserted");
-                        System.out.println("price package details did not inserted");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                break;
-            case 3:
+                    break;
+                case 3:
 
 
-                try {
+                    try {
 
-                    newPackagePricing.setPackageId(packageId);
+                        newPackagePricing.setPackageId(packageId);
 
-                    int result1 = insertPricePackageData(newPackagePricing);
+                        int result1 = insertPricePackageData(newPackagePricing);
 
-                    JsonObject resultJson = new JsonObject();
-                    resultJson.addProperty("pricePackageId", result1);
+                        JsonObject resultJson = new JsonObject();
+                        resultJson.addProperty("pricePackageId", result1);
 
-                    System.out.println("price package id : "+result1);
+                        System.out.println("price package id : "+result1);
 
 
-                    if (result1>0){
-                        FlyerDesignDeliverables newDeliverables = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
+                        if (result1>0){
+                            FlyerDesignDeliverables newDeliverables = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
 
-                        newDeliverables.setPricePackageID(result1);
-                        int result2 = insertFDDeliverables(newDeliverables);
+                            newDeliverables.setPricePackageID(result1);
+                            int result2 = insertFDDeliverables(newDeliverables);
 
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resultJson.addProperty("message", "price package details inserted successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resultJson.addProperty("message", "price package details inserted successfully");
 //                            out.write("price package details inserted successfully");
-                            System.out.println("price package details inserted successfully");
-                            out.print(resultJson.toString());
+                                System.out.println("price package details inserted successfully");
+                                out.print(resultJson.toString());
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not inserted");
+                                System.out.println("price package details did not inserted");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not inserted");
                             System.out.println("price package details did not inserted");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not inserted");
-                        System.out.println("price package details did not inserted");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
+                    break;
+                case 4:
 
-                break;
-            case 4:
+                    try {
 
-                try {
+                        newPackagePricing.setPackageId(packageId);
 
-                    newPackagePricing.setPackageId(packageId);
+                        int result1 = insertPricePackageData(newPackagePricing);
 
-                    int result1 = insertPricePackageData(newPackagePricing);
+                        JsonObject resultJson = new JsonObject();
+                        resultJson.addProperty("pricePackageId", result1);
 
-                    JsonObject resultJson = new JsonObject();
-                    resultJson.addProperty("pricePackageId", result1);
-
-                    System.out.println("price package id : "+result1);
+                        System.out.println("price package id : "+result1);
 
 
-                    if (result1>0){
-                        BannerDesignDeliverables newDeliverables = gson.fromJson(deliverables, BannerDesignDeliverables.class);
+                        if (result1>0){
+                            BannerDesignDeliverables newDeliverables = gson.fromJson(deliverables, BannerDesignDeliverables.class);
 
-                        newDeliverables.setPricePackageID(result1);
-                        int result2 = insertBDDeliverables(newDeliverables);
+                            newDeliverables.setPricePackageID(result1);
+                            int result2 = insertBDDeliverables(newDeliverables);
 
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resultJson.addProperty("message", "price package details inserted successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resultJson.addProperty("message", "price package details inserted successfully");
 //                            out.write("price package details inserted successfully");
-                            System.out.println("price package details inserted successfully");
-                            out.print(resultJson.toString());
+                                System.out.println("price package details inserted successfully");
+                                out.print(resultJson.toString());
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not inserted");
+                                System.out.println("price package details did not inserted");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not inserted");
                             System.out.println("price package details did not inserted");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not inserted");
-                        System.out.println("price package details did not inserted");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
+                    break;
+                default:
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Invalid category");
-                System.out.println("Invalid category");
-                break;
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Invalid category");
+                    System.out.println("Invalid category");
+                    break;
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
         }
+
     }
 
     @Override
@@ -313,180 +344,193 @@ public class PackagePricingController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
         int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
         int category = Integer.parseInt(req.getParameter("category"));
         int packageId = Integer.parseInt(req.getParameter("packageId"));
-//        String type = req.getParameter("type");
 
-        StringBuilder requestBody = new StringBuilder();
-        BufferedReader reader = req.getReader();
+        if (tokenService.isTokenValid(token)){
+            //        String type = req.getParameter("type");
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            requestBody.append(line);
-        }
+            StringBuilder requestBody = new StringBuilder();
+            BufferedReader reader = req.getReader();
 
-        System.out.println(requestBody);
-        JsonObject jsonObject = null;
-        JsonObject deliverables = null;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                requestBody.append(line);
+            }
 
-        // Parse the JSON string
-        JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
+            System.out.println(requestBody);
+            JsonObject jsonObject = null;
+            JsonObject deliverables = null;
 
-        // Check if it's a JSON object
-        if (jsonElement.isJsonObject()) {
-            // Convert to a JsonObject
-            jsonObject = jsonElement.getAsJsonObject();
+            // Parse the JSON string
+            JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
 
-            // Create separate JsonObjects for "deliverables" and the rest
-            deliverables = jsonObject.getAsJsonObject("deliverables");
+            // Check if it's a JSON object
+            if (jsonElement.isJsonObject()) {
+                // Convert to a JsonObject
+                jsonObject = jsonElement.getAsJsonObject();
 
-            // Remove "deliverables" from the original JsonObject
-            jsonObject.remove("deliverables");
+                // Create separate JsonObjects for "deliverables" and the rest
+                deliverables = jsonObject.getAsJsonObject("deliverables");
 
-            // Now, you have two separate JsonObjects
-            System.out.println("Original Object Without Deliverables: " + jsonObject);
-            System.out.println("Deliverables Object: " + deliverables);
-        }
+                // Remove "deliverables" from the original JsonObject
+                jsonObject.remove("deliverables");
 
-        Gson gson = new Gson();
+                // Now, you have two separate JsonObjects
+                System.out.println("Original Object Without Deliverables: " + jsonObject);
+                System.out.println("Deliverables Object: " + deliverables);
+            }
 
-        PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
+            Gson gson = new Gson();
+
+            PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
 
 //                    newPackagePricing.setcategory(category);
-        newPackagePricing.setPackageId(packageId);
+            newPackagePricing.setPackageId(packageId);
 //                    newPackagePricing.setType(type);
-        newPackagePricing.setPricePackageId(pricePackageId);
+            newPackagePricing.setPricePackageId(pricePackageId);
 
-        int result1 = updatePricePackageData(newPackagePricing);
+            int result1 = updatePricePackageData(newPackagePricing);
 
 //                    System.out.println("price package id : "+result1);
-        switch (category) {
-            case 1:
-                try {
+            switch (category) {
+                case 1:
+                    try {
 
-                    if (result1>0){
-                        LogoDesignDeliverables newDeliverables1 = gson.fromJson(deliverables, LogoDesignDeliverables.class);
+                        if (result1>0){
+                            LogoDesignDeliverables newDeliverables1 = gson.fromJson(deliverables, LogoDesignDeliverables.class);
 
-                        newDeliverables1.setPricePackageId(pricePackageId);
-                        int result2 = updateLDDeliverables(newDeliverables1);
+                            newDeliverables1.setPricePackageId(pricePackageId);
+                            int result2 = updateLDDeliverables(newDeliverables1);
 
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            out.write("price package details updated successfully");
-                            System.out.println("price package details updated successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write("price package details updated successfully");
+                                System.out.println("price package details updated successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not updated");
+                                System.out.println("price package details did not updated");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not updated");
                             System.out.println("price package details did not updated");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not updated");
-                        System.out.println("price package details did not updated");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
+
+                    break;
+                case 2:
+
+                    try{
+
+                        if (result1>0){
+                            IllustrationDeliverables newDeliverables2 = gson.fromJson(deliverables, IllustrationDeliverables.class);
 
 
-                break;
-            case 2:
+                            newDeliverables2.setPricePackageID(pricePackageId);
+                            int result2 = updateIllustDeliverables(newDeliverables2);
 
-                try{
-
-                    if (result1>0){
-                        IllustrationDeliverables newDeliverables2 = gson.fromJson(deliverables, IllustrationDeliverables.class);
-
-
-                        newDeliverables2.setPricePackageID(pricePackageId);
-                        int result2 = updateIllustDeliverables(newDeliverables2);
-
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            out.write("price package details updated successfully");
-                            System.out.println("price package details updated successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write("price package details updated successfully");
+                                System.out.println("price package details updated successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not updated");
+                                System.out.println("price package details did not updated");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not updated");
                             System.out.println("price package details did not updated");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not updated");
-                        System.out.println("price package details did not updated");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
+                    break;
+                case 3:
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case 3:
+                    try{
 
-                try{
+                        if (result1>0){
+                            FlyerDesignDeliverables newDeliverables3 = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
 
-                    if (result1>0){
-                        FlyerDesignDeliverables newDeliverables3 = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
+                            newDeliverables3.setPricePackageID(pricePackageId);
+                            int result2 = updateFDDeliverables(newDeliverables3);
 
-                        newDeliverables3.setPricePackageID(pricePackageId);
-                        int result2 = updateFDDeliverables(newDeliverables3);
-
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            out.write("price package details updated successfully");
-                            System.out.println("price package details updated successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write("price package details updated successfully");
+                                System.out.println("price package details updated successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not updated");
+                                System.out.println("price package details did not updated");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not updated");
                             System.out.println("price package details did not updated");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not updated");
-                        System.out.println("price package details did not updated");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
+                    break;
+                case 4:
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case 4:
+                    try{
 
-                try{
+                        if (result1>0){
+                            BannerDesignDeliverables newDeliverables4 = gson.fromJson(deliverables, BannerDesignDeliverables.class);
 
-                    if (result1>0){
-                        BannerDesignDeliverables newDeliverables4 = gson.fromJson(deliverables, BannerDesignDeliverables.class);
+                            newDeliverables4.setPricePackageID(pricePackageId);
+                            int result2 = updateBDDeliverables(newDeliverables4);
 
-                        newDeliverables4.setPricePackageID(pricePackageId);
-                        int result2 = updateBDDeliverables(newDeliverables4);
-
-                        if (result2>0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            out.write("price package details updated successfully");
-                            System.out.println("price package details updated successfully");
+                            if (result2>0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write("price package details updated successfully");
+                                System.out.println("price package details updated successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("price package details did not updated");
+                                System.out.println("price package details did not updated");
+                            }
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             out.write("price package details did not updated");
                             System.out.println("price package details did not updated");
                         }
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("price package details did not updated");
-                        System.out.println("price package details did not updated");
+
+                    } catch (JsonSyntaxException | JsonIOException e) {
+                        throw new RuntimeException(e);
                     }
+                    break;
+                default:
 
-                } catch (JsonSyntaxException | JsonIOException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("invalid type");
-                System.out.println("invalid type");
-                break;
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("invalid type");
+                    System.out.println("invalid type");
+                    break;
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
         }
+
     }
 
 
