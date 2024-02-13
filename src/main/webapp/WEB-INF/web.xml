@@ -129,6 +129,11 @@
         <servlet-class>org.ucsc.enmoskill.controller.skillController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>supportAgent</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.SupportAgentController</servlet-class>
+    </servlet>
+
 
 
 
@@ -204,6 +209,11 @@
     <servlet-mapping>
         <servlet-name>skill</servlet-name>
         <url-pattern>/skill</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>supportAgent</servlet-name>
+        <url-pattern>/supportAgent</url-pattern>
     </servlet-mapping>
 
 </web-app>
