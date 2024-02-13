@@ -87,7 +87,8 @@ public class PackageListService {
                         "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price <= ?" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, price);
@@ -102,7 +103,8 @@ public class PackageListService {
                         "WHERE p.category = ? " +
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price <= ?" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -136,14 +138,14 @@ public class PackageListService {
 
             if (category == 0){
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=? AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=? AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, price);
                 preparedStatement.setInt(2, delTimeCode);
 
             } else {
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price<=? AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price<=? AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, price);
@@ -181,7 +183,8 @@ public class PackageListService {
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price >= 5000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
@@ -197,7 +200,9 @@ public class PackageListService {
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price >= 5000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
+
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -236,7 +241,8 @@ public class PackageListService {
                         "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price >= 5000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, language);
@@ -249,7 +255,8 @@ public class PackageListService {
                         "WHERE p.category = ? " +
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price >= 5000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -283,12 +290,12 @@ public class PackageListService {
 
             if (category == 0){
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price>=5000 AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price>=5000 AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
             } else {
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price>=5000 AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price>=5000 AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, delTimeCode);
@@ -325,7 +332,8 @@ public class PackageListService {
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price BETWEEN 2000 AND 5000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
@@ -341,7 +349,8 @@ public class PackageListService {
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price BETWEEN 2000 AND 5000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -380,7 +389,8 @@ public class PackageListService {
                         "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price BETWEEN 2000 AND 5000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, language);
@@ -393,7 +403,8 @@ public class PackageListService {
                         "WHERE p.category = ? " +
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price BETWEEN 2000 AND 5000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -426,12 +437,12 @@ public class PackageListService {
 
             if (category == 0){
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
             } else {
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND (price BETWEEN 2000 AND 5000) AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, delTimeCode);
@@ -468,7 +479,8 @@ public class PackageListService {
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price <= 2000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
@@ -484,7 +496,8 @@ public class PackageListService {
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price <= 2000" +
                         "  AND pp.delivery_duration <= ?"+
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -523,7 +536,8 @@ public class PackageListService {
                         "JOIN language_mapping lm ON p.designer_userID = lm.userID " +
                         "WHERE pp.type = 'bronze'" +
                         "  AND pp.price <= 2000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, language);
@@ -536,7 +550,8 @@ public class PackageListService {
                         "WHERE p.category = ? " +
                         "  AND pp.type = 'bronze'" +
                         "  AND pp.price <= 2000" +
-                        "  AND lm.language_id = ?;";
+                        "  AND lm.language_id = ?"+
+                        "  ORDER BY clicks DESC;";
 
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
@@ -569,12 +584,12 @@ public class PackageListService {
 
             if (category == 0){
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000 AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000 AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
             } else {
                 query = "SELECT * FROM package WHERE package_id IN ("
-                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price<=2000 AND delivery_duration<=?)";
+                        +"SELECT package_id FROM package_pricing WHERE category=? AND type='bronze' AND price<=2000 AND delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, delTimeCode);
@@ -605,12 +620,14 @@ public class PackageListService {
 
             if (category == 0){
                 query = "SELECT * FROM package WHERE designer_userID IN ("
-                +"SELECT userID FROM language_mapping WHERE language_id = ?)";
+                +"SELECT userID FROM language_mapping WHERE language_id = ?)"+
+                        "  ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, language);
             } else {
                 query = "SELECT * FROM package WHERE category=? AND designer_userID IN ("
-                        +"SELECT userID FROM language_mapping WHERE language_id = ?)";
+                        +"SELECT userID FROM language_mapping WHERE language_id = ?)"+
+                        "  ORDER BY clicks DESC;";;
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, language);
@@ -638,11 +655,11 @@ public class PackageListService {
             con = DatabaseConnection.initializeDatabase();
 
             if (category == 0){
-                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?)";
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, delTimeCode);
             } else {
-                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?)";
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE delivery_duration<=?) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, delTimeCode);
@@ -669,11 +686,11 @@ public class PackageListService {
             con = DatabaseConnection.initializeDatabase();
 
             if (category == 0){
-                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?))";
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?)) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, price);
             } else {
-                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?))";
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price <= ?)) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
                 preparedStatement.setInt(2, price);
@@ -742,10 +759,10 @@ public class PackageListService {
             con = DatabaseConnection.initializeDatabase();
 
             if (category == 0) {
-                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000))";
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000)) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
             } else {
-                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000))";
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE (type = 'bronze' AND price between 2000 AND 5000)) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1, category);
             }
@@ -773,11 +790,11 @@ public class PackageListService {
             con = DatabaseConnection.initializeDatabase();
 
             if (category == 0){
-                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000)";
+                query = "SELECT * FROM package WHERE package_id IN (SELECT package_id FROM package_pricing WHERE type='bronze' AND price<=2000) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
 
             } else {
-                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000)";
+                query = "SELECT * FROM package WHERE category=? AND package_id IN (SELECT package_id FROM package_pricing WHERE type='platinum' AND price<=2000) ORDER BY clicks DESC;";
                 preparedStatement = con.prepareStatement(query);
                 preparedStatement.setInt(1,category);
 

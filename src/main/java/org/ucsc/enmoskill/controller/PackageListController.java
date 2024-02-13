@@ -1,7 +1,13 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.Package;
+import org.ucsc.enmoskill.model.ProfileModel;
+import org.ucsc.enmoskill.model.ResponsModel;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.ucsc.enmoskill.Services.PackageListService.*;
@@ -87,12 +94,36 @@ public class PackageListController extends HttpServlet {
 
                     float lowestPrice = getBronzePrice(packageId);
                     float highestPrice = getPlatinumPrice(packageId);
+                    String designerName = "";
+
+                    ProfileModel profile = new ProfileModel(newpackage.getDesignerUserId(), "Designer", null, null, null, null, null, null);
+                    if (profile.CheckReqiredFields()){
+                        ProfileGET servise = new ProfileGET(profile,resp);
+                        try{
+                            StringBuilder profilejson = new StringBuilder();
+                            ResponsModel responsModel= servise.Run();
+                            profilejson.append(responsModel.getResMassage());
+
+                            // Parse the JSON string
+                            JsonParser parser = new JsonParser();
+                            JsonObject jsonObject = parser.parse(String.valueOf(profilejson)).getAsJsonObject();
+
+                            // Get the value of the display_name property
+                            designerName = jsonObject.get("display_name").getAsString();
+
+
+
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
 
                     String pkg = gson.toJson(newpackage);
                     StringBuilder aPackage = new StringBuilder(pkg);
 
                     aPackage.insert(aPackage.length()-1, ", \"starterPrice\":"+lowestPrice);
                     aPackage.insert(aPackage.length()-1, ", \"highestPrice\":"+highestPrice);
+                    aPackage.insert(aPackage.length()-1, ", \"designerName\":\""+designerName+"\"");
 
 
                     jsonObj.append(aPackage);
