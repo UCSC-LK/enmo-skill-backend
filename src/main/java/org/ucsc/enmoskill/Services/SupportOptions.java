@@ -20,6 +20,7 @@ public class SupportOptions {
     public ResponsModel Run(String agentID, String ticketId, String decision) throws SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
+
         if(connection==null){
 
 //            response.getWriter().write("SQL Connection Error");
@@ -56,12 +57,12 @@ public class SupportOptions {
         String query=null;
         
         if(decision.equals("Reject")) {
-
-            query = "UPDATE enmo_database.ticket t SET t.status = 0 \n" +
-                    "WHERE t.agentID=" + tokenInfo.getUserId() + " AND t.ref_no=" + ticketId +" AND  status=2 ";
+            query = "UPDATE enmo_database.ticket SET status = 0 " +
+                    "WHERE agentID=" + tokenInfo.getUserId() + " AND ref_no=" + ticketId +" AND status=2";
+            System.out.println(query);
         } else if (decision.equals("Clos")) {
 
-            query = "UPDATE enmo_database.ticket t SET t.status = 3 \n" +
+            query = "UPDATE enmo_database.ticket t SET t.status = 3 " +
                     "WHERE t.agentID=" + tokenInfo.getUserId() + " AND t.ref_no=" + ticketId+" AND status = 2";
         }
 

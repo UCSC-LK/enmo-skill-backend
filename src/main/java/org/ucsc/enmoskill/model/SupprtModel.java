@@ -80,14 +80,14 @@ public class SupprtModel {
 
     public String getUpdatedQuery(){
 
-        Date Today= new Date();
-        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//        Date Today= new Date();
+//        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 
 //        String query ="UPDATE enmo_database.ticket t SET t.description = \"" + description + "\", t.subject = \"" + subject + "\", t.date = \'" + Date + "\'\n" +
 //                        "WHERE t.ref_no="+ref_no;
 
-        String query ="UPDATE enmo_database.ticket t SET t.description = ?, t.subject = ?, t.date =?\n" +
-                       "WHERE t.ref_no="+ref_no;
+        String query ="UPDATE enmo_database.ticket SET description = ?, subject = ?, date =? "+
+                       "WHERE ref_no="+ref_no;
 
         return query;
     }

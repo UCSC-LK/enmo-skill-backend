@@ -136,14 +136,17 @@ public class SupportGET {
 
         if(popup != null){
 
-            query = "SELECT t.* FROM enmo_database.ticket_history t WHERE ticketID = ? ORDER BY updateID DESC";
+            query = "SELECT th.* FROM enmo_database.ticket_history th JOIN ticket t ON th.ticketID = t.ref_no WHERE ticketID = ? AND t.agentID= ? ORDER BY updateID DESC";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, popup);
+            preparedStatement.setString(2, userid);
 
+        }else if(TicketId != null){
+            query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID WHERE t.ref_no = "+TicketId+" ORDER BY status DESC";
+            preparedStatement = connection.prepareStatement(query);
         }else{
             query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID ORDER BY status DESC";
             preparedStatement = connection.prepareStatement(query);
-
         }
 
 
