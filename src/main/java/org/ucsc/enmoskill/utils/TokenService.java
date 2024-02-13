@@ -10,11 +10,17 @@ import java.util.Date;
 import java.util.Map;
 
 public class TokenService {
-    private static final Key SIGNING_KEY;
-    private final long EXPIRATION_TIME_MS = 86400000;
+    private static final Key SIGNING_KEY,SIGNING_KEY2 ;
+    private final long EXPIRATION_TIME_HOUR = 3600000;
+    private final long EXPIRATION_TIME_DAY = 86400000;
     static {
             String signingKeyString = "TFSysTS6s^8$Sgsr#havtFGse5ajFtaeCAuhAUTAWdc%f";
             SIGNING_KEY = new SecretKeySpec(signingKeyString.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+    }
+
+    static {
+        String signingKeyString2 = "TFSysTS6s^8$Hagfs425h$$&GdsuhAUTAWdc%f";
+        SIGNING_KEY2 = new SecretKeySpec(signingKeyString2.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
 
@@ -22,7 +28,15 @@ public class TokenService {
         return  Jwts.builder()
                 .setSubject(userId)
                 .claim("role", role)
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_HOUR))
+                .signWith(getSigningKey())
+                .compact();
+    }
+    public  String generateDualToken(String userId, String role) {
+        return  Jwts.builder()
+                .setSubject(userId)
+                .claim("role", role)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_DAY))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -37,7 +51,6 @@ public class TokenService {
             return false;
         }
     }
-
 
     public  String getTokenFromHeader(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
