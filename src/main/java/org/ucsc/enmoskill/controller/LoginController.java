@@ -53,9 +53,10 @@ public class LoginController extends HttpServlet {
                 try {
                     TokenService tokenService = new TokenService();
                     String token = tokenService.generateToken(loginDB.getId(), loginDB.getUserLevelID());
+                    String token2 = tokenService.generateDualToken(loginDB.getId(), loginDB.getUserLevelID());
                     resp.setStatus(HttpServletResponse.SC_OK);
                     resp.setContentType("application/json");
-                    String successMessage = "{\"message\": \"Login successfully\",\"userLevelID\":"+loginDB.getUserLevelID()+" ,\"JWT\": \"" + token+ "\"}";
+                    String successMessage = "{\"message\": \"Login successfully\",\"userLevelID\":"+loginDB.getUserLevelID()+" ,\"JWT\": \"" + token+ "\""+" ,\"JWT2\": \""+token2+"\"}";
                     resp.getWriter().write(successMessage);
                     System.out.println("Login successful");
                     System.out.println(token);
