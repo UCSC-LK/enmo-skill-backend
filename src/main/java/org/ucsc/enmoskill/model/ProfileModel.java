@@ -69,8 +69,7 @@ public class ProfileModel {
 
 
     public String getUpdateQuery1(){
-        String updateQuery1 = "UPDATE enmo_database.designer SET description = \"" + description + "\", fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  getUserId();
-        System.out.println(updateQuery1);
+        String updateQuery1 = "UPDATE enmo_database.designer SET description = \"" + description + "\", fname = \'" + fname + "\', lname = \'" + lname + "\', display_name = \'" + display_name + "\' WHERE userId = " +  userId;
         return updateQuery1;
     }
 
@@ -86,23 +85,21 @@ public class ProfileModel {
     }
 
 
-
-
-
-
-    public boolean CheckReqiredFields(){
-        if(userId == 0){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    public Boolean isDesigner(){
-        if(role.equals("Designer")){
-            return true;
-        }else return false;
-    }
+//
+//
+//    public boolean CheckReqiredFields(){
+//        if(userId == 0){
+//            return false;
+//        }else{
+//            return true;
+//        }
+//    }
+//
+//    public Boolean isDesigner(){
+//        if(role.equals("Designer")){
+//            return true;
+//        }else return false;
+//    }
 
 
     public int getUserId() {
