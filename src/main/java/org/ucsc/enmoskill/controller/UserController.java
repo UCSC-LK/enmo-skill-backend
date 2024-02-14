@@ -1,5 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
+import com.google.gson.JsonObject;
+import org.ucsc.enmoskill.Services.BuyerRequestPUT;
+import org.ucsc.enmoskill.Services.ClientDetailsPUT;
 import org.ucsc.enmoskill.Services.UserSer;
 
 import javax.servlet.ServletException;
@@ -8,10 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
+import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
 import org.ucsc.enmoskill.utils.Hash;
+import org.ucsc.enmoskill.utils.TokenService;
 
 public class UserController extends HttpServlet {
 
@@ -37,7 +42,13 @@ public class UserController extends HttpServlet {
             System.out.println("Username: " + user.getUsername());
             System.out.println("Password: " + user.getPassword());
             System.out.println("user_role: " + user.getUser_role());
+            if (user.getPassword().length() < 8) {
+                System.out.println("Password length should be at least 8 characters");
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                out.write("Password should be at least 8 characters");
+                return;
 
+            }
             // Hash the password
             String hashedPassword = Hash.hashPassword(user.getPassword());
 //            userID = (int)(Math.random()*(100000-10+1)+10);
@@ -46,18 +57,18 @@ public class UserController extends HttpServlet {
 
             UserSer newuser = new UserSer();
             // Insert data into the database
-            boolean isSuccess = newuser.isInsertionSuccessful(newUser);
-            if (isSuccess) {
+            int isSuccess = newuser.isInsertionSuccessful(newUser);
+            if (isSuccess==1) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 out.write("Registration successfully");
-                System.out.println("Registration successful");
-            } else {
-                // Set the status code to 401 (Unauthorized) for an unsuccessful login
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                out.write("Registration unsuccessfully");
-//                System.out.println("Registration incorrect");
+//                System.out.println("Registration successful");
+            } else if(isSuccess==2){
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Email or Username already exists");
+            }  else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Registration failed");
             }
-            out.write("Data inserted successfully");
         } catch (Exception e) {
             e.printStackTrace(); // Print the exception details for debugging
             throw new RuntimeException(e);
@@ -67,7 +78,20 @@ public class UserController extends HttpServlet {
     }
 
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        resp.setContentType("application/json");
+        try (BufferedReader reader = req.getReader()){
+            User usermodel = new Gson().fromJson(reader, User.class);
+            if (usermodel.checkRequired()){
+                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
+                service.Run();
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
+            resp.getWriter().write(e.toString());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     @Override
@@ -75,4 +99,25 @@ public class UserController extends HttpServlet {
         super.doDelete(req, resp);
     }
 
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        try (BufferedReader reader = req.getReader()){
+            User usermodel = new Gson().fromJson(reader, User.class);
+            if (usermodel.getId()!=0){
+                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
+                service.Validate();
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Required Field Missing");
+            }
+        } catch (Exception e) {
+            resp.getWriter().write(e.toString());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+
 }
+
+

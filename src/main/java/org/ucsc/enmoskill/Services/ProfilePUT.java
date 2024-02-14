@@ -2,6 +2,8 @@ package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ProfileModel;
+import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,19 +16,24 @@ import java.util.Map;
 
 public class ProfilePUT {
     private ProfileModel profileModel;
-    HttpServletResponse res;
+    private TokenService.TokenInfo tokenInfo;
+//    HttpServletResponse res;
 
-    public ProfilePUT(ProfileModel profileModel, HttpServletResponse res) {
+    public ProfilePUT(ProfileModel profileModel, TokenService.TokenInfo tokenInfo) {
         this.profileModel = profileModel;
-        this.res = res;
+        this.tokenInfo = tokenInfo;
+//        this.res = res;
     }
 
-    public void Run() throws IOException, SQLException {
+    public ResponsModel Run() throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
-            res.getWriter().write("SQL Connection Error");
-            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            res.getWriter().write("SQL Connection Error");
+//            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
 
         //update designer table details-----------------------------------------------------------------------------
         String updateQuery1 = profileModel.getUpdateQuery1();
@@ -112,11 +119,15 @@ public class ProfilePUT {
         }
 
         if (rows1 > 0 && rows2 > 0 && rows3 >0 && rowDeleteLanguages>0 && rowDeleteSkills > 0) {
-            res.getWriter().write("Data Updated successfully!");
-            res.setStatus(HttpServletResponse.SC_CREATED);
+//            res.getWriter().write("Data Updated successfully!");
+//            res.setStatus(HttpServletResponse.SC_CREATED);
+            return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);
+
+
         } else {
-            res.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-            res.getWriter().write("Data Updated Failed!");
+//            res.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+//            res.getWriter().write("Data Updated Failed!");
+            return new ResponsModel("Data Updated Failed!",HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
 
     }

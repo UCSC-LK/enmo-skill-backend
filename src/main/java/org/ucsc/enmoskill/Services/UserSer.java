@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class UserSer {
 
-    public  boolean isInsertionSuccessful(User user) {
+    public  int isInsertionSuccessful(User user) {
         // You can implement logic here to check if the insertion was successful
         // For example, you can return true if no exceptions were thrown during insertion
         // and false if an exception occurred.
@@ -23,14 +23,20 @@ public class UserSer {
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPassword());
-            preparedStatement.executeUpdate(); // Execute the INSERT operation
+            int Rowaffected = preparedStatement.executeUpdate(); // Execute the INSERT operation
+
+
 
             // If the execution reaches this point, the insertion was successful
-            return true;
+            return 1;
         } catch (SQLException e) {
-            // Handle any exceptions that might occur during the insertion
-            e.printStackTrace();
-            return false;
+
+            if (e.getErrorCode() == 1062) {
+                return 2;
+            } else {
+                e.printStackTrace();
+                return 0; // Other SQL error
+            }
         } finally {
             try {
                 if (preparedStatement != null) {

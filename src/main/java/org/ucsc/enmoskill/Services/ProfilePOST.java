@@ -2,6 +2,8 @@ package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ProfileModel;
+import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,35 +16,44 @@ import java.util.Map;
 
 public class ProfilePOST {
     private ProfileModel profileModel;
-    HttpServletResponse res;
+    private TokenService.TokenInfo tokenInfo;
+//    HttpServletResponse res;
 
-    public ProfilePOST(ProfileModel profileModel, HttpServletResponse res) {
+    public ProfilePOST(ProfileModel profileModel,TokenService.TokenInfo tokenInfo) {
         this.profileModel = profileModel;
-        this.res = res;
+        this.tokenInfo = tokenInfo;
+//        this.res = res;
     }
 
-    public void Run() throws IOException, SQLException {
+    public ResponsModel Run() throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
         if(connection==null){
-            res.getWriter().write("SQL Connection Error");
-            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            res.getWriter().write("SQL Connection Error");
+//            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
+
+        //update user role---------------------------------------------------------------------------
+        String queryRoleLevelUp = profileModel.getQueryLevelUp();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRoleLevelUp);
+        int rows = preparedStatement.executeUpdate();
+        preparedStatement.close();
 
         //set designer table details-----------------------------------------------------------------------------
         String query1 = profileModel.getQuery1();
 
         PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-        System.out.println(query1);
         int rows1 = preparedStatement1.executeUpdate();
-//        System.out.println(rows1);
         preparedStatement1.close();
 
         //set skills--------------------------------------------------------------------------------------------
         String query2 = profileModel.getQuery2();
         boolean skillFlag = false;
+
+        System.out.println(profileModel.getUserId());
         for(int i = 0; i< profileModel.getSkills().size(); i++){
-
-
             if(skillFlag){
                 query2 = query2+",";
             }
@@ -106,11 +117,13 @@ public class ProfilePOST {
         }
 
         if (rows1 > 0 && rows2 > 0 && rows3 > 0) {
-            res.getWriter().write("Data inserted successfully!");
-            res.setStatus(HttpServletResponse.SC_CREATED);
+//            res.getWriter().write("Data inserted successfully!");
+//            res.setStatus(HttpServletResponse.SC_CREATED);
+            return new ResponsModel("Data inserted successfully!",HttpServletResponse.SC_CREATED);
         } else {
-            res.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-            res.getWriter().write("Data Inserting Failed!");
+//            res.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+//            res.getWriter().write("Data Inserting Failed!");
+            return new ResponsModel("Data Inserting Failed!",HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
 
     }

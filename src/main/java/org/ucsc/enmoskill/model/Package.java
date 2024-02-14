@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.sql.Timestamp;
+
 public class Package {
     private int packageId;
     private String title;
@@ -11,6 +13,8 @@ public class Package {
     private String cancellations;
     private String status;
     private int designerUserId;
+
+    private java.sql.Timestamp insertionTime;
 
     public Package(){
     }
@@ -26,7 +30,7 @@ public class Package {
         this.category = category;
     }
 
-    public Package(int packageId , String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId){
+    public Package(int packageId , String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId, Timestamp insertionTime){
         this.packageId = packageId;
         this.title = title;
         this.description = description;
@@ -37,6 +41,7 @@ public class Package {
         this.cancellations = cancellations;
         this.status = status;
         this.designerUserId = designerUserId;
+        this.insertionTime = insertionTime;
     }
 
     public void setPackageId(int packageId) {
@@ -79,6 +84,10 @@ public class Package {
         this.designerUserId = designerUserId;
     }
 
+    public void setInsertionTime(Timestamp insertionTime) {
+        this.insertionTime = insertionTime;
+    }
+
     public int getPackageId() {
         return packageId;
     }
@@ -119,5 +128,7 @@ public class Package {
         return designerUserId;
     }
 
-
+    public Timestamp getInsertionTime() {
+        return insertionTime;
+    }
 }
