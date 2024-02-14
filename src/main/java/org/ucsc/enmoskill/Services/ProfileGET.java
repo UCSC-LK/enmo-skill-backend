@@ -6,6 +6,7 @@ import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.DesignerProfileModel;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,13 +16,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ProfileGET {
+    private TokenService.TokenInfo tokenInfo;
+//    private HttpServletResponse resp;
 
-    private ProfileModel profileModel;
-    private HttpServletResponse resp;
-
-    public ProfileGET(ProfileModel profileModel, HttpServletResponse resp) {
-        this.profileModel = profileModel;
-        this.resp = resp;
+    public ProfileGET(TokenService.TokenInfo tokenInfo) {
+        this.tokenInfo=tokenInfo;
+//        this.resp = resp;
     }
 
     public ResponsModel Run() throws IOException, SQLException {
@@ -32,7 +32,9 @@ public class ProfileGET {
 //            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        if (profileModel.isDesigner()) {
+
+
+        if (tokenInfo.isDesigner()) {
 
           String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
                   "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
@@ -42,7 +44,7 @@ public class ProfileGET {
                   "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
                   "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
                   "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
-                  "WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
+                  "WHERE designer.userId ="+ tokenInfo.getUserId()+  " GROUP BY designer.userId";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 //                preparedStatement.setInt(1, profileModel.getUserId());
@@ -55,9 +57,6 @@ public class ProfileGET {
 
                     ProfileModel profileModel = new ProfileModel(resultSet);
                     jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
-
-
-
                 }
 
 //                resp.getWriter().write(jsonObject.toString());
@@ -67,14 +66,9 @@ public class ProfileGET {
                 }else{
                     return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
                 }
-
             }
-
-
 
         }
         return new ResponsModel("This is not Valid Request",HttpServletResponse.SC_BAD_REQUEST);
-
-
     }
 }

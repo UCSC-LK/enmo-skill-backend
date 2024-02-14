@@ -3,20 +3,25 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SupportPOST {
     private SupprtModel supportObj;
-    private HttpServletResponse response;
+    private TokenService.TokenInfo tokenInfo;
 
-    public SupportPOST(SupprtModel supportObj, HttpServletResponse response) {
+
+    public SupportPOST(SupprtModel supportObj,TokenService.TokenInfo TokenInfo) {
         this.supportObj = supportObj;
-        this.response = response;
+        tokenInfo= TokenInfo;
+        //this.response = response;
     }
 
     public ResponsModel Run() throws IOException {
@@ -27,10 +32,21 @@ public class SupportPOST {
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         }else {
+
+            supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+
             String query = this.supportObj.getQuery();
 
             try {
+                Date Today= new Date();
+                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, supportObj.getDescription());
+                preparedStatement.setString(2, Date);
+                preparedStatement.setInt(3, supportObj.getRequesterID());
+                preparedStatement.setString(4, supportObj.getSubject());
+
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
@@ -47,7 +63,5 @@ public class SupportPOST {
             }
         }
     }
-
-
 
 }

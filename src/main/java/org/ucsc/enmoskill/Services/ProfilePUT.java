@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,11 +16,13 @@ import java.util.Map;
 
 public class ProfilePUT {
     private ProfileModel profileModel;
-    HttpServletResponse res;
+    private TokenService.TokenInfo tokenInfo;
+//    HttpServletResponse res;
 
-    public ProfilePUT(ProfileModel profileModel, HttpServletResponse res) {
+    public ProfilePUT(ProfileModel profileModel, TokenService.TokenInfo tokenInfo) {
         this.profileModel = profileModel;
-        this.res = res;
+        this.tokenInfo = tokenInfo;
+//        this.res = res;
     }
 
     public ResponsModel Run() throws IOException, SQLException {
@@ -29,6 +32,8 @@ public class ProfilePUT {
 //            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
 
         //update designer table details-----------------------------------------------------------------------------
         String updateQuery1 = profileModel.getUpdateQuery1();

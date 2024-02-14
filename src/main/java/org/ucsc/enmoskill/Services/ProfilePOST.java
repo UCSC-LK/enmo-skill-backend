@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ProfileModel;
 import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,11 +16,13 @@ import java.util.Map;
 
 public class ProfilePOST {
     private ProfileModel profileModel;
-    HttpServletResponse res;
+    private TokenService.TokenInfo tokenInfo;
+//    HttpServletResponse res;
 
-    public ProfilePOST(ProfileModel profileModel, HttpServletResponse res) {
+    public ProfilePOST(ProfileModel profileModel,TokenService.TokenInfo tokenInfo) {
         this.profileModel = profileModel;
-        this.res = res;
+        this.tokenInfo = tokenInfo;
+//        this.res = res;
     }
 
     public ResponsModel Run() throws IOException, SQLException {
@@ -29,6 +32,8 @@ public class ProfilePOST {
 //            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
 
         //update user role---------------------------------------------------------------------------
         String queryRoleLevelUp = profileModel.getQueryLevelUp();
@@ -40,17 +45,15 @@ public class ProfilePOST {
         String query1 = profileModel.getQuery1();
 
         PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-        System.out.println(query1);
         int rows1 = preparedStatement1.executeUpdate();
-//        System.out.println(rows1);
         preparedStatement1.close();
 
         //set skills--------------------------------------------------------------------------------------------
         String query2 = profileModel.getQuery2();
         boolean skillFlag = false;
+
+        System.out.println(profileModel.getUserId());
         for(int i = 0; i< profileModel.getSkills().size(); i++){
-
-
             if(skillFlag){
                 query2 = query2+",";
             }
