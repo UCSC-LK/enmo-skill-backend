@@ -85,21 +85,21 @@ public class ProfileModel {
     }
 
 
-//
-//
-//    public boolean CheckReqiredFields(){
-//        if(userId == 0){
-//            return false;
-//        }else{
-//            return true;
-//        }
-//    }
-//
-//    public Boolean isDesigner(){
-//        if(role.equals("Designer")){
-//            return true;
-//        }else return false;
-//    }
+
+
+    public boolean CheckReqiredFields(){
+        if(userId == 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public Boolean isDesigner(){
+        if(role.equals("Designer")){
+            return true;
+        }else return false;
+    }
 
 
     public int getUserId() {
