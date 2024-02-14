@@ -106,12 +106,15 @@ public class PackageListController extends HttpServlet {
                         String designerName = "";
 
                         ProfileModel profile = new ProfileModel(newpackage.getDesignerUserId(), "Designer", null, null, null, null, null, null);
-                        if (profile.CheckReqiredFields()){
+//                        if ("Designer" != null && newpackage.getDesignerUserId() != 0){
+                            if (profile.CheckReqiredFields()){
                             ProfileGET servise = new ProfileGET(profile,resp);
                             try{
                                 StringBuilder profilejson = new StringBuilder();
                                 ResponsModel responsModel= servise.Run();
                                 profilejson.append(responsModel.getResMassage());
+
+//                                System.out.println(profilejson);
 
                                 // Parse the JSON string
                                 JsonParser parser = new JsonParser();

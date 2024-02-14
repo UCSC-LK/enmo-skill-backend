@@ -62,7 +62,8 @@ public class PackageViewController extends HttpServlet {
 
                 ProfileModel profile = new ProfileModel(designerId, "Designer", null, null, null, null, null, null);
 
-                if(profile.CheckReqiredFields()){
+//                if(tokenInfo.getRole() != null && tokenInfo.getUserId() != null){
+                if (profile.CheckReqiredFields()){
                     ProfileGET servise = new ProfileGET(profile,resp);
                     try {
                         ResponsModel responsModel= servise.Run();
