@@ -39,33 +39,40 @@ public class PricePackageService {
                 String jsonDeliverables = null;
 
 
-                switch (category) {
-                    case 1:
-                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
+                PackageDeliverablesService service = new PackageDeliverablesService();
+                PackageDeliverables deliverables = service.getPackageDeliverables(pricePackageId);
 
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables1);
+//              Convert deliverables object to JSON
+                jsonDeliverables = gson.toJson(deliverables);
 
-                        break;
 
-                    case 2:
-                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables2);
-                        break;
-
-                    case 3:
-                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables3);
-                        break;
-
-                    default:
-                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
-                        // Convert deliverables object to JSON
-                        jsonDeliverables = gson.toJson(deliverables4);
-                        break;
-                }
+//                switch (category) {
+//                    case 1:
+//                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
+//
+//                        // Convert deliverables object to JSON
+//                        jsonDeliverables = gson.toJson(deliverables1);
+//
+//                        break;
+//
+//                    case 2:
+//                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
+//                        // Convert deliverables object to JSON
+//                        jsonDeliverables = gson.toJson(deliverables2);
+//                        break;
+//
+//                    case 3:
+//                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
+//                        // Convert deliverables object to JSON
+//                        jsonDeliverables = gson.toJson(deliverables3);
+//                        break;
+//
+//                    default:
+//                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
+//                        // Convert deliverables object to JSON
+//                        jsonDeliverables = gson.toJson(deliverables4);
+//                        break;
+//                }
 
 
                 // Create a JSON object for pricing
@@ -183,7 +190,7 @@ public class PricePackageService {
         }
     }
 
-    public static int insertPricePackageData(PackagePricing newPackagePricing){
+    public int insertPricePackageData(PackagePricing newPackagePricing){
 
         Connection con = null;
         PreparedStatement preparedStatement = null;
