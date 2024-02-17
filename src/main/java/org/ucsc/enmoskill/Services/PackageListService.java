@@ -2,6 +2,7 @@ package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Package;
+import org.ucsc.enmoskill.model.PackageBlockModel;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.sql.Connection;
@@ -874,5 +875,147 @@ public class PackageListService {
         }
 
 
+    }
+
+    public List<PackageBlockModel> getPackages(int category, int priceCode, int delTimeCode, int languages, int reviews){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+                query = "SELECT" +
+                        "    p.package_id," +
+                        "    p.title," +
+                        "    p.description," +
+                        "    p.category," +
+                        "    p.cover_url," +
+                        "    p.clicks," +
+                        "    p.orders," +
+                        "    p.cancellations," +
+                        "    p.status," +
+                        "    p.designer_userID," +
+                        "    pp.price AS starterPrice," +
+                        "    pp.delivery_duration," +
+                        "    r.stars AS reviews," +
+                        "    pr.display_name AS designerUserName, " +
+                        "    GROUP_CONCAT(DISTINCT lm.language_id) AS languageIds "+
+                        "FROM" +
+                        "    package p " +
+                        "JOIN" +
+                        "    package_pricing pp ON p.package_id = pp.package_id " +
+                        "JOIN" +
+                        "    designer pr ON p.designer_userID = pr.userID " +
+                        "LEFT JOIN" +
+                        "    review r ON p.package_id = r.package_id " +
+                        "LEFT JOIN"+
+                        "   language_mapping lm ON p.designer_userID = lm.userID "+
+                        "WHERE" +
+                        "   pp.type='bronze' AND p.status='active' " +
+                        "GROUP BY" +
+                        "   p.package_id, p.clicks " +
+                        "ORDER BY" +
+                        "   p.clicks DESC;";
+                preparedStatement = con.prepareStatement(query);
+
+
+
+
+            resultSet = preparedStatement.executeQuery();
+
+            List<PackageBlockModel> packages = new ArrayList<>();
+
+            while (resultSet.next()){
+                PackageBlockModel block = new PackageBlockModel();
+                block.setPackageId(resultSet.getInt("package_id"));
+                block.setTitle(resultSet.getString("title"));
+                block.setDescription(resultSet.getString("description"));
+                block.setCategory(resultSet.getInt("category"));
+                block.setCoverUrl(resultSet.getString("cover_url"));
+                block.setClicks(resultSet.getInt("clicks"));
+                block.setOrders(resultSet.getInt("orders"));
+                block.setCancellations(resultSet.getString("cancellations"));
+                block.setStatus(resultSet.getString("status"));
+                block.setDesignerUserId(resultSet.getInt("designer_userID"));
+                block.setStarterPrice(resultSet.getInt("starterPrice"));
+                block.setDeliveryDuration(resultSet.getString("delivery_duration"));
+                block.setReviews(resultSet.getFloat("reviews"));
+                block.setDesignerUserName(resultSet.getString("designerUserName"));
+
+                // Fetching language IDs
+                String languageIdsStr = resultSet.getString("languageIds");
+                System.out.println(languageIdsStr);
+                if (languageIdsStr != null) {
+                    String[] languageIdsArray = languageIdsStr.split(","); // Splitting language IDs by comma
+                    List<Integer> languageIdsList = new ArrayList<>();
+                    for (String languageIdStr : languageIdsArray) {
+                        languageIdsList.add(Integer.parseInt(languageIdStr.trim())); // Converting string IDs to integers
+                    }
+                    block.setLanguageId(languageIdsList); // Set the language IDs to the PackageBlockModel object
+                }
+                packages.add(block);
+            }
+
+            return packages;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // Close the database connections in a finally block
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
+
+    public List<Integer> getLanguages(int designerUserId, int languageCode){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+        List<Integer> languageIds = new ArrayList<>();
+
+
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            if (languageCode==0){
+                query = "SELECT language_id FROM language_mapping WHERE userID=?";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, designerUserId);
+            } else {
+                query = "SELECT language_id FROM language_mapping WHERE userID=? AND language_id=?";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, designerUserId);
+                preparedStatement.setInt(2, languageCode);
+
+            }
+
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                languageIds.add(resultSet.getInt("language_id"));
+            }
+
+            return languageIds;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // Close the database connections in a finally block
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
     }
 }

@@ -379,7 +379,7 @@ public class PackagePricingController extends HttpServlet {
         tokenInfo = tokenService.getTokenInfo(token);
 
         int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
-        int category = Integer.parseInt(req.getParameter("category"));
+//        int category = Integer.parseInt(req.getParameter("category"));
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
         if (tokenService.isTokenValid(token)){
@@ -427,133 +427,159 @@ public class PackagePricingController extends HttpServlet {
 
             int result1 = updatePricePackageData(newPackagePricing);
 
-//                    System.out.println("price package id : "+result1);
-            switch (category) {
-                case 1:
-                    try {
+            if (result1 > 0) {
+                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
+                newDeliverables.setPricePackageId(pricePackageId);
 
-                        if (result1>0){
-                            LogoDesignDeliverables newDeliverables1 = gson.fromJson(deliverables, LogoDesignDeliverables.class);
+                System.out.println(newDeliverables.getMockup());
+                System.out.println(newDeliverables.getDeliverablesId());
 
-                            newDeliverables1.setPricePackageId(pricePackageId);
-                            int result2 = updateLDDeliverables(newDeliverables1);
+                PackageDeliverablesService service = new PackageDeliverablesService();
+                int result2 = service.updatePackageDeliverables(newDeliverables);
 
-                            if (result2>0){
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                out.write("price package details updated successfully");
-                                System.out.println("price package details updated successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                out.write("price package details did not updated");
-                                System.out.println("price package details did not updated");
-                            }
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.write("price package details did not updated");
-                            System.out.println("price package details did not updated");
-                        }
-
-                    } catch (JsonSyntaxException | JsonIOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-
-                    break;
-                case 2:
-
-                    try{
-
-                        if (result1>0){
-                            IllustrationDeliverables newDeliverables2 = gson.fromJson(deliverables, IllustrationDeliverables.class);
-
-
-                            newDeliverables2.setPricePackageID(pricePackageId);
-                            int result2 = updateIllustDeliverables(newDeliverables2);
-
-                            if (result2>0){
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                out.write("price package details updated successfully");
-                                System.out.println("price package details updated successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                out.write("price package details did not updated");
-                                System.out.println("price package details did not updated");
-                            }
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.write("price package details did not updated");
-                            System.out.println("price package details did not updated");
-                        }
-
-                    } catch (JsonSyntaxException | JsonIOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case 3:
-
-                    try{
-
-                        if (result1>0){
-                            FlyerDesignDeliverables newDeliverables3 = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
-
-                            newDeliverables3.setPricePackageID(pricePackageId);
-                            int result2 = updateFDDeliverables(newDeliverables3);
-
-                            if (result2>0){
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                out.write("price package details updated successfully");
-                                System.out.println("price package details updated successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                out.write("price package details did not updated");
-                                System.out.println("price package details did not updated");
-                            }
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.write("price package details did not updated");
-                            System.out.println("price package details did not updated");
-                        }
-
-                    } catch (JsonSyntaxException | JsonIOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case 4:
-
-                    try{
-
-                        if (result1>0){
-                            BannerDesignDeliverables newDeliverables4 = gson.fromJson(deliverables, BannerDesignDeliverables.class);
-
-                            newDeliverables4.setPricePackageID(pricePackageId);
-                            int result2 = updateBDDeliverables(newDeliverables4);
-
-                            if (result2>0){
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                out.write("price package details updated successfully");
-                                System.out.println("price package details updated successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                out.write("price package details did not updated");
-                                System.out.println("price package details did not updated");
-                            }
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.write("price package details did not updated");
-                            System.out.println("price package details did not updated");
-                        }
-
-                    } catch (JsonSyntaxException | JsonIOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                default:
-
+                if (result2>0){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write("price package details updated successfully");
+                    System.out.println("price package details updated successfully");
+                } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("invalid type");
-                    System.out.println("invalid type");
-                    break;
+                    out.write("price package details did not updated");
+                    System.out.println("price package details did not updated");
+                }
+
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("price package details did not updated");
+                System.out.println("price package details did not updated");
             }
+
+//                    System.out.println("price package id : "+result1);
+//            switch (category) {
+//                case 1:
+//                    try {
+//
+//                        if (result1>0){
+//                            LogoDesignDeliverables newDeliverables1 = gson.fromJson(deliverables, LogoDesignDeliverables.class);
+//
+//                            newDeliverables1.setPricePackageId(pricePackageId);
+//                            int result2 = updateLDDeliverables(newDeliverables1);
+//
+//                            if (result2>0){
+//                                resp.setStatus(HttpServletResponse.SC_OK);
+//                                out.write("price package details updated successfully");
+//                                System.out.println("price package details updated successfully");
+//                            } else {
+//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                                out.write("price package details did not updated");
+//                                System.out.println("price package details did not updated");
+//                            }
+//                        } else {
+//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            out.write("price package details did not updated");
+//                            System.out.println("price package details did not updated");
+//                        }
+//
+//                    } catch (JsonSyntaxException | JsonIOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//
+//
+//                    break;
+//                case 2:
+//
+//                    try{
+//
+//                        if (result1>0){
+//                            IllustrationDeliverables newDeliverables2 = gson.fromJson(deliverables, IllustrationDeliverables.class);
+//
+//
+//                            newDeliverables2.setPricePackageID(pricePackageId);
+//                            int result2 = updateIllustDeliverables(newDeliverables2);
+//
+//                            if (result2>0){
+//                                resp.setStatus(HttpServletResponse.SC_OK);
+//                                out.write("price package details updated successfully");
+//                                System.out.println("price package details updated successfully");
+//                            } else {
+//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                                out.write("price package details did not updated");
+//                                System.out.println("price package details did not updated");
+//                            }
+//                        } else {
+//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            out.write("price package details did not updated");
+//                            System.out.println("price package details did not updated");
+//                        }
+//
+//                    } catch (JsonSyntaxException | JsonIOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    break;
+//                case 3:
+//
+//                    try{
+//
+//                        if (result1>0){
+//                            FlyerDesignDeliverables newDeliverables3 = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
+//
+//                            newDeliverables3.setPricePackageID(pricePackageId);
+//                            int result2 = updateFDDeliverables(newDeliverables3);
+//
+//                            if (result2>0){
+//                                resp.setStatus(HttpServletResponse.SC_OK);
+//                                out.write("price package details updated successfully");
+//                                System.out.println("price package details updated successfully");
+//                            } else {
+//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                                out.write("price package details did not updated");
+//                                System.out.println("price package details did not updated");
+//                            }
+//                        } else {
+//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            out.write("price package details did not updated");
+//                            System.out.println("price package details did not updated");
+//                        }
+//
+//                    } catch (JsonSyntaxException | JsonIOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    break;
+//                case 4:
+//
+//                    try{
+//
+//                        if (result1>0){
+//                            BannerDesignDeliverables newDeliverables4 = gson.fromJson(deliverables, BannerDesignDeliverables.class);
+//
+//                            newDeliverables4.setPricePackageID(pricePackageId);
+//                            int result2 = updateBDDeliverables(newDeliverables4);
+//
+//                            if (result2>0){
+//                                resp.setStatus(HttpServletResponse.SC_OK);
+//                                out.write("price package details updated successfully");
+//                                System.out.println("price package details updated successfully");
+//                            } else {
+//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                                out.write("price package details did not updated");
+//                                System.out.println("price package details did not updated");
+//                            }
+//                        } else {
+//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            out.write("price package details did not updated");
+//                            System.out.println("price package details did not updated");
+//                        }
+//
+//                    } catch (JsonSyntaxException | JsonIOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    break;
+//                default:
+//
+//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                    out.write("invalid type");
+//                    System.out.println("invalid type");
+//                    break;
+//            }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");

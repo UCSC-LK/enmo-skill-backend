@@ -108,4 +108,65 @@ public class PackageDeliverablesService {
             }
         }
     }
+
+    public int updatePackageDeliverables(PackageDeliverables deliverables){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE package_deliverables SET " +
+                    "price_package_id=?, " +
+                    "deliverables_count=?, " +
+                    "transparent_file=?, " +
+                    "vector_file=?, " +
+                    "printable_file=?, " +
+                    "mockup=?, " +
+                    "source_file=?, " +
+                    "social_media_kit=?, " +
+                    "high_resolution=?, " +
+                    "background_scene=?, " +
+                    "colour=?, " +
+                    "full_body=?, " +
+                    "commercial_use=?, " +
+                    "double_sided=?, " +
+                    "custom_graphics=?, " +
+                    "photo_editing=? " +
+                    "WHERE deliverables_id=?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, deliverables.getPricePackageId());
+            preparedStatement.setInt(2, deliverables.getDeliverablesCount());
+            preparedStatement.setInt(3, deliverables.getTransparentFile());
+            preparedStatement.setInt(4, deliverables.getVectorFile());
+            preparedStatement.setInt(5, deliverables.getPrintableFile());
+            preparedStatement.setInt(6, deliverables.getMockup());
+            preparedStatement.setInt(7, deliverables.getSourceFile());
+            preparedStatement.setInt(8, deliverables.getSocialMediaKit());
+            preparedStatement.setInt(9, deliverables.getHighResolution());
+            preparedStatement.setInt(10, deliverables.getBackground_scene());
+            preparedStatement.setInt(11, deliverables.getColour());
+            preparedStatement.setInt(12, deliverables.getFullBody());
+            preparedStatement.setInt(13, deliverables.getCommercialUse());
+            preparedStatement.setInt(14, deliverables.getDoubleSided());
+            preparedStatement.setInt(15, deliverables.getCustomGraphics());
+            preparedStatement.setInt(16, deliverables.getPhotoEditing());
+            preparedStatement.setInt(17, deliverables.getDeliverablesId());
+
+            result = preparedStatement.executeUpdate();
+
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
 }
