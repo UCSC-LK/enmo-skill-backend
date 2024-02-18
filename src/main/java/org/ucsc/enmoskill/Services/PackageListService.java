@@ -900,7 +900,7 @@ public class PackageListService {
                         "    p.designer_userID," +
                         "    pp.price AS starterPrice," +
                         "    pp.delivery_duration," +
-                        "    r.stars AS reviews," +
+                        "    AVG(r.stars) AS reviews," +
                         "    pr.display_name AS designerUserName, " +
                         "    u.url AS DesignerImg,"+
                         "    GROUP_CONCAT(DISTINCT lm.language_id) AS languageIds "+

@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.*;
 
@@ -33,6 +35,7 @@ public class PackagePricingController extends HttpServlet {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
+        Gson gson = new Gson();
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
@@ -42,19 +45,23 @@ public class PackagePricingController extends HttpServlet {
 
         if (tokenService.isTokenValid(token)){
             // fetch the category of the price package
-            Package pkgObj = getPackage(packageId);
-            int category = pkgObj.getCategory();
-            System.out.println("Category is :"+category);
+//            Package pkgObj = getPackage(packageId);
+//            int category = pkgObj.getCategory();
+//            System.out.println("Category is :"+category);
 
-            StringBuilder sb = fetchData(packageId, category);
+//            StringBuilder sb = fetchData(packageId, category);
 
-            if (sb == null){
+            List<PackagePricing> priceList = new ArrayList<>();
+            priceList = fetchData(packageId);
+
+
+            if (priceList == null){
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.write("Data not found");
                 System.out.println("Data not found");
             } else {
                 resp.setStatus(HttpServletResponse.SC_OK);
-                out.write(String.valueOf(sb));
+                out.write(gson.toJson(priceList));
                 System.out.println("Data loaded successfully");
             }
 

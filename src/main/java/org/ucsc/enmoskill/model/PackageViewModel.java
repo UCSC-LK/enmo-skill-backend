@@ -3,20 +3,42 @@ package org.ucsc.enmoskill.model;
 import java.util.List;
 
 public class PackageViewModel {
-    private String  role, fname, lname, display_name, description;
-    private int userId;
-    private List<String> skills;
-    private List<String> language;
+    Package packageModel;
+    List<PackagePricing> pricings;
+    ProfileModel profileModel;
 
-    private int packageId;
-    private String title;
-    private String packageDescription;
-    private int category;
-    private String coverUrl;
-    private int clicks;
-    private int orders;
-    private String cancellations;
-    private String status;
+    /// REVIEW DATA GOES HERE
 
+    public PackageViewModel(){}
 
+    public PackageViewModel(Package packageModel, List<PackagePricing> pricings, ProfileModel profileModel){
+        this.packageModel = packageModel;
+        this.pricings = pricings;
+        this.profileModel = profileModel;
+    }
+
+    public void setPackageModel(Package packageModel) {
+        this.packageModel = packageModel;
+    }
+
+    public void setPricings(List<PackagePricing> pricings) {
+        this.pricings = pricings;
+    }
+
+    public void setProfileModel(ProfileModel profileModel) {
+        this.profileModel = profileModel;
+    }
+
+    public Package getPackageModel() {
+        return packageModel;
+    }
+
+    public List<PackagePricing> getPricings() {
+        return pricings;
+    }
+
+    public ProfileModel getProfileModel() {
+        return profileModel;
+    }
 }
+

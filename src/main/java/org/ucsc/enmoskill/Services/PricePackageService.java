@@ -16,7 +16,7 @@ import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDelive
 
 public class PricePackageService {
 
-    public static StringBuilder fetchData(int packageId, int category){
+    public static List<PackagePricing> fetchData(int packageId){
         List<PackagePricing> pricingList;
         pricingList = getPricePackage(packageId);
 
@@ -25,7 +25,7 @@ public class PricePackageService {
         // fetch the pricing details
         if (!pricingList.isEmpty()) {
 
-            return new StringBuilder(gson.toJson(pricingList));
+            return pricingList;
 
 
 
