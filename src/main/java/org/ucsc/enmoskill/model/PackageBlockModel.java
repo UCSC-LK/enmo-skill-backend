@@ -17,7 +17,7 @@ public class PackageBlockModel {
     private java.sql.Timestamp insertionTime;
     private int starterPrice;
     private int highestPrice;
-    private String deliveryDuration;
+    private int deliveryDuration;
     private float reviews;
     private String designerUserName;
     private String designerProfileImg;
@@ -27,7 +27,7 @@ public class PackageBlockModel {
 
     public PackageBlockModel(int packageId, String title, String description, int category, String coverUrl, int clicks,
                              int orders, String cancellations, String status, int designerUserId, Timestamp insertionTime,
-                             int starterPrice, int highestPrice, String deliveryDuration,
+                             int starterPrice, int highestPrice, int deliveryDuration,
                              float reviews, String designerUserName, String designerProfileImg, List<Integer> languageId) {
         this.packageId = packageId;
         this.title = title;
@@ -62,7 +62,7 @@ public class PackageBlockModel {
         return packageId;
     }
 
-    public String getDeliveryDuration() {
+    public int getDeliveryDuration() {
         return deliveryDuration;
     }
 
@@ -134,7 +134,7 @@ public class PackageBlockModel {
         this.packageId = packageId;
     }
 
-    public void setDeliveryDuration(String deliveryDuration) {
+    public void setDeliveryDuration(int deliveryDuration) {
         this.deliveryDuration = deliveryDuration;
     }
 

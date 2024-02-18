@@ -49,6 +49,8 @@ public class PackageListController extends HttpServlet {
         if (tokenService.isTokenValid(token)){
 
             List<PackageBlockModel> packageList1 = null;
+            List<PackageBlockModel> packageList2 = null;
+
 
             if (category>4 || category<0){
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -58,17 +60,24 @@ public class PackageListController extends HttpServlet {
                 Gson gson = new Gson();
 
                 PackageListService service = new PackageListService();
-                packageList1 = service.getPackages(category, priceCode, delTimeCode, language, reviews);
+                int packageCount;
 
-                if (!packageList1.isEmpty()){
-//                    for (PackageBlockModel aBlock: packageList1) {
-////                        List<Integer> lang_ids = service.getLanguages(aBlock.getDesignerUserId(), language);
-////                        aBlock.setLanguageId(lang_ids);
-//
-//                        System.out.println(aBlock.getLanguageId());
-//
-//                    }
-                    String json = gson.toJson(packageList1);
+                do {
+                    // fetch all the required details to filter and display
+                    packageList1 = service.getPackages();
+
+                    // fetch packages count
+                    packageCount = service.countPackages();
+                    System.out.println(packageCount);
+                    System.out.println("list: " + packageList1.size());
+
+                } while (packageCount != packageList1.size());
+
+                packageList2 = service.filterPackages(category, priceCode, delTimeCode, language, reviews, packageList1);
+
+                if (!packageList2.isEmpty()){
+
+                    String json = gson.toJson(packageList2);
                     resp.setStatus(HttpServletResponse.SC_OK);
                     out.write(json);
                     System.out.println("Data loaded successfully");

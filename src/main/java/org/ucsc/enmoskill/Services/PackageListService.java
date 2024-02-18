@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class PackageListService {
 
@@ -877,7 +879,7 @@ public class PackageListService {
 
     }
 
-    public List<PackageBlockModel> getPackages(int category, int priceCode, int delTimeCode, int languages, int reviews){
+    public List<PackageBlockModel> getPackages(){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -900,6 +902,7 @@ public class PackageListService {
                         "    pp.delivery_duration," +
                         "    r.stars AS reviews," +
                         "    pr.display_name AS designerUserName, " +
+                        "    u.url AS DesignerImg,"+
                         "    GROUP_CONCAT(DISTINCT lm.language_id) AS languageIds "+
                         "FROM" +
                         "    package p " +
@@ -907,10 +910,12 @@ public class PackageListService {
                         "    package_pricing pp ON p.package_id = pp.package_id " +
                         "JOIN" +
                         "    designer pr ON p.designer_userID = pr.userID " +
-                        "LEFT JOIN" +
+                        "JOIN" +
                         "    review r ON p.package_id = r.package_id " +
-                        "LEFT JOIN"+
+                        "JOIN"+
                         "   language_mapping lm ON p.designer_userID = lm.userID "+
+                        "JOIN "+
+                        "   users u ON p.designer_userID = u.userID "+
                         "WHERE" +
                         "   pp.type='bronze' AND p.status='active' " +
                         "GROUP BY" +
@@ -939,13 +944,13 @@ public class PackageListService {
                 block.setStatus(resultSet.getString("status"));
                 block.setDesignerUserId(resultSet.getInt("designer_userID"));
                 block.setStarterPrice(resultSet.getInt("starterPrice"));
-                block.setDeliveryDuration(resultSet.getString("delivery_duration"));
+                block.setDeliveryDuration(resultSet.getInt("delivery_duration"));
                 block.setReviews(resultSet.getFloat("reviews"));
                 block.setDesignerUserName(resultSet.getString("designerUserName"));
+                block.setDesignerProfileImg(resultSet.getString("DesignerImg"));
 
                 // Fetching language IDs
                 String languageIdsStr = resultSet.getString("languageIds");
-                System.out.println(languageIdsStr);
                 if (languageIdsStr != null) {
                     String[] languageIdsArray = languageIdsStr.split(","); // Splitting language IDs by comma
                     List<Integer> languageIdsList = new ArrayList<>();
@@ -973,43 +978,77 @@ public class PackageListService {
         }
     }
 
-    public List<Integer> getLanguages(int designerUserId, int languageCode){
+//    public List<Integer> getLanguages(int designerUserId, int languageCode){
+//        Connection con = null;
+//        PreparedStatement preparedStatement = null;
+//        ResultSet resultSet = null;
+//        String query = null;
+//        List<Integer> languageIds = new ArrayList<>();
+//
+//
+//
+//        try{
+//            con = DatabaseConnection.initializeDatabase();
+//            if (languageCode==0){
+//                query = "SELECT language_id FROM language_mapping WHERE userID=?";
+//                preparedStatement = con.prepareStatement(query);
+//                preparedStatement.setInt(1, designerUserId);
+//            } else {
+//                query = "SELECT language_id FROM language_mapping WHERE userID=? AND language_id=?";
+//                preparedStatement = con.prepareStatement(query);
+//                preparedStatement.setInt(1, designerUserId);
+//                preparedStatement.setInt(2, languageCode);
+//
+//            }
+//
+//            resultSet = preparedStatement.executeQuery();
+//
+//            while (resultSet.next()){
+//                languageIds.add(resultSet.getInt("language_id"));
+//            }
+//
+//            return languageIds;
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            // Close the database connections in a finally block
+//            try {
+//                if (resultSet != null) resultSet.close();
+//                if (preparedStatement != null) preparedStatement.close();
+//                if (con != null) con.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                // Handle exceptions during closing connections if needed
+//            }
+//        }
+//    }
+
+    public int countPackages(){
         Connection con = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ResultSet result = null;
         String query = null;
-        List<Integer> languageIds = new ArrayList<>();
-
-
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            if (languageCode==0){
-                query = "SELECT language_id FROM language_mapping WHERE userID=?";
-                preparedStatement = con.prepareStatement(query);
-                preparedStatement.setInt(1, designerUserId);
-            } else {
-                query = "SELECT language_id FROM language_mapping WHERE userID=? AND language_id=?";
-                preparedStatement = con.prepareStatement(query);
-                preparedStatement.setInt(1, designerUserId);
-                preparedStatement.setInt(2, languageCode);
 
-            }
+            query = "SELECT COUNT(package_id) FROM package WHERE status='active';";
+            preparedStatement = con.prepareStatement(query);
+            result = preparedStatement.executeQuery();
 
-            resultSet = preparedStatement.executeQuery();
+            // Move the cursor to the first row
+            result.next();
 
-            while (resultSet.next()){
-                languageIds.add(resultSet.getInt("language_id"));
-            }
+            // Retrieve the count value from the ResultSet
+            return result.getInt(1);
 
-            return languageIds;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
             // Close the database connections in a finally block
             try {
-                if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();
                 if (con != null) con.close();
             } catch (Exception e) {
@@ -1018,4 +1057,35 @@ public class PackageListService {
             }
         }
     }
+
+    public List<PackageBlockModel> filterPackages(int category, int price, int delTime, int language, int reviews, List<PackageBlockModel> packageList) {
+        return packageList.stream()
+                .filter(filterByCategory(category))
+                .filter(filterByPrice(price))
+                .filter(filterByDeliveryTime(delTime))
+                .filter(filterByReviews(reviews))
+                .filter(filterByLanguage(language))
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<PackageBlockModel> filterByCategory(int category) {
+        return aBlock -> category == 0 || aBlock.getCategory() == category;
+    }
+
+    private Predicate<PackageBlockModel> filterByPrice(int price) {
+        return aBlock -> price == 0 || aBlock.getStarterPrice() <= price;
+    }
+
+    private Predicate<PackageBlockModel> filterByDeliveryTime(int delTime) {
+        return aBlock -> delTime == 0 || aBlock.getDeliveryDuration() <= delTime;
+    }
+
+    private Predicate<PackageBlockModel> filterByLanguage(int language) {
+        return aBlock -> language == 0 || aBlock.getLanguageId().contains(language);
+    }
+
+    private Predicate<PackageBlockModel> filterByReviews(int reviews) {
+        return aBlock -> reviews == 0 || aBlock.getReviews() >= reviews;
+    }
+
 }
