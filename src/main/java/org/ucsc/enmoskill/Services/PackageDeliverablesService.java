@@ -2,6 +2,7 @@ package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.PackageDeliverables;
+import org.ucsc.enmoskill.model.PackagePricing;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ public class PackageDeliverablesService {
 
     String query;
 
-    public int insertPackageDeliverables(PackageDeliverables deliverables){
+    public int insertPackageDeliverables(PackagePricing pricing){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         int result = 0;
@@ -22,22 +23,22 @@ public class PackageDeliverablesService {
             con = DatabaseConnection.initializeDatabase();
              query = "INSERT INTO package_deliverables(price_package_id, deliverables_count, transparent_file, vector_file, printable_file, mockup, source_file, social_media_kit, high_resolution, background_scene, colour, full_body, commercial_use, double_sided, custom_graphics, photo_editing) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
              preparedStatement = con.prepareStatement(query);
-             preparedStatement.setInt(1, deliverables.getPricePackageId());
-            preparedStatement.setInt(2, deliverables.getDeliverablesCount());
-            preparedStatement.setInt(3, deliverables.getTransparentFile());
-            preparedStatement.setInt(4, deliverables.getVectorFile());
-            preparedStatement.setInt(5, deliverables.getPrintableFile());
-            preparedStatement.setInt(6, deliverables.getMockup());
-            preparedStatement.setInt(7, deliverables.getSourceFile());
-            preparedStatement.setInt(8, deliverables.getSocialMediaKit());
-            preparedStatement.setInt(9, deliverables.getHighResolution());
-            preparedStatement.setInt(10, deliverables.getBackground_scene());
-            preparedStatement.setInt(11, deliverables.getColour());
-            preparedStatement.setInt(12, deliverables.getFullBody());
-            preparedStatement.setInt(13, deliverables.getCommercialUse());
-            preparedStatement.setInt(14, deliverables.getDoubleSided());
-            preparedStatement.setInt(15, deliverables.getCustomGraphics());
-            preparedStatement.setInt(16, deliverables.getPhotoEditing());
+             preparedStatement.setInt(1, pricing.getDeliverables().getPricePackageId());
+            preparedStatement.setInt(2, pricing.getDeliverables().getDeliverablesCount());
+            preparedStatement.setInt(3, pricing.getDeliverables().getTransparentFile());
+            preparedStatement.setInt(4, pricing.getDeliverables().getVectorFile());
+            preparedStatement.setInt(5, pricing.getDeliverables().getPrintableFile());
+            preparedStatement.setInt(6, pricing.getDeliverables().getMockup());
+            preparedStatement.setInt(7, pricing.getDeliverables().getSourceFile());
+            preparedStatement.setInt(8, pricing.getDeliverables().getSocialMediaKit());
+            preparedStatement.setInt(9, pricing.getDeliverables().getHighResolution());
+            preparedStatement.setInt(10, pricing.getDeliverables().getBackground_scene());
+            preparedStatement.setInt(11, pricing.getDeliverables().getColour());
+            preparedStatement.setInt(12, pricing.getDeliverables().getFullBody());
+            preparedStatement.setInt(13, pricing.getDeliverables().getCommercialUse());
+            preparedStatement.setInt(14, pricing.getDeliverables().getDoubleSided());
+            preparedStatement.setInt(15, pricing.getDeliverables().getCustomGraphics());
+            preparedStatement.setInt(16, pricing.getDeliverables().getPhotoEditing());
 
             result = preparedStatement.executeUpdate();
 
@@ -109,7 +110,7 @@ public class PackageDeliverablesService {
         }
     }
 
-    public int updatePackageDeliverables(PackageDeliverables deliverables){
+    public int updatePackageDeliverables(PackagePricing pricing){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         int result = 0;
@@ -135,23 +136,23 @@ public class PackageDeliverablesService {
                     "photo_editing=? " +
                     "WHERE deliverables_id=?";
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, deliverables.getPricePackageId());
-            preparedStatement.setInt(2, deliverables.getDeliverablesCount());
-            preparedStatement.setInt(3, deliverables.getTransparentFile());
-            preparedStatement.setInt(4, deliverables.getVectorFile());
-            preparedStatement.setInt(5, deliverables.getPrintableFile());
-            preparedStatement.setInt(6, deliverables.getMockup());
-            preparedStatement.setInt(7, deliverables.getSourceFile());
-            preparedStatement.setInt(8, deliverables.getSocialMediaKit());
-            preparedStatement.setInt(9, deliverables.getHighResolution());
-            preparedStatement.setInt(10, deliverables.getBackground_scene());
-            preparedStatement.setInt(11, deliverables.getColour());
-            preparedStatement.setInt(12, deliverables.getFullBody());
-            preparedStatement.setInt(13, deliverables.getCommercialUse());
-            preparedStatement.setInt(14, deliverables.getDoubleSided());
-            preparedStatement.setInt(15, deliverables.getCustomGraphics());
-            preparedStatement.setInt(16, deliverables.getPhotoEditing());
-            preparedStatement.setInt(17, deliverables.getDeliverablesId());
+            preparedStatement.setInt(1, pricing.getDeliverables().getPricePackageId());
+            preparedStatement.setInt(2, pricing.getDeliverables().getDeliverablesCount());
+            preparedStatement.setInt(3, pricing.getDeliverables().getTransparentFile());
+            preparedStatement.setInt(4, pricing.getDeliverables().getVectorFile());
+            preparedStatement.setInt(5, pricing.getDeliverables().getPrintableFile());
+            preparedStatement.setInt(6, pricing.getDeliverables().getMockup());
+            preparedStatement.setInt(7, pricing.getDeliverables().getSourceFile());
+            preparedStatement.setInt(8, pricing.getDeliverables().getSocialMediaKit());
+            preparedStatement.setInt(9, pricing.getDeliverables().getHighResolution());
+            preparedStatement.setInt(10, pricing.getDeliverables().getBackground_scene());
+            preparedStatement.setInt(11, pricing.getDeliverables().getColour());
+            preparedStatement.setInt(12, pricing.getDeliverables().getFullBody());
+            preparedStatement.setInt(13, pricing.getDeliverables().getCommercialUse());
+            preparedStatement.setInt(14, pricing.getDeliverables().getDoubleSided());
+            preparedStatement.setInt(15, pricing.getDeliverables().getCustomGraphics());
+            preparedStatement.setInt(16, pricing.getDeliverables().getPhotoEditing());
+            preparedStatement.setInt(17, pricing.getDeliverables().getDeliverablesId());
 
             result = preparedStatement.executeUpdate();
 

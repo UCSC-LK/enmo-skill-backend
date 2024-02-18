@@ -133,6 +133,7 @@ public class PackagePricingController extends HttpServlet {
             Gson gson = new Gson();
             PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
             newPackagePricing.setPackageId(packageId);
+            newPackagePricing.setDeliverables(gson.fromJson(deliverables, PackageDeliverables.class));
 //            switch (category) {
 //                case 1:
 //                    try {
@@ -333,20 +334,21 @@ public class PackagePricingController extends HttpServlet {
 
 
             if (result1 > 0){
-                JsonObject resultJson = new JsonObject();
-                resultJson.addProperty("pricePackageId", result1);
-                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
-                newDeliverables.setPricePackageId(result1);
+//                JsonObject resultJson = new JsonObject();
+//                resultJson.addProperty("pricePackageId", result1);
+//                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
+//                newDeliverables.setPricePackageId(result1);
+                newPackagePricing.setPricePackageId(result1);
 
                 PackageDeliverablesService service2 = new PackageDeliverablesService();
-                int result2 = service2.insertPackageDeliverables(newDeliverables);
+                int result2 = service2.insertPackageDeliverables(newPackagePricing);
 
                 if (result2>0){
                     resp.setStatus(HttpServletResponse.SC_OK);
-                    resultJson.addProperty("message", "price package details inserted successfully");
-//                            out.write("price package details inserted successfully");
+//                    resultJson.addProperty("message", "price package details inserted successfully");
+////                            out.write("price package details inserted successfully");
                     System.out.println("price package details inserted successfully");
-                    out.print(resultJson.toString());
+                    out.print(result2);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.write("price package details did not inserted");
@@ -419,23 +421,21 @@ public class PackagePricingController extends HttpServlet {
             Gson gson = new Gson();
 
             PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
-
-//                    newPackagePricing.setcategory(category);
             newPackagePricing.setPackageId(packageId);
-//                    newPackagePricing.setType(type);
             newPackagePricing.setPricePackageId(pricePackageId);
+            newPackagePricing.setDeliverables(gson.fromJson(deliverables,PackageDeliverables.class));
 
             int result1 = updatePricePackageData(newPackagePricing);
 
             if (result1 > 0) {
-                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
-                newDeliverables.setPricePackageId(pricePackageId);
-
-                System.out.println(newDeliverables.getMockup());
-                System.out.println(newDeliverables.getDeliverablesId());
+//                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
+//                newDeliverables.setPricePackageId(pricePackageId);
+//
+//                System.out.println(newDeliverables.getMockup());
+//                System.out.println(newDeliverables.getDeliverablesId());
 
                 PackageDeliverablesService service = new PackageDeliverablesService();
-                int result2 = service.updatePackageDeliverables(newDeliverables);
+                int result2 = service.updatePackageDeliverables(newPackagePricing);
 
                 if (result2>0){
                     resp.setStatus(HttpServletResponse.SC_OK);
