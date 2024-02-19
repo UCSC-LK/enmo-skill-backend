@@ -65,13 +65,13 @@ public class SupportOptions {
         if(decision.equals("Reject")) {
             query = "UPDATE enmo_database.ticket SET status = 4 " +
                     "WHERE" +
-                    " (status = 0 OR (agentID=" + tokenInfo.getUserId() + " AND status = 2 AND assign_ad = 0))" +
+                    " (status = 1 OR (agentID=" + tokenInfo.getUserId() + " AND status = 2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
         } else if (decision.equals("Clos")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 3 " +
                     "WHERE" +
-                    " (status=0 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
+                    " (status=1 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
         }
 
