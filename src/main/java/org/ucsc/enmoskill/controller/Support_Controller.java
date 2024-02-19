@@ -160,7 +160,7 @@ public class Support_Controller extends HttpServlet {
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
@@ -173,11 +173,11 @@ public class Support_Controller extends HttpServlet {
 
 //            Req_BRlist request =new Req_BRlist(req);
 
-            if(tokenInfo.isAgent()){
+            if(tokenInfo.isAgent() || tokenInfo.isAdmin()){
                 SupportOptions service = new SupportOptions(tokenInfo);
 
                 ResponsModel responsModel = null;
-                if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
+                if(tokenInfo.isAdmin() && req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
                     agentID=req.getParameter("AgentID");
                     ticketId= req.getParameter("TicketId");
                     try {
@@ -185,7 +185,7 @@ public class Support_Controller extends HttpServlet {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-
+                    System.out.println(responsModel.getResMassage());
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
 

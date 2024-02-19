@@ -1,7 +1,6 @@
 package org.ucsc.enmoskill.Services;
 
 import org.ucsc.enmoskill.database.DatabaseConnection;
-import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.utils.TokenService;
 
@@ -45,29 +44,76 @@ public class SupportOptions {
 
         } else if(decision != null){
 
-             ResponsModel responsModel =seStatus(connection,decision,ticketId);
-             return responsModel;
+
+            if(tokenInfo.isAdmin()){
+                ResponsModel responsModel = setStatusAdmin(connection,decision,ticketId);
+                return responsModel;
+            }else if(tokenInfo.isAgent()){
+                ResponsModel responsModel = setStatusAgent(connection,decision,ticketId);
+                return responsModel;
+            }
+
         }
         
         return null;
     }
     
-    private ResponsModel seStatus(Connection connection , String decision, String ticketId) throws SQLException {
+    private ResponsModel setStatusAgent(Connection connection , String decision, String ticketId) throws SQLException {
 
         String query=null;
-        
+
         if(decision.equals("Reject")) {
-            query = "UPDATE enmo_database.ticket SET status = 0 " +
-                    "WHERE agentID=" + tokenInfo.getUserId() + " AND ref_no=" + ticketId +" AND status=2";
-            System.out.println(query);
+            query = "UPDATE enmo_database.ticket SET status = 4 " +
+                    "WHERE" +
+                    " (status = 0 OR (agentID=" + tokenInfo.getUserId() + " AND status = 2 AND assign_ad = 0))" +
+                    " AND ref_no=" + ticketId;
+
+//            query =  "UPDATE enmo_database.ticket t " +
+//                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
+//                    "SET t.status = 4 " +
+//                    "WHERE ((t.status = 2 AND ta.ticket_id !="+ ticketId +" AND agentID=" + tokenInfo.getUserId() + ") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
+
         } else if (decision.equals("Clos")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 3 " +
-                    "WHERE t.agentID=" + tokenInfo.getUserId() + " AND t.ref_no=" + ticketId+" AND status = 2";
+                    "WHERE" +
+                    " (status=0 OR (agentID=" + tokenInfo.getUserId() + " AND status=2))" +
+                    " AND ref_no=" + ticketId;
         }
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         int row = preparedStatement.executeUpdate(query);
+
+        if(row>0){
+            return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
+        }else{
+            return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+        }
+
+    }
+
+    private ResponsModel setStatusAdmin(Connection connection , String decision, String ticketId) throws SQLException {
+
+        String query=null;
+
+        if(decision.equals("Reject")) {
+            query =  "UPDATE enmo_database.ticket t " +
+                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
+                    "SET t.status = 4 " +
+                    "WHERE ((t.status = 2 AND ta.ticket_id ="+ ticketId +") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
+            
+
+        } else if (decision.equals("Clos")) {
+
+            query = "UPDATE enmo_database.ticket t " +
+                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
+                    "SET t.status = 3 " +
+                    "WHERE ((t.status = 2 AND ta.ticket_id ="+ ticketId +") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
+        }
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        int row = preparedStatement.executeUpdate(query);
+
 
         if(row>0){
             return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
