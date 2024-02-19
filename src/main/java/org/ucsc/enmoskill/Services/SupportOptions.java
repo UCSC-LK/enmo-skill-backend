@@ -67,17 +67,11 @@ public class SupportOptions {
                     "WHERE" +
                     " (status = 0 OR (agentID=" + tokenInfo.getUserId() + " AND status = 2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
-
-//            query =  "UPDATE enmo_database.ticket t " +
-//                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
-//                    "SET t.status = 4 " +
-//                    "WHERE ((t.status = 2 AND ta.ticket_id !="+ ticketId +" AND agentID=" + tokenInfo.getUserId() + ") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
-
         } else if (decision.equals("Clos")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 3 " +
                     "WHERE" +
-                    " (status=0 OR (agentID=" + tokenInfo.getUserId() + " AND status=2))" +
+                    " (status=0 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
         }
 
