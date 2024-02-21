@@ -51,7 +51,7 @@ public class SupportGET {
                 ResponsModel responsModel = GetRequestClient(connection, tokenInfo.getUserId(), popup,TicketId);
                 return responsModel;
 
-            } else if (tokenInfo.isAgent()) {
+            } else if (tokenInfo.isAgent() || tokenInfo.isAdmin()) {
 //                if (tokenInfo.getUserId() == null) {
 ////
 ////                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -73,14 +73,14 @@ public class SupportGET {
             PreparedStatement preparedStatement = null;
 
             if(popup != null){
-
+                System.out.println(userid);
                 query = "SELECT t.* FROM enmo_database.ticket_history t WHERE ticketID = ? AND requesterID = ? ORDER BY updateID DESC";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, popup);
                 preparedStatement.setString(2, userid);
             } else if(TicketId != null){
 
-                query = "SELECT t.description, t.subject,t.date,t.status FROM enmo_database.ticket t WHERE ref_no = ? AND requesterID = ?";
+                query = "SELECT t.description,t.subject,t.date,t.status FROM enmo_database.ticket t WHERE ref_no = ? AND requesterID = ?";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, TicketId);
                 preparedStatement.setString(2, userid);

@@ -64,8 +64,9 @@ public class Support_Controller extends HttpServlet {
             try (BufferedReader reader = req.getReader()){
 
                 SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+                System.out.println(supportmodel.getDescription());
 
-                if (supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+                if (supportmodel.getDescription()!=null){
 
                     SupportPUT service = new SupportPUT(supportmodel,tokenInfo);
 
@@ -75,7 +76,7 @@ public class Support_Controller extends HttpServlet {
                     resp.setStatus(responsModel.getResStatus());
                 }else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write("Missing subject or description");
+                    resp.getWriter().write("Missing description");
                 }
             } catch (Exception e) {
                 resp.getWriter().write(e.toString());
@@ -165,6 +166,7 @@ public class Support_Controller extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
+
         if(tokenService.isTokenValid(token)){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             String agentID = null;
@@ -177,9 +179,10 @@ public class Support_Controller extends HttpServlet {
                 SupportOptions service = new SupportOptions(tokenInfo);
 
                 ResponsModel responsModel = null;
-                if(tokenInfo.isAdmin() && req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
+                if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
                     agentID=req.getParameter("AgentID");
                     ticketId= req.getParameter("TicketId");
+
                     try {
                         responsModel = service.Run(agentID,ticketId,decision);
                     } catch (SQLException e) {

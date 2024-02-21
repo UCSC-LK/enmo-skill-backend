@@ -32,7 +32,7 @@ public class SupportOptions {
         if(agentID!= null){
             String query ="UPDATE enmo_database.ticket t SET t.agentID=\'"+agentID+"\',t.status=2 \n" +
                           "WHERE t.agentID=0 and t.ref_no="+ticketId;
-
+            System.out.println(query);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             int row = preparedStatement.executeUpdate(query);
 
