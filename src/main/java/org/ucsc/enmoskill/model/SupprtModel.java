@@ -32,7 +32,7 @@ public class SupprtModel {
         this.requesterID = result.getInt("requesterID");
         this.ref_no = result.getInt("ticketID");
         this.description = result.getString("description");
-        this.subject = result.getString("subject");
+//        this.subject = result.getString("subject");
         this.date = result.getString("date");
     }
 
@@ -71,26 +71,33 @@ public class SupprtModel {
     }
 
     public String setHistoryData(){
-        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID, subject)\n" +
-                "SELECT ref_no, description, date, requesterID, subject\n" +
-                "FROM ticket\n" +
-                "WHERE ref_no = \'" + ref_no+"\' AND status = 1" ;
-        return query;
-    }
 
-    public String getUpdatedQuery(){
+//        String query = "INSERT INTO enmo_database.ticket_history th (ticketID, description, date, requesterID) " +
+//                "LEFT JOIN ticket t ON (t.ref_no = th.ticketID) "+
+//                "VALUES (?, ?, ?, ?) "+
+//                "WHERE ((t.status = 2 OR t.status = 1) AND t.ref_no = ?";
 
-//        Date Today= new Date();
-//        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-//        String query ="UPDATE enmo_database.ticket t SET t.description = \"" + description + "\", t.subject = \"" + subject + "\", t.date = \'" + Date + "\'\n" +
-//                        "WHERE t.ref_no="+ref_no;
-
-        String query ="UPDATE enmo_database.ticket SET description = ?, subject = ?, date =? "+
-                       "WHERE ref_no="+ref_no;
+        String query ="INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID)\n" +
+                "SELECT t.ref_no, ?, ?, ?\n" +
+                "FROM ticket t\n" +
+                "WHERE (t.status = 2 OR t.status = 1) AND t.ref_no = ?";
 
         return query;
     }
+
+//    public String getUpdatedQuery(){
+//
+////        Date Today= new Date();
+////        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//
+////        String query ="UPDATE enmo_database.ticket t SET t.description = \"" + description + "\", t.subject = \"" + subject + "\", t.date = \'" + Date + "\'\n" +
+////                        "WHERE t.ref_no="+ref_no;
+//
+//        String query ="UPDATE enmo_database.ticket SET description = ?, subject = ?, date =? "+
+//                       "WHERE ref_no="+ref_no;
+//
+//        return query;
+//    }
 
 
     public int getRequesterID() {

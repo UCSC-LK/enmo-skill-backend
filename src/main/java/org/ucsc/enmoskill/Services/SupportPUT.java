@@ -38,27 +38,36 @@ public class SupportPUT {
             supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
 
             String query1 = this.supportObj.setHistoryData();//insert data form ticket table to ticket_history table
-            String query2 = this.supportObj.getUpdatedQuery();//update ticket table
+//            String query2 = this.supportObj.getUpdatedQuery();//update ticket table
+
+            Date Today= new Date();
+            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
+            System.out.println(query1);
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query1);
+//            preparedStatement.setInt(1, supportObj.getRef_no());
+            preparedStatement.setString(1, supportObj.getDescription());
+            preparedStatement.setString(2, Date);
+            preparedStatement.setString(3, tokenInfo.getUserId());
+            preparedStatement.setInt(4, supportObj.getRef_no());
+            int rowsAffected = preparedStatement.executeUpdate();
 
 
-            PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-            int rowsAffected1 = preparedStatement1.executeUpdate();
-            int rowsAffected2=0;
+//            if(rowsAffected1>0){
+//
+//                Date Today= new Date();
+//                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//
+//                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+//                preparedStatement2.setString(1, supportObj.getDescription());
+//                preparedStatement2.setString(2, supportObj.getSubject());
+//                preparedStatement2.setString(3, Date);
+//
+//                rowsAffected2 = preparedStatement2.executeUpdate();
+//            }
 
-            if(rowsAffected1>0){
-
-                Date Today= new Date();
-                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
-                preparedStatement2.setString(1, supportObj.getDescription());
-                preparedStatement2.setString(2, supportObj.getSubject());
-                preparedStatement2.setString(3, Date);
-
-                rowsAffected2 = preparedStatement2.executeUpdate();
-            }
-
-            if (rowsAffected2 > 0) {
+            if (rowsAffected>0) {
 
 //                    response.getWriter().write("Data Updated successfully!");
 //                    response.setStatus(HttpServletResponse.SC_CREATED);
@@ -66,9 +75,9 @@ public class SupportPUT {
 
             } else {
 
-                String deleteQuery = "DELETE FROM enmo_database.ticket_history WHERE ticketID = " + supportObj.getRef_no();
-                Statement deleteStatement = connection.createStatement();
-                deleteStatement.executeUpdate(deleteQuery);
+//                String deleteQuery = "DELETE FROM enmo_database.ticket_history WHERE ticketID = " + supportObj.getRef_no();
+//                Statement deleteStatement = connection.createStatement();
+//                deleteStatement.executeUpdate(deleteQuery);
 
 //                    response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 //                    response.getWriter().write("Data Updating Failed!");
