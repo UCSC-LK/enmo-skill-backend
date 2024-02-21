@@ -172,6 +172,7 @@ public class Support_Controller extends HttpServlet {
             String agentID = null;
             String decision=null;
             String ticketId=null;
+            String comment=null;
 
 //            Req_BRlist request =new Req_BRlist(req);
 
@@ -183,8 +184,9 @@ public class Support_Controller extends HttpServlet {
                     agentID=req.getParameter("AgentID");
                     ticketId= req.getParameter("TicketId");
 
+
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision);
+                        responsModel = service.Run(agentID,ticketId,decision,comment);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -197,7 +199,13 @@ public class Support_Controller extends HttpServlet {
                     ticketId= req.getParameter("TicketId");
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision);
+                        BufferedReader reader = req.getReader();
+
+                            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+                            comment = supportmodel.getDescription();
+
+
+                        responsModel = service.Run(agentID,ticketId,decision,comment);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

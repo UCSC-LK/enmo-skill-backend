@@ -16,7 +16,7 @@ public class SupportOptions {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run(String agentID, String ticketId, String decision) throws SQLException {
+    public ResponsModel Run(String agentID, String ticketId, String decision, String comment) throws SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -46,10 +46,10 @@ public class SupportOptions {
 
 
             if(tokenInfo.isAdmin()){
-                ResponsModel responsModel = setStatusAdmin(connection,decision,ticketId);
+                ResponsModel responsModel = setStatusAdmin(connection,decision,ticketId,comment);
                 return responsModel;
             }else if(tokenInfo.isAgent()){
-                ResponsModel responsModel = setStatusAgent(connection,decision,ticketId);
+                ResponsModel responsModel = setStatusAgent(connection,decision,ticketId,comment);
                 return responsModel;
             }
 
@@ -58,7 +58,7 @@ public class SupportOptions {
         return null;
     }
     
-    private ResponsModel setStatusAgent(Connection connection , String decision, String ticketId) throws SQLException {
+    private ResponsModel setStatusAgent(Connection connection , String decision, String ticketId ,String comment) throws SQLException {
 
         String query=null;
 
@@ -74,19 +74,45 @@ public class SupportOptions {
                     " (status=1 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
         }
+        try {
+            connection.setAutoCommit(false); // Start transaction-----------
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            int row = preparedStatement.executeUpdate(query);
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        int row = preparedStatement.executeUpdate(query);
+            if(row>0){
+                if(comment != null){
+                    String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?, NOW(), ?)";
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+                    preparedStatement1.setString(1, ticketId);
+                    preparedStatement1.setString(2, tokenInfo.getUserId());
+                    preparedStatement1.setString(3, comment);
+                    int row1= preparedStatement1.executeUpdate();
 
-        if(row>0){
-            return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
-        }else{
-            return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                    if(row1>0){
+                        connection.commit(); // Commit transaction--------------
+                        return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
+                    }else{
+                        connection.rollback(); // Rollback if the second query fails---
+                        return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                    }
+                }else {
+                    connection.commit();
+                    return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
+                }
+            }else{
+                connection.rollback();
+                return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+            }
+        } catch (SQLException e) {
+            connection.rollback(); // Rollback if there's an exception
+            throw e; // Re-throw the exception after rollback
+        } finally {
+            connection.setAutoCommit(true); // Reset auto-commit mode
         }
 
     }
 
-    private ResponsModel setStatusAdmin(Connection connection , String decision, String ticketId) throws SQLException {
+    private ResponsModel setStatusAdmin(Connection connection , String decision, String ticketId,String comment) throws SQLException {
 
         String query=null;
 
@@ -105,14 +131,40 @@ public class SupportOptions {
                     "WHERE ((t.status = 2 AND ta.ticket_id ="+ ticketId +") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
         }
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        int row = preparedStatement.executeUpdate(query);
+        try {
+            connection.setAutoCommit(false); // Start transaction-----------
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            int row = preparedStatement.executeUpdate(query);
 
+            if(row>0){
+                if(comment != null){
+                    String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?, NOW(), ?)";
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+                    preparedStatement1.setString(1, ticketId);
+                    preparedStatement1.setString(2, tokenInfo.getUserId());
+                    preparedStatement1.setString(3, comment);
+                    int row1= preparedStatement1.executeUpdate();
 
-        if(row>0){
-            return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
-        }else{
-            return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                    if(row1>0){
+                        connection.commit(); // Commit transaction--------------
+                        return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
+                    }else{
+                        connection.rollback(); // Rollback if the second query fails---
+                        return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                    }
+                }else {
+                    connection.commit();
+                    return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
+                }
+            }else{
+                connection.rollback();
+                return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+            }
+        } catch (SQLException e) {
+            connection.rollback(); // Rollback if there's an exception
+            throw e; // Re-throw the exception after rollback
+        } finally {
+            connection.setAutoCommit(true); // Reset auto-commit mode
         }
 
     }
