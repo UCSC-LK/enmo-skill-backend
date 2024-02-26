@@ -46,6 +46,10 @@ public class SupportPOST {
                 preparedStatement.setString(2, Date);
                 preparedStatement.setInt(3, supportObj.getRequesterID());
                 preparedStatement.setString(4, supportObj.getSubject());
+                preparedStatement.setString(5, supportObj.getFileURL());
+                preparedStatement.setInt(6, supportObj.getOrder());
+                preparedStatement.setInt(7, supportObj.getPackages());
+                preparedStatement.setInt(8, supportObj.getUrgent());
 
                 int rowsAffected = preparedStatement.executeUpdate();
 

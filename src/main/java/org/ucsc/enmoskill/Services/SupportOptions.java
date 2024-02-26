@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SupportOptions {
 
@@ -52,8 +54,25 @@ public class SupportOptions {
                 ResponsModel responsModel = setStatusAgent(connection,decision,ticketId,comment);
                 return responsModel;
             }
+        }else if(ticketId != null){
+            Date Today= new Date();
+            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 
+            String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?,?, ?)";
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+                preparedStatement1.setString(1, ticketId);
+                preparedStatement1.setString(2, tokenInfo.getUserId());
+                preparedStatement1.setString(3, Date);
+                preparedStatement1.setString(4, comment);
+                int row= preparedStatement1.executeUpdate();
+
+            if(row>0){
+                return new ResponsModel("Comment was added", HttpServletResponse.SC_OK);
+            }else{
+                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
+            }
         }
+
         
         return null;
     }
@@ -73,42 +92,54 @@ public class SupportOptions {
                     "WHERE" +
                     " (status=1 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
-        }
-        try {
-            connection.setAutoCommit(false); // Start transaction-----------
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            int row = preparedStatement.executeUpdate(query);
 
-            if(row>0){
-                if(comment != null){
-                    String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?, NOW(), ?)";
-                    PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
-                    preparedStatement1.setString(1, ticketId);
-                    preparedStatement1.setString(2, tokenInfo.getUserId());
-                    preparedStatement1.setString(3, comment);
-                    int row1= preparedStatement1.executeUpdate();
-
-                    if(row1>0){
-                        connection.commit(); // Commit transaction--------------
-                        return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
-                    }else{
-                        connection.rollback(); // Rollback if the second query fails---
-                        return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
-                    }
-                }else {
-                    connection.commit();
-                    return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
-                }
-            }else{
-                connection.rollback();
-                return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
-            }
-        } catch (SQLException e) {
-            connection.rollback(); // Rollback if there's an exception
-            throw e; // Re-throw the exception after rollback
-        } finally {
-            connection.setAutoCommit(true); // Reset auto-commit mode
         }
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        int row = preparedStatement.executeUpdate(query);
+
+        if(row>0){
+            return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
+        }else{
+            connection.rollback(); // Rollback if the second query fails---
+            return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+        }
+
+//        try {
+//            connection.setAutoCommit(false); // Start transaction-----------
+//            PreparedStatement preparedStatement = connection.prepareStatement(query);
+//            int row = preparedStatement.executeUpdate(query);
+//
+//            if(row>0){
+//                if(comment != null){
+//                    String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?, NOW(), ?)";
+//                    PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+//                    preparedStatement1.setString(1, ticketId);
+//                    preparedStatement1.setString(2, tokenInfo.getUserId());
+//                    preparedStatement1.setString(3, comment);
+//                    int row1= preparedStatement1.executeUpdate();
+//
+//                    if(row1>0){
+//                        connection.commit(); // Commit transaction--------------
+//                        return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
+//                    }else{
+//                        connection.rollback(); // Rollback if the second query fails---
+//                        return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+//                    }
+//                }else {
+//                    connection.commit();
+//                    return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
+//                }
+//            }else{
+//                connection.rollback();
+//                return new ResponsModel("The ticket cannot be "+decision+"ed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+//            }
+//        } catch (SQLException e) {
+//            connection.rollback(); // Rollback if there's an exception
+//            throw e; // Re-throw the exception after rollback
+//        } finally {
+//            connection.setAutoCommit(true); // Reset auto-commit mode
+//        }
 
     }
 

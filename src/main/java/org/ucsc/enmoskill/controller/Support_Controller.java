@@ -64,7 +64,6 @@ public class Support_Controller extends HttpServlet {
             try (BufferedReader reader = req.getReader()){
 
                 SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-                System.out.println(supportmodel.getDescription());
 
                 if (supportmodel.getDescription()!=null){
 
@@ -129,6 +128,7 @@ public class Support_Controller extends HttpServlet {
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             String popup=null;
             String TicketId=null;
+            String comment = null;
 
             if(req.getParameter("popup")!=null){
                 popup= req.getParameter("popup");
@@ -136,6 +136,10 @@ public class Support_Controller extends HttpServlet {
             if(req.getParameter("TicketId")!=null){
                 TicketId= req.getParameter("TicketId");
             }
+            if(req.getParameter("comment") != null){
+                comment= req.getParameter("comment");
+            }
+
 
             if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null ){
                 SupportGET service = new SupportGET(tokenInfo);
@@ -143,7 +147,7 @@ public class Support_Controller extends HttpServlet {
 //            service.Run();
                 ResponsModel responsModel = null;
                 try {
-                    responsModel = service.Run(popup,TicketId);
+                    responsModel = service.Run(popup,TicketId,comment);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -151,11 +155,12 @@ public class Support_Controller extends HttpServlet {
                 resp.setStatus(responsModel.getResStatus());
 
             }else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Role is Required!");
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().write("Please login");
             }
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("Please login");
         }
 
     }
@@ -199,12 +204,28 @@ public class Support_Controller extends HttpServlet {
                     ticketId= req.getParameter("TicketId");
 
                     try {
-                        BufferedReader reader = req.getReader();
+//                        BufferedReader reader = req.getReader();
 
-                            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-                            comment = supportmodel.getDescription();
+//                            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+//                            comment = supportmodel.getDescription();
 
 
+                        responsModel = service.Run(agentID,ticketId,decision,comment);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+
+                }else if(req.getParameter("TicketId")!=null){
+                    ticketId= req.getParameter("TicketId");
+
+                    BufferedReader reader = req.getReader();
+                    SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+                    comment = supportmodel.getDescription();
+
+                    try {
                         responsModel = service.Run(agentID,ticketId,decision,comment);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
@@ -216,8 +237,8 @@ public class Support_Controller extends HttpServlet {
 
 
             }else{
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("You can't access");
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().write("Please login again");
             }
         }
 
