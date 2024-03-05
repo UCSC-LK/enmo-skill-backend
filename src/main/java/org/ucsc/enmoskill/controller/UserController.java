@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.Services.BuyerRequestPUT;
 import org.ucsc.enmoskill.Services.ClientDetailsPUT;
+import org.ucsc.enmoskill.Services.UserGet;
 import org.ucsc.enmoskill.Services.UserSer;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 import org.ucsc.enmoskill.model.BuyerRequestModel;
+import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
@@ -21,6 +23,27 @@ import org.ucsc.enmoskill.utils.TokenService;
 public class UserController extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        if (tokenService.isTokenValidState(token) == 1) {
+            TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
+            if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
+                UserGet userGet = new UserGet(tokenInfo);
+                ResponsModel res = userGet.Run();
+                resp.setStatus(res.getResStatus());
+                resp.getWriter().write(res.getResMassage());
+            }else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        }
 
     }
 
@@ -59,8 +82,16 @@ public class UserController extends HttpServlet {
             // Insert data into the database
             int isSuccess = newuser.isInsertionSuccessful(newUser);
             if (isSuccess==1) {
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.write("Registration successfully");
+                ClientDetailsPUT service = new ClientDetailsPUT(user);
+                ResponsModel res = service.SaveUser();
+                if(res.getResStatus()==HttpServletResponse.SC_CREATED){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write("Registration successfully");
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Registration failed");
+                }
+
 //                System.out.println("Registration successful");
             } else if(isSuccess==2){
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -81,13 +112,26 @@ public class UserController extends HttpServlet {
         resp.setContentType("application/json");
         try (BufferedReader reader = req.getReader()){
             User usermodel = new Gson().fromJson(reader, User.class);
-            if (usermodel.checkRequired()){
-                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
-                service.Run();
-            }else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
+            TokenService tokenService = new TokenService();
+            String token = tokenService.getTokenFromHeader(req);
+            if (tokenService.isTokenValidState(token) == 1) {
+                TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
+                if(tokenInfo.getRole().equals("1")){
+                    usermodel.setId(Integer.parseInt(tokenInfo.getUserId()));
+                    ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
+                    service.Run();
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
+
+
         } catch (Exception e) {
             resp.getWriter().write(e.toString());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -99,23 +143,7 @@ public class UserController extends HttpServlet {
         super.doDelete(req, resp);
     }
 
-    @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        try (BufferedReader reader = req.getReader()){
-            User usermodel = new Gson().fromJson(reader, User.class);
-            if (usermodel.getId()!=0){
-                ClientDetailsPUT service = new ClientDetailsPUT(resp,usermodel);
-                service.Validate();
-            }else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
-            }
-        } catch (Exception e) {
-            resp.getWriter().write(e.toString());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-    }
+
 
 
 }
