@@ -53,7 +53,7 @@ public class Support_Controller extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
 
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
@@ -128,7 +128,8 @@ public class Support_Controller extends HttpServlet {
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             String popup=null;
             String TicketId=null;
-            String comment = null;
+//            String comment = null;
+//            String adminComment = null;
 
             if(req.getParameter("popup")!=null){
                 popup= req.getParameter("popup");
@@ -136,9 +137,12 @@ public class Support_Controller extends HttpServlet {
             if(req.getParameter("TicketId")!=null){
                 TicketId= req.getParameter("TicketId");
             }
-            if(req.getParameter("comment") != null){
-                comment= req.getParameter("comment");
-            }
+//            if(req.getParameter("comment") != null){
+//                comment= req.getParameter("comment");
+//            }
+//            if(req.getParameter("adminComment") != null){
+//                adminComment= req.getParameter("adminComment");
+//            }
 
 
             if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null ){
@@ -147,7 +151,7 @@ public class Support_Controller extends HttpServlet {
 //            service.Run();
                 ResponsModel responsModel = null;
                 try {
-                    responsModel = service.Run(popup,TicketId,comment);
+                    responsModel = service.Run(popup,TicketId);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -178,6 +182,7 @@ public class Support_Controller extends HttpServlet {
             String decision=null;
             String ticketId=null;
             String comment=null;
+            String toAdmin=null;
 
 //            Req_BRlist request =new Req_BRlist(req);
 
@@ -187,11 +192,11 @@ public class Support_Controller extends HttpServlet {
                 ResponsModel responsModel = null;
                 if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
                     agentID=req.getParameter("AgentID");
-                    ticketId= req.getParameter("TicketId");
+//                    ticketId= req.getParameter("TicketId");
 
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,comment);
+                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -210,7 +215,7 @@ public class Support_Controller extends HttpServlet {
 //                            comment = supportmodel.getDescription();
 
 
-                        responsModel = service.Run(agentID,ticketId,decision,comment);
+                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -218,21 +223,38 @@ public class Support_Controller extends HttpServlet {
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
 
-                }else if(req.getParameter("TicketId")!=null){
-                    ticketId= req.getParameter("TicketId");
-
-                    BufferedReader reader = req.getReader();
-                    SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-                    comment = supportmodel.getDescription();
+//                }else if(req.getParameter("TicketId")!=null){
+//                    ticketId= req.getParameter("TicketId");
+//
+//                    BufferedReader reader = req.getReader();
+//                    SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+//                    comment = supportmodel.getDescription();
+//
+//                    try {
+//                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
+//                    } catch (SQLException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//
+//                    resp.getWriter().write(responsModel.getResMassage());
+//                    resp.setStatus(responsModel.getResStatus());
+                }else if(req.getParameter("toAdmin")!=null){
+                    toAdmin = req.getParameter("toAdmin");
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,comment);
+                        BufferedReader reader = req.getReader();
+
+                        SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
+                        comment = supportmodel.getDescription();
+
+                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
 
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
+
                 }
 
 

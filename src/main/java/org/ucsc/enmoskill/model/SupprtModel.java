@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no,status,agentID,order,packages,urgent;
+    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID;
 
-    private String description,subject,date,role,email,userName,url,fileURL;
+    private String description,subject,date,role,email,userName,url,fileURL,agent_description;
 
     public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL) {
         this.requesterID = requesterID;
@@ -43,13 +43,21 @@ public class SupprtModel {
         this.description = result.getString("description");
 //        this.subject = result.getString("subject");
         this.date = result.getString("date");
-
+        this.roleID=result.getInt("userlevelID");
     }
 
     public SupprtModel(ResultSet result, String comment,boolean agent) throws SQLException {
         this.agentID = result.getInt("agent_id");
         this.date = result.getString("date");
         this.description = result.getString("comment");
+    }
+
+    public SupprtModel(ResultSet result,boolean agent,boolean adminComment) throws SQLException {
+        this.ref_no = result.getInt("ticket_id");
+        this.agentID = result.getInt("agent_id");
+        this.agent_description = result.getString("agent_description");
+        this.description = result.getString("comment");
+        this.date = result.getString("date");
     }
 
     public SupprtModel(ResultSet result, String TicketID,int a) throws SQLException {
@@ -98,13 +106,18 @@ public class SupprtModel {
 
 //        String query = "INSERT INTO enmo_database.ticket_history th (ticketID, description, date, requesterID) " +
 //                "LEFT JOIN ticket t ON (t.ref_no = th.ticketID) "+
-//                "VALUES (?, ?, ?, ?) "+
-//                "WHERE ((t.status = 2 OR t.status = 1) AND t.ref_no = ?";
+//                "VALUES (t.ref_no, ?, ?, ?) "+
+//                "WHERE ((t.status = 2 OR t.status = 1) AND t.ref_no = " + ref_no;
 
-        String query ="INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID)\n" +
-                "SELECT t.ref_no, ?, ?, ?\n" +
-                "FROM ticket t\n" +
-                "WHERE (t.status = 2 OR t.status = 1) AND t.ref_no = ?";
+//        String query ="INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID)\n" +
+//                "SELECT t.ref_no, ?, ?, ?\n" +
+//                "FROM ticket t\n" +
+//                "WHERE ";
+        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
+                "SELECT t.ref_no, ?, ?, ? "+
+                "FROM ticket t "+
+                "WHERE (t.status = 2 OR t.status = 1) AND t.ref_no = " + ref_no;
+
 
         return query;
     }

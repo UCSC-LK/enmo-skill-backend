@@ -47,10 +47,11 @@ public class SupportPUT {
 
             PreparedStatement preparedStatement = connection.prepareStatement(query1);
 //            preparedStatement.setInt(1, supportObj.getRef_no());
+
             preparedStatement.setString(1, supportObj.getDescription());
             preparedStatement.setString(2, Date);
             preparedStatement.setString(3, tokenInfo.getUserId());
-            preparedStatement.setInt(4, supportObj.getRef_no());
+
             int rowsAffected = preparedStatement.executeUpdate();
 
 

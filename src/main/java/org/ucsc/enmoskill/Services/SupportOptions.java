@@ -18,7 +18,7 @@ public class SupportOptions {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run(String agentID, String ticketId, String decision, String comment) throws SQLException {
+    public ResponsModel Run(String agentID, String ticketId, String decision, String comment,String toAdmin) throws SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -54,23 +54,26 @@ public class SupportOptions {
                 ResponsModel responsModel = setStatusAgent(connection,decision,ticketId,comment);
                 return responsModel;
             }
-        }else if(ticketId != null){
-            Date Today= new Date();
-            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-            String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?,?, ?)";
-                PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
-                preparedStatement1.setString(1, ticketId);
-                preparedStatement1.setString(2, tokenInfo.getUserId());
-                preparedStatement1.setString(3, Date);
-                preparedStatement1.setString(4, comment);
-                int row= preparedStatement1.executeUpdate();
-
-            if(row>0){
-                return new ResponsModel("Comment was added", HttpServletResponse.SC_OK);
-            }else{
-                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
-            }
+//        }else if(ticketId != null){
+//            Date Today= new Date();
+//            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//
+//            String query2 ="INSERT INTO enmo_database.ticket_comment (ticket_id, agent_id, date, comment) VALUES (?, ?,?, ?)";
+//                PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+//                preparedStatement1.setString(1, ticketId);
+//                preparedStatement1.setString(2, tokenInfo.getUserId());
+//                preparedStatement1.setString(3, Date);
+//                preparedStatement1.setString(4, comment);
+//                int row= preparedStatement1.executeUpdate();
+//
+//            if(row>0){
+//                return new ResponsModel("Comment was added", HttpServletResponse.SC_OK);
+//            }else{
+//                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
+//            }
+        }else if(toAdmin != null){
+                ResponsModel responsModel = assignToAgrnt(connection,toAdmin,comment);
+                return responsModel;
         }
 
         
@@ -198,5 +201,24 @@ public class SupportOptions {
             connection.setAutoCommit(true); // Reset auto-commit mode
         }
 
+    }
+
+    private ResponsModel assignToAgrnt(Connection connection ,String ticketId,String description) throws SQLException {
+        Date Today= new Date();
+        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
+        String query2 ="INSERT INTO enmo_database.ticket_admin (ticket_id, agent_id,agent_description, date, comment) VALUES (?, ?,'',?, ?)";
+        PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
+        preparedStatement1.setString(1, ticketId);
+        preparedStatement1.setString(2, tokenInfo.getUserId());
+        preparedStatement1.setString(3, Date);
+        preparedStatement1.setString(4, description);
+        int row= preparedStatement1.executeUpdate();
+
+        if(row>0){
+            return new ResponsModel("Comment was added", HttpServletResponse.SC_OK);
+        }else{
+            return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
+        }
     }
 }
