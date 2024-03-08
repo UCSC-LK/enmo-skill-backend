@@ -88,32 +88,32 @@ public class Support_Controller extends HttpServlet {
 
     }
 
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
-        TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);
-
-        if(tokenService.isTokenValid(token)){
-            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
-            String TicketID= req.getParameter("TicketID");
-
-            if(TicketID!=null){
-                try {
-                    new SupportDELETE(TicketID,tokenInfo,resp);
-                } catch (SQLException e) {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    throw new RuntimeException(e);
-                }
-            }
-            else {
-                resp.getWriter().write("Ticket ID required");
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        }else{
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
-
-    }
+//    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
+//        TokenService tokenService = new TokenService();
+//        String token = tokenService.getTokenFromHeader(req);
+//
+//        if(tokenService.isTokenValid(token)){
+//            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+//            String TicketID= req.getParameter("TicketID");
+//
+//            if(TicketID!=null){
+//                try {
+//                    new SupportDELETE(TicketID,tokenInfo,resp);
+//                } catch (SQLException e) {
+//                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//            else {
+//                resp.getWriter().write("Ticket ID required");
+//                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            }
+//        }else{
+//            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        }
+//
+//
+//    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
