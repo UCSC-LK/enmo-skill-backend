@@ -1058,7 +1058,7 @@ public class PackageListService {
         }
     }
 
-    public List<PackageBlockModel> filterPackages(int category, int price, int delTime, int language, int reviews, List<PackageBlockModel> packageList) {
+    public List<PackageBlockModel> filterPackages(int category, int price, int delTime, int language, float reviews, List<PackageBlockModel> packageList) {
         return packageList.stream()
                 .filter(filterByCategory(category))
                 .filter(filterByPrice(price))
@@ -1084,7 +1084,7 @@ public class PackageListService {
         return aBlock -> language == 0 || aBlock.getLanguageId().contains(language);
     }
 
-    private Predicate<PackageBlockModel> filterByReviews(int reviews) {
+    private Predicate<PackageBlockModel> filterByReviews(float reviews) {
         return aBlock -> reviews == 0 || aBlock.getReviews() >= reviews;
     }
 

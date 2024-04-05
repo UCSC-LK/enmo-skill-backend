@@ -44,7 +44,7 @@ public class PackageListController extends HttpServlet {
         int priceCode = Integer.parseInt(req.getParameter("price"));
         int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
         int language = Integer.parseInt(req.getParameter("language"));
-        int reviews = Integer.parseInt(req.getParameter("reviewCode"));
+        float reviews = Float.parseFloat(req.getParameter("reviewCode"));
 
         if (tokenService.isTokenValid(token)){
 
