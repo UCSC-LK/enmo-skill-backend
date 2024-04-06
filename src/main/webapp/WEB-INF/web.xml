@@ -132,7 +132,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.PackageViewController</servlet-class>
     </servlet>
 
-
+    <servlet>
+        <servlet-name>payment</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PaymentControler</servlet-class>
+    </servlet>
 
 
     <servlet>
@@ -176,6 +179,10 @@
         <url-pattern>/profile_pic</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>payment</servlet-name>
+        <url-pattern>/payment</url-pattern>
+    </servlet-mapping>
 
 
     <servlet-mapping>
