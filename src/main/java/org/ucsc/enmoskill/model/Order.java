@@ -1,6 +1,9 @@
 package org.ucsc.enmoskill.model;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Order {
     private int orderId;
@@ -11,13 +14,13 @@ public class Order {
     private int clientId;
     private int packageId;
     private int price;
-    private float platformFeeId;
+    private int platformFeeId;
 
     public Order(){}
 
-    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
+    public Order(int orderId, String createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
         this.orderId = orderId;
-        this.createdTime = createdTime;
+//        this.createdTime = createdTime;
         this.requirements = requirements;
         this.status = status;
         this.designerId = designerId;
@@ -25,6 +28,16 @@ public class Order {
         this.packageId = packageId;
         this.price = price;
         this.platformFeeId = platformFeeId;
+
+        // Parse and set createdTime
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a");
+        try {
+            Date parsedDate = dateFormat.parse(createdTime);
+            this.createdTime = new Timestamp(parsedDate.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+            // Handle parsing exception here
+        }
     }
 
     public Order(int orderId, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
@@ -54,7 +67,7 @@ public class Order {
         return designerId;
     }
 
-    public float getPlatformFeeId() {
+    public int getPlatformFeeId() {
         return platformFeeId;
     }
 
@@ -102,7 +115,7 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public void setPlatformFeeId(float platformFeeId) {
+    public void setPlatformFeeId(int platformFeeId) {
         this.platformFeeId = platformFeeId;
     }
 

@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 //import com.sun.org.apache.xpath.internal.operations.Or;
 import org.ucsc.enmoskill.Services.OrderService;
+import org.ucsc.enmoskill.Services.PaymentService;
 import org.ucsc.enmoskill.model.Order;
+import org.ucsc.enmoskill.model.Payment;
 import org.ucsc.enmoskill.utils.TokenService;
 import software.amazon.awssdk.awscore.util.SignerOverrideUtils;
 
@@ -134,9 +136,33 @@ public class OrderController extends HttpServlet {
 
                 OrderService service = new OrderService();
 
-                int result = service.updateOrder(order);
+                int result1 = service.updateOrder(order);
+//                System.out.println(result1);
 
+                if (result1 > 0){
 
+                    double totalPrice = service.calTotalPayAmount(order);
+//                    System.out.println(totalPrice);
+                    Payment newPayment = new Payment(totalPrice, orderId);
+
+                    //store the payment
+                    PaymentService paymentService = new PaymentService();
+                    int result2 = paymentService.savePaymentDetails(newPayment);
+
+                    if (result2 > 0) {
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write("Payment successful");
+                        System.out.println("Payment successful");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Payment unsuccessful");
+                        System.out.println("Payment unsuccessful");
+                    }
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Payment unsuccessful");
+                    System.out.println("Payment unsuccessful");
+                }
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

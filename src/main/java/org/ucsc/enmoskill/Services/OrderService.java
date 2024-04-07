@@ -7,6 +7,44 @@ import java.sql.*;
 
 public class OrderService {
 
+    public double findFee(int orderId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        double result = 0;
+        ResultSet resultSet = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+
+            String query = "SELECT c.percentage FROM orders o "
+                    +"JOIN client_charges c "
+                    +"ON c.charge_category = o.platform_fee_id "
+                    +"WHERE order_id=?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1,orderId);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result = resultSet.getDouble("percentage");
+//                System.out.println(resultSet.getDouble("percentage"));
+
+            }
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public double calTotalPayAmount(Order order){
+
+        double platformFee = findFee(order.getOrderId());
+
+        double totalFee = order.getPrice() + order.getPrice()*platformFee;
+
+        return totalFee;
+    }
+
     public Order setFee(Order order){
 
         int price = order.getPrice();
@@ -36,7 +74,7 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setFloat(7,order.getPlatformFeeId());
+            preparedStatement.setDouble(7,order.getPlatformFeeId());
 
 
             result = preparedStatement.executeUpdate();
@@ -84,7 +122,7 @@ public class OrderService {
                     order.setDesignerId(resultSet.getInt("designer_userID"));
                     order.setPackageId(resultSet.getInt("package_id"));
                     order.setPrice(resultSet.getInt("price"));
-                    order.setPlatformFeeId(resultSet.getFloat("platform_fee_id"));
+                    order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
                 }
 
 
@@ -107,16 +145,7 @@ public class OrderService {
         try {
             con = DatabaseConnection.initializeDatabase();
 
-            String query = "UPDATE orders SET"
-                    + "requirements = ?, "
-                    + "created_time = ?, "
-                    + "status = ?, "
-                    + "client_userID = ?, "
-                    + "designer_userID = ?, "
-                    + "package_id = ?, "
-                    + "price = ?, "
-                    + "platform_fee_id = ? "
-                    + "WHERE order_id = ?;";
+            String query = "UPDATE orders SET requirements=?, created_time=?, status=?, client_userID=?, designer_userID=?, package_id=?, price=?, platform_fee_id=? WHERE order_id=?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, order.getRequirements());
             preparedStatement.setTimestamp(2, order.getCreatedTime());
@@ -125,7 +154,9 @@ public class OrderService {
             preparedStatement.setInt(5, order.getDesignerId());
             preparedStatement.setInt(6, order.getPackageId());
             preparedStatement.setInt(7, order.getPrice());
-            preparedStatement.setFloat(8, order.getPlatformFeeId());
+            preparedStatement.setInt(8, order.getPlatformFeeId());
+            preparedStatement.setInt(9, order.getOrderId());
+
 
             result = preparedStatement.executeUpdate();
 
