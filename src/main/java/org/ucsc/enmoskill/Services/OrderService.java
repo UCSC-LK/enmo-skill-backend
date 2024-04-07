@@ -36,7 +36,7 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setInt(7,order.getPlatformFeeId());
+            preparedStatement.setFloat(7,order.getPlatformFeeId());
 
 
             result = preparedStatement.executeUpdate();
@@ -53,6 +53,84 @@ public class OrderService {
                 }
             }
             return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Order getOrderDetails(int orderId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT * FROM orders WHERE order_id = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1,orderId);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet!=null){
+
+                Order order = new Order();
+
+                while (resultSet.next()){
+                    order.setOrderId(resultSet.getInt("order_id"));
+                    order.setCreatedTime(resultSet.getTimestamp("created_time"));
+                    order.setRequirements(resultSet.getString("requirements"));
+                    order.setStatus(resultSet.getInt("status"));
+                    order.setClientId(resultSet.getInt("client_userID"));
+                    order.setDesignerId(resultSet.getInt("designer_userID"));
+                    order.setPackageId(resultSet.getInt("package_id"));
+                    order.setPrice(resultSet.getInt("price"));
+                    order.setPlatformFeeId(resultSet.getFloat("platform_fee_id"));
+                }
+
+
+
+                return order;
+
+            }
+            return  null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public int updateOrder(Order order){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+
+            String query = "UPDATE orders SET"
+                    + "requirements = ?, "
+                    + "created_time = ?, "
+                    + "status = ?, "
+                    + "client_userID = ?, "
+                    + "designer_userID = ?, "
+                    + "package_id = ?, "
+                    + "price = ?, "
+                    + "platform_fee_id = ? "
+                    + "WHERE order_id = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, order.getRequirements());
+            preparedStatement.setTimestamp(2, order.getCreatedTime());
+            preparedStatement.setInt(3, order.getStatus());
+            preparedStatement.setInt(4, order.getClientId());
+            preparedStatement.setInt(5, order.getDesignerId());
+            preparedStatement.setInt(6, order.getPackageId());
+            preparedStatement.setInt(7, order.getPrice());
+            preparedStatement.setFloat(8, order.getPlatformFeeId());
+
+            result = preparedStatement.executeUpdate();
+
+            return result;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

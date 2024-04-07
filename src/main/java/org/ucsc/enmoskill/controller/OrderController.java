@@ -2,9 +2,11 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+//import com.sun.org.apache.xpath.internal.operations.Or;
 import org.ucsc.enmoskill.Services.OrderService;
 import org.ucsc.enmoskill.model.Order;
 import org.ucsc.enmoskill.utils.TokenService;
+import software.amazon.awssdk.awscore.util.SignerOverrideUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -70,6 +72,76 @@ public class OrderController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        Gson gson = new Gson();
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        int clientId = Integer.parseInt(tokenInfo.getUserId());
+
+        int orderId = Integer.parseInt(req.getParameter("orderId"));
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isClient()){
+                OrderService service = new OrderService();
+
+                Order order = service.getOrderDetails(orderId);
+
+                if (order != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(order));
+                    System.out.println("Order details found");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Order details not found");
+                    System.out.println("Order details not found");
+                }
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        int clientId = Integer.parseInt(tokenInfo.getUserId());
+        int orderId = Integer.parseInt(req.getParameter("orderId"));
+
+        if (tokenService.isTokenValid(token)){
+
+            if (tokenInfo.isClient()){
+
+                Gson gson = new Gson();
+
+                // creating an Order object using the request body
+                BufferedReader reader = req.getReader();
+                Order order = gson.fromJson(reader,Order.class);
+
+                OrderService service = new OrderService();
+
+                int result = service.updateOrder(order);
+
+
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
     }
 }

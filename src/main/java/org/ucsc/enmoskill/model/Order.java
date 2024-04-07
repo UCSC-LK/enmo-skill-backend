@@ -11,7 +11,7 @@ public class Order {
     private int clientId;
     private int packageId;
     private int price;
-    private int platformFeeId;
+    private float platformFeeId;
 
     public Order(){}
 
@@ -54,7 +54,7 @@ public class Order {
         return designerId;
     }
 
-    public int getPlatformFeeId() {
+    public float getPlatformFeeId() {
         return platformFeeId;
     }
 
@@ -68,6 +68,10 @@ public class Order {
 
     public String getRequirements() {
         return requirements;
+    }
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
     }
 
     public void setStatus(int status) {
@@ -98,7 +102,7 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public void setPlatformFeeId(int platformFeeId) {
+    public void setPlatformFeeId(float platformFeeId) {
         this.platformFeeId = platformFeeId;
     }
 
