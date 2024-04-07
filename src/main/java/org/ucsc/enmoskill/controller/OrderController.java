@@ -170,4 +170,42 @@ public class OrderController extends HttpServlet {
             System.out.println("Authorization failed");
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        int clientId = Integer.parseInt(tokenInfo.getUserId());
+        int orderId = Integer.parseInt(req.getParameter("orderId"));
+
+        if (tokenService.isTokenValid(token)) {
+
+            OrderService service = new OrderService();
+
+            int result = service.deleteOrder(orderId);
+
+            if (result > 0){
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write("Order deleted successfully");
+                System.out.println("Order deleted successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Order deletion unsuccessful");
+                System.out.println("Order deletion unsuccessful");
+            }
+
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+
+
+    }
 }

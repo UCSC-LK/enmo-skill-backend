@@ -166,4 +166,24 @@ public class OrderService {
             throw new RuntimeException(e);
         }
     }
+
+    public int deleteOrder(int orderId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "DELETE FROM orders WHERE order_id = ?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1,orderId);
+            result = preparedStatement.executeUpdate();
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
 }
