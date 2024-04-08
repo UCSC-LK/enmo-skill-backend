@@ -28,7 +28,7 @@ public class SupportGET {
         //this.response = response;
     }
 
-    public ResponsModel Run(String popup, String TicketId) throws IOException, SQLException {
+    public ResponsModel Run(String popup, String TicketId,String assign) throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -59,8 +59,7 @@ public class SupportGET {
 ////                    response.getWriter().write("User ID is Required!");
 //                    return new ResponsModel("Please log in again!",HttpServletResponse.SC_BAD_REQUEST);
 //                }
-
-                ResponsModel responsModel = GetRequestAgent(connection, popup,TicketId);
+                ResponsModel responsModel = GetRequestAgent(connection, popup,TicketId,assign);
                 return responsModel;
             }else{
                 return new ResponsModel("Invalid user ID",HttpServletResponse.SC_BAD_REQUEST);
@@ -128,7 +127,7 @@ public class SupportGET {
 
     @NotNull
 
-    private ResponsModel GetRequestAgent(Connection connection , String popup, String TicketId) throws SQLException {
+    private ResponsModel GetRequestAgent(Connection connection , String popup, String TicketId,String assign) throws SQLException {
     //**********user Id for filter specific user's ticket************
 
         String query;
@@ -153,6 +152,15 @@ public class SupportGET {
 //            query = "SELECT t.* FROM enmo_database.ticket_admin t where t.ticket_id = ? ORDER BY t.ticket_id";
 //            preparedStatement = connection.prepareStatement(query);
 //            preparedStatement.setString(1, adminComment);
+
+        }else if(assign != null){
+            if(tokenInfo.isAdmin()){
+                query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID WHERE t.assign_ad = 1 ORDER BY urgent DESC";
+                preparedStatement = connection.prepareStatement(query);
+            } else if (tokenInfo.isAgent()) {
+                query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID WHERE t.agentID ="+ tokenInfo.getUserId() +" ORDER BY urgent DESC";
+                preparedStatement = connection.prepareStatement(query);
+            }
 
         }else{
             query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID ORDER BY status";

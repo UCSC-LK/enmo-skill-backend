@@ -1,6 +1,7 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.Services.*;
 import org.ucsc.enmoskill.model.Req_BRlist;
 import org.ucsc.enmoskill.model.ResponsModel;
@@ -128,7 +129,7 @@ public class Support_Controller extends HttpServlet {
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             String popup=null;
             String TicketId=null;
-//            String comment = null;
+            String assign = null;
 //            String adminComment = null;
 
             if(req.getParameter("popup")!=null){
@@ -137,9 +138,9 @@ public class Support_Controller extends HttpServlet {
             if(req.getParameter("TicketId")!=null){
                 TicketId= req.getParameter("TicketId");
             }
-//            if(req.getParameter("comment") != null){
-//                comment= req.getParameter("comment");
-//            }
+            if(req.getParameter("assign") != null){
+                assign= req.getParameter("assign");
+            }
 //            if(req.getParameter("adminComment") != null){
 //                adminComment= req.getParameter("adminComment");
 //            }
@@ -151,7 +152,7 @@ public class Support_Controller extends HttpServlet {
 //            service.Run();
                 ResponsModel responsModel = null;
                 try {
-                    responsModel = service.Run(popup,TicketId);
+                    responsModel = service.Run(popup,TicketId,assign);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
