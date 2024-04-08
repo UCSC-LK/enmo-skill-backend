@@ -137,7 +137,7 @@ public class PackageController extends HttpServlet {
                 }
 
                 // Send the JSON object as the response
-                out.print(resultJson.toString());
+                out.write(resultJson.toString());
 
             } catch (IOException | JsonSyntaxException | JsonIOException e) {
                 throw new RuntimeException(e);

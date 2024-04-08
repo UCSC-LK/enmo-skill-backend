@@ -13,10 +13,12 @@ public class PackagePricing {
 
     private int noOfConcepts;
 
+    private PackageDeliverables deliverables;
+
     public PackagePricing(){
     }
 
-    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId){
+    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId, PackageDeliverables deliverables){
         this.pricePackageId = pricePackageId;
         this.type = type;
         this.deliveryDuration = deliveryDuration;
@@ -24,6 +26,7 @@ public class PackagePricing {
         this.price = price;
         this.noOfConcepts = noOfConcepts;
         this.packageId = packageId;
+        this.deliverables = deliverables;
 
     }
 
@@ -49,6 +52,10 @@ public class PackagePricing {
 
     public void setNoOfConcepts(int noOfConcepts) {
         this.noOfConcepts = noOfConcepts;
+    }
+
+    public void setDeliverables(PackageDeliverables deliverables) {
+        this.deliverables = deliverables;
     }
 
     public void setPackageId(int packageId) {
@@ -81,5 +88,9 @@ public class PackagePricing {
 
     public int getPackageId() {
         return packageId;
+    }
+
+    public PackageDeliverables getDeliverables() {
+        return deliverables;
     }
 }

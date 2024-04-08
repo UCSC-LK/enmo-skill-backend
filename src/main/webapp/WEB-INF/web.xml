@@ -95,7 +95,10 @@
         <servlet-name>chats</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.ChatsController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>order</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.OrderController</servlet-class>
+    </servlet>
 
 
 
@@ -234,6 +237,9 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>order</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
 
 </web-app>
