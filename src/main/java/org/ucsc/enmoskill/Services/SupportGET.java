@@ -75,7 +75,7 @@ public class SupportGET {
 
             if(popup != null){
                 System.out.println(userid);
-                query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID";
+                query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID DESC";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, popup);
 //                preparedStatement.setString(2, userid);
@@ -137,7 +137,7 @@ public class SupportGET {
 
         if(popup != null){
 
-            query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID";
+            query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID DESC";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, popup);
 
