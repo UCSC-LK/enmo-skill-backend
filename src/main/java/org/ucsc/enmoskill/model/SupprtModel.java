@@ -95,7 +95,7 @@ public class SupprtModel {
 //        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 //        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,status) VALUES (\""+description+"\", \'"+Date+"\',"+ requesterID+", \""+subject+"\",1)";
 
-        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,fileURL, `order`,`packages`,urgent, `status`) VALUES (?, ?, ?, ?, COALESCE(?, ''), ?,?,?, 1)";
+        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,fileURL, `order`,`packages`, `status`) VALUES (?, ?, ?, ?, COALESCE(?, ''), ?,?, 1)";
 
 
         return query;

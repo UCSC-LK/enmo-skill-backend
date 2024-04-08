@@ -181,8 +181,8 @@ public class Support_Controller extends HttpServlet {
             String agentID = null;
             String decision=null;
             String ticketId=null;
-            String comment=null;
             String toAdmin=null;
+            String ugent=null;
 
 //            Req_BRlist request =new Req_BRlist(req);
 
@@ -196,7 +196,7 @@ public class Support_Controller extends HttpServlet {
 
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -209,13 +209,7 @@ public class Support_Controller extends HttpServlet {
                     ticketId= req.getParameter("TicketId");
 
                     try {
-//                        BufferedReader reader = req.getReader();
-
-//                            SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-//                            comment = supportmodel.getDescription();
-
-
-                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -223,21 +217,19 @@ public class Support_Controller extends HttpServlet {
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
 
-//                }else if(req.getParameter("TicketId")!=null){
-//                    ticketId= req.getParameter("TicketId");
-//
-//                    BufferedReader reader = req.getReader();
-//                    SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-//                    comment = supportmodel.getDescription();
-//
-//                    try {
-//                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
-//                    } catch (SQLException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                    resp.getWriter().write(responsModel.getResMassage());
-//                    resp.setStatus(responsModel.getResStatus());
+                }else if(req.getParameter("Urgent")!=null && req.getParameter("TicketId")!=null){
+                    ugent= req.getParameter("Urgent");
+                    ticketId= req.getParameter("TicketId");
+
+                    try {
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+
                 }else if(req.getParameter("toAdmin")!=null){
                     toAdmin = req.getParameter("toAdmin");
 
@@ -245,9 +237,8 @@ public class Support_Controller extends HttpServlet {
                         BufferedReader reader = req.getReader();
 
                         SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
-                        comment = supportmodel.getDescription();
 
-                        responsModel = service.Run(agentID,ticketId,decision,comment,toAdmin);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
