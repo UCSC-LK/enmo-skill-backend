@@ -201,7 +201,7 @@ public class SupportOptions {
     private ResponsModel markUgent(Connection connection,String urgent,String ticketId) throws SQLException {
         String query = "UPDATE enmo_database.ticket t " +
                         "SET t.urgent = 1 " +
-                        "WHERE (t.urgent = 0 AND t.ref_no ="+ ticketId +")";
+                        "WHERE (t.urgent = 0 AND !(t.status=3 OR t.status=4) AND t.ref_no ="+ ticketId +")";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         int row= preparedStatement.executeUpdate();
 
