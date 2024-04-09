@@ -45,7 +45,7 @@ public class PackagePricingController extends HttpServlet {
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        //check validy of token
+        //check validity of token
         if (tokenService.isTokenValid(token)){
 
             PricePackageService newService = new PricePackageService();
@@ -73,7 +73,7 @@ public class PackagePricingController extends HttpServlet {
 
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
-
+        Gson gson = new Gson();
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
@@ -84,75 +84,44 @@ public class PackagePricingController extends HttpServlet {
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
         if (tokenService.isTokenValid(token)){
-            //        String type = req.getParameter("type");
 
-            StringBuilder requestBody = new StringBuilder();
-            BufferedReader reader = req.getReader();
+            if (tokenInfo.isDesigner()){
+                JsonObject responseJson = new JsonObject();
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                requestBody.append(line);
-            }
+                // Phrase the json string into class
+                BufferedReader reader = req.getReader();
+                PackagePricing pricing = gson.fromJson(reader,PackagePricing.class);
 
-            System.out.println(requestBody);
-            JsonObject jsonObject = null;
-            JsonObject deliverables = null;
+                // insert pricing data
+                PricePackageService pricePackageService = new PricePackageService();
+                int result1 = pricePackageService.insertPricePackageData(pricing);
+                pricing.setPricePackageId(result1);
 
-            // Parse the JSON string
-            JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
+                DeliverablesModel deliverables = pricing.getDel();
+                deliverables.setPricePackageId(result1);
+                pricing.setDel(deliverables);
 
-            // Check if it's a JSON object
-            if (jsonElement.isJsonObject()) {
-                // Convert to a JsonObject
-                jsonObject = jsonElement.getAsJsonObject();
+                if (result1 > 0){
 
-                // Create separate JsonObjects for "deliverables" and the rest
-                deliverables = jsonObject.getAsJsonObject("del");
+                    System.out.println(result1);
 
-                // Remove "deliverables" from the original JsonObject
-                jsonObject.remove("deliverables");
+                    //insert deliverables data
+                    PackageDeliverablesService deliverablesService = new PackageDeliverablesService();
+                    int result2 = deliverablesService.insertPackageDeliverables(deliverables);
 
-                // Now, you have two separate JsonObjects
-//                System.out.println("Original Object Without Deliverables: " + jsonObject);
-//                System.out.println("Deliverables Object: " + deliverables);
-            }
-//
-//
-            Gson gson = new Gson();
-            PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
-            newPackagePricing.setPackageId(packageId);
-            newPackagePricing.setDel(gson.fromJson(deliverables, DeliverablesModel.class));
+                    responseJson.addProperty("pricePackageId", result1);
 
-            PricePackageService service = new PricePackageService();
-            int result1 = service.insertPricePackageData(newPackagePricing);
-
-
-            if (result1 > 0){
-//                JsonObject resultJson = new JsonObject();
-//                resultJson.addProperty("pricePackageId", result1);
-//                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
-//                newDeliverables.setPricePackageId(result1);
-                newPackagePricing.setPricePackageId(result1);
-
-                PackageDeliverablesService service2 = new PackageDeliverablesService();
-                int result2 = service2.insertPackageDeliverables(newPackagePricing);
-
-                if (result2>0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-//                    resultJson.addProperty("message", "price package details inserted successfully");
-////                            out.write("price package details inserted successfully");
-                    System.out.println("price package details inserted successfully");
-                    out.print(result2);
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("price package details did not inserted");
-                    System.out.println("price package details did not inserted");
+                    if (result2 > 0){
+                        responseJson.addProperty("message", "Data inserted successfully");
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(String.valueOf(responseJson));
+                        System.out.println("Data inserted successfully");
+                    } else {
+                        System.out.println("result 2 falls");
+                    }
                 }
-            }  else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("price package details did not inserted");
-                    System.out.println("price package details did not inserted");
             }
+
 
 
         } else {

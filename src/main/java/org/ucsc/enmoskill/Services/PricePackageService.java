@@ -152,7 +152,7 @@ public class PricePackageService {
         PreparedStatement preparedStatement = null;
         int result = 0;
 
-//        package_pricing(price_package_id, type, delivery_duration, no_of_revisions, price, no_of_concepts, packageID)
+//
         try {
             con = DatabaseConnection.initializeDatabase();
 
@@ -220,6 +220,10 @@ public class PricePackageService {
                 // create the hashmap
                 HashMap<String, Integer> delMap = createHashMap(newDeliverables);
 
+                //Designcategory model
+                DesignCategoryService categoryService = new DesignCategoryService();
+                DesignCategoryModel categoryModel = categoryService.getCategory(newDeliverables.getCategoryId());
+
                 PackagePricing newPackagePricing = new PackagePricing();
                 newPackagePricing.setPricePackageId(resultSet.getInt("price_package_id"));
                 newPackagePricing.setType(resultSet.getString("type"));
@@ -230,6 +234,7 @@ public class PricePackageService {
                 newPackagePricing.setPackageId(resultSet.getInt("package_id"));
                 newPackagePricing.setDel(newDeliverables);
                 newPackagePricing.setDelMap(delMap);
+                newPackagePricing.setCriteria(categoryModel);
 
 
                 packagePricings.add(newPackagePricing);

@@ -19,6 +19,8 @@ public class PackagePricing {
 
     private HashMap<String, Integer> delMap;
 
+    private DesignCategoryModel criteria;
+
     public PackagePricing(){
     }
 
@@ -79,6 +81,10 @@ public class PackagePricing {
         this.delMap = delMap;
     }
 
+    public void setCriteria(DesignCategoryModel criteria) {
+        this.criteria = criteria;
+    }
+
     public void setPackageId(int packageId) {
         this.packageId = packageId;
     }
@@ -117,5 +123,9 @@ public class PackagePricing {
 
     public DeliverablesModel getDel() {
         return del;
+    }
+
+    public DesignCategoryModel getCriteria() {
+        return criteria;
     }
 }
