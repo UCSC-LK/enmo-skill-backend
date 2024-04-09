@@ -33,8 +33,6 @@ public class Support_Controller extends HttpServlet {
                 if (supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
 
                     SupportPOST service = new SupportPOST(supportmodel,tokenInfo);
-
-//                service.Run();
                     ResponsModel responsModel = service.Run();
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
@@ -66,11 +64,11 @@ public class Support_Controller extends HttpServlet {
 
                 SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
 
+
                 if (supportmodel.getDescription()!=null){
 
                     SupportPUT service = new SupportPUT(supportmodel,tokenInfo);
 
-//                service.Run();
                     ResponsModel responsModel = service.Run();
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());

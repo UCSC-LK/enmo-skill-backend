@@ -6,11 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID;
+    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID,complainantID;
 
     private String description,subject,date,role,email,userName,url,fileURL,admin;
 
-    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL,String admin) {
+    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL,String admin,int complainantID) {
         this.requesterID = requesterID;
         this.ref_no = ref_no;
         this.description = description;
@@ -22,6 +22,7 @@ public class SupprtModel {
         this.urgent=urgent;
         this.fileURL=fileURL;
         this.admin=admin;
+        this.complainantID=complainantID;
 
     }
     public SupprtModel(ResultSet result) throws SQLException {
@@ -107,15 +108,7 @@ public class SupprtModel {
 
     public String setHistoryData(){
 
-//        String query = "INSERT INTO enmo_database.ticket_history th (ticketID, description, date, requesterID) " +
-//                "LEFT JOIN ticket t ON (t.ref_no = th.ticketID) "+
-//                "VALUES (t.ref_no, ?, ?, ?) "+
-//                "WHERE ((t.status = 2 OR t.status = 1) AND t.ref_no = " + ref_no;
 
-//        String query ="INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID)\n" +
-//                "SELECT t.ref_no, ?, ?, ?\n" +
-//                "FROM ticket t\n" +
-//                "WHERE ";
         String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
                 "SELECT t.ref_no, ?, ?, ? "+
                 "FROM ticket t "+
@@ -203,5 +196,11 @@ public class SupprtModel {
     public void setSubject(String subject) {
         this.subject = subject;
     }
+    public void setComplainantID(int complainantID) {
+        this.complainantID = complainantID;
+    }
 
+    public int getComplainantID() {
+        return complainantID;
+    }
 }

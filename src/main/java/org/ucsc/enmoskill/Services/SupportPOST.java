@@ -33,8 +33,12 @@ public class SupportPOST {
 
         }else {
 
-            supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
 
+            if(tokenInfo.isAgent()){
+                supportObj.setRequesterID(supportObj.getComplainantID());
+            } else if (tokenInfo.isClient() || tokenInfo.isDesigner()) {
+                supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+            }
             String query = this.supportObj.getQuery();
 
             try {
