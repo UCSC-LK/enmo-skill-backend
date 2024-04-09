@@ -193,7 +193,7 @@ public class Support_Controller extends HttpServlet {
                 ResponsModel responsModel = null;
                 if(req.getParameter("AgentID")!=null && req.getParameter("TicketId")!=null){
                     agentID=req.getParameter("AgentID");
-//                    ticketId= req.getParameter("TicketId");
+                    ticketId= req.getParameter("TicketId");
 
 
                     try {
@@ -231,7 +231,8 @@ public class Support_Controller extends HttpServlet {
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
 
-                }else if(req.getParameter("toAdmin")!=null){
+                }else if(req.getParameter("toAdmin")!=null && req.getParameter("TicketId")!=null){
+                    ticketId= req.getParameter("TicketId");
                     toAdmin = req.getParameter("toAdmin");
 
                     try {

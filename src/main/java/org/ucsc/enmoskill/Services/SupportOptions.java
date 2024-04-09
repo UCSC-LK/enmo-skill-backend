@@ -32,16 +32,16 @@ public class SupportOptions {
 
         //assign a agent ----------------------------------------------------------------
         if(agentID!= null){
-            String query ="UPDATE enmo_database.ticket t SET t.agentID=\'"+agentID+"\',t.status=2 \n" +
-                          "WHERE t.agentID=0 and t.ref_no="+ticketId;
+            String query ="UPDATE enmo_database.ticket t SET t.agentID="+agentID+",t.status=2 " +
+                          "WHERE t.agentID=0 AND t.assign_ad=0 AND t.ref_no="+ticketId;
             System.out.println(query);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             int row = preparedStatement.executeUpdate(query);
 
             if(row>0){
-                return new ResponsModel("Ticket assign successful", HttpServletResponse.SC_OK);
+                return new ResponsModel("Ticket assign successful!", HttpServletResponse.SC_OK);
             }else{
-                return new ResponsModel("Ticket assign failed", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                return new ResponsModel("Ticket assign failed!", HttpServletResponse.SC_NOT_IMPLEMENTED);
             }
 
         } else if(decision != null){
@@ -72,7 +72,7 @@ public class SupportOptions {
 //                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
 //            }
         }else if(toAdmin != null){
-                ResponsModel responsModel = assignToAgrnt(connection,toAdmin);
+                ResponsModel responsModel = assignToAgrnt(connection,toAdmin,ticketId);
                 return responsModel;
         }else if (ugent !=null){
             ResponsModel responsModel = markUgent(connection,ugent,ticketId);
@@ -179,22 +179,17 @@ public class SupportOptions {
             }
     }
 
-    private ResponsModel assignToAgrnt(Connection connection ,String ticketId) throws SQLException {
-        Date Today= new Date();
-        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-        String query2 ="INSERT INTO enmo_database.ticket_admin (ticket_id, agent_id, date) VALUES (?, ?,'',?, ?)";
-        PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
-        preparedStatement1.setString(1, ticketId);
-        preparedStatement1.setString(2, tokenInfo.getUserId());
-        preparedStatement1.setString(3, Date);
-//        preparedStatement1.setString(4, description);
-        int row= preparedStatement1.executeUpdate();
+    private ResponsModel assignToAgrnt(Connection connection ,String toadmin, String ticketId) throws SQLException {
+        String query = "UPDATE enmo_database.ticket t " +
+                    "SET t.assign_ad = 1 " +
+                    "WHERE (t.assign_ad = 0 AND !(t.status=3 OR t.status=4) AND t.ref_no ="+ ticketId +")";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        int row= preparedStatement.executeUpdate();
 
         if(row>0){
-            return new ResponsModel("Comment was added", HttpServletResponse.SC_OK);
+            return new ResponsModel("Assign successful!", HttpServletResponse.SC_OK);
         }else{
-            return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
+            return new ResponsModel("Assign unsuccessful!", HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
     }
 
