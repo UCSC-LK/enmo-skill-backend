@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.ucsc.enmoskill.Services.BannerDesDeliverablesService.getBDDeliverables;
@@ -15,6 +16,28 @@ import static org.ucsc.enmoskill.Services.IllustrationDeliverablesService.getIll
 import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDeliverables;
 
 public class PricePackageService {
+
+    public HashMap<String, Integer> createHashMap(DeliverablesModel deliverables){
+        
+        // hashmap object
+        HashMap<String, Integer> delMap = new HashMap<String, Integer>();
+        
+        //get the relevant category details
+//        DeliverablesModel delModel = pricing.getDel();
+        DesignCategoryService newService = new DesignCategoryService();
+
+        DesignCategoryModel model = newService.getCategory(deliverables.getCategoryId());
+
+        delMap.put(model.getDel_1(), deliverables.getDel_1());
+        delMap.put(model.getDel_2(), deliverables.getDel_2());
+        delMap.put(model.getDel_3(), deliverables.getDel_3());
+        delMap.put(model.getDel_4(), deliverables.getDel_4());
+        delMap.put(model.getDel_5(), deliverables.getDel_5());
+
+
+        return delMap;
+        
+    }
 
     public List<PackagePricing> fetchData(int packageId){
         List<PackagePricing> pricingList;
@@ -26,80 +49,6 @@ public class PricePackageService {
         if (!pricingList.isEmpty()) {
 
             return pricingList;
-
-
-
-
-
-//            System.out.println(pricingList.size());
-//
-//            StringBuilder jsonObj = new StringBuilder("[");
-//
-//            for (PackagePricing pricing : pricingList) {
-//                int pricePackageId = pricing.getPricePackageId();
-//
-//                System.out.println(pricePackageId);
-//                Gson gson = new Gson();
-//
-//                // Convert pricing object to JSON
-//                String jsonPricing = gson.toJson(pricing);
-//                String jsonDeliverables = null;
-//
-//
-//                PackageDeliverablesService service = new PackageDeliverablesService();
-//                PackageDeliverables deliverables = service.getPackageDeliverables(pricePackageId);
-//
-////              Convert deliverables object to JSON
-//                jsonDeliverables = gson.toJson(deliverables);
-//
-//
-////                switch (category) {
-////                    case 1:
-////                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
-////
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables1);
-////
-////                        break;
-////
-////                    case 2:
-////                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables2);
-////                        break;
-////
-////                    case 3:
-////                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables3);
-////                        break;
-////
-////                    default:
-////                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables4);
-////                        break;
-////                }
-//
-//
-//                // Create a JSON object for pricing
-//                StringBuilder jsonResult = new StringBuilder(jsonPricing);
-//
-//                // Add a new field for deliverables within the pricing JSON object
-//                jsonResult.insert(jsonResult.length() - 1, ", \"deliverables\":" + jsonDeliverables);
-//
-//                jsonObj.append(jsonResult);
-//                jsonObj.append(",");
-////                System.out.println(jsonResult);
-//
-//            }
-//
-//            int lastIndex = jsonObj.length() - 1;
-//            jsonObj.deleteCharAt(lastIndex);
-//            jsonObj.append("]");
-//
-////            System.out.println(jsonObj);
-//            return jsonObj;
 
         } else{
             return null;
@@ -247,11 +196,7 @@ public class PricePackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-//            query = "SELECT * " +
-//                    "FROM package_pricing pp " +
-//                    "LEFT JOIN " +
-//                    "package_deliverables pd ON pp.price_package_id=pd.price_package_id "+
-//                    "WHERE pp.package_id=?;";
+
             query = "SELECT * FROM package_pricing pp LEFT JOIN price_package_deliverables pd "
                     + "ON pp.price_package_id = pd.price_package_id WHERE package_id = ?;";
             preparedStatement = con.prepareStatement(query);
@@ -272,24 +217,8 @@ public class PricePackageService {
                 newDeliverables.setDel_4(resultSet.getInt("del_4"));
                 newDeliverables.setDel_5(resultSet.getInt("del_5"));
 
-
-//                PackageDeliverables newDeliverables = new PackageDeliverables();
-//                newDeliverables.setPricePackageId(resultSet.getInt("price_package_id"));
-//                newDeliverables.setDeliverablesCount(resultSet.getInt("deliverables_count"));
-//                newDeliverables.setTransparentFile(resultSet.getInt("transparent_file"));
-//                newDeliverables.setVectorFile(resultSet.getInt("vector_file"));
-//                newDeliverables.setPrintableFile(resultSet.getInt("printable_file"));
-//                newDeliverables.setMockup(resultSet.getInt("mockup"));
-//                newDeliverables.setSourceFile(resultSet.getInt("source_file"));
-//                newDeliverables.setSocialMediaKit(resultSet.getInt("social_media_kit"));
-//                newDeliverables.setHighResolution(resultSet.getInt("high_resolution"));
-//                newDeliverables.setBackground_scene(resultSet.getInt("background_scene"));
-//                newDeliverables.setColour(resultSet.getInt("colour"));
-//                newDeliverables.setFullBody(resultSet.getInt("full_body"));
-//                newDeliverables.setCommercialUse(resultSet.getInt("commercial_use"));
-//                newDeliverables.setDoubleSided(resultSet.getInt("double_sided"));
-//                newDeliverables.setCustomGraphics(resultSet.getInt("custom_graphics"));
-//                newDeliverables.setPhotoEditing(resultSet.getInt("photo_editing"));
+                // create the hashmap
+                HashMap<String, Integer> delMap = createHashMap(newDeliverables);
 
                 PackagePricing newPackagePricing = new PackagePricing();
                 newPackagePricing.setPricePackageId(resultSet.getInt("price_package_id"));
@@ -300,6 +229,7 @@ public class PricePackageService {
                 newPackagePricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
                 newPackagePricing.setPackageId(resultSet.getInt("package_id"));
                 newPackagePricing.setDel(newDeliverables);
+                newPackagePricing.setDelMap(delMap);
 
 
                 packagePricings.add(newPackagePricing);

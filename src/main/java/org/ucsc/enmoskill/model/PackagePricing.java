@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.util.HashMap;
+
 public class PackagePricing {
 
     private int pricePackageId;
@@ -13,9 +15,9 @@ public class PackagePricing {
 
     private int noOfConcepts;
 
-//    private PackageDeliverables deliverables;
-
     private DeliverablesModel del;
+
+    private HashMap<String, Integer> delMap;
 
     public PackagePricing(){
     }
@@ -73,9 +75,9 @@ public class PackagePricing {
         this.noOfConcepts = noOfConcepts;
     }
 
-//    public void setDeliverables(PackageDeliverables deliverables) {
-//        this.deliverables = deliverables;
-//    }
+    public void setDelMap(HashMap<String, Integer> delMap) {
+        this.delMap = delMap;
+    }
 
     public void setPackageId(int packageId) {
         this.packageId = packageId;
@@ -109,10 +111,9 @@ public class PackagePricing {
         return packageId;
     }
 
-//    public PackageDeliverables getDeliverables() {
-//        return deliverables;
-//    }
-
+    public HashMap<String, Integer> getDelMap() {
+        return delMap;
+    }
 
     public DeliverablesModel getDel() {
         return del;

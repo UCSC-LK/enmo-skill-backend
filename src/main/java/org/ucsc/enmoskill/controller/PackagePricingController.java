@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.*;
 
+import com.google.gson.reflect.TypeToken;
 import org.ucsc.enmoskill.Services.PackageDeliverablesService;
 import org.ucsc.enmoskill.Services.PricePackageService;
 import org.ucsc.enmoskill.model.*;
@@ -29,7 +32,6 @@ public class PackagePricingController extends HttpServlet {
 
     private TokenService.TokenInfo tokenInfo;
 
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -43,50 +45,28 @@ public class PackagePricingController extends HttpServlet {
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
+        //check validy of token
         if (tokenService.isTokenValid(token)){
-            // fetch the category of the price package
-//            Package pkgObj = getPackage(packageId);
-//            int category = pkgObj.getCategory();
-//            System.out.println("Category is :"+category);
 
-//            StringBuilder sb = fetchData(packageId, category);
+            PricePackageService newService = new PricePackageService();
+            List<PackagePricing> priceList;
+            priceList =   newService.getPricePackage(packageId);
 
-            List<PackagePricing> priceList = new ArrayList<>();
-            PricePackageService service = new PricePackageService();
-            priceList = service.fetchData(packageId);
-
-
-            if (priceList == null){
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Data not found");
-                System.out.println("Data not found");
-            } else {
+            if (priceList != null){
                 resp.setStatus(HttpServletResponse.SC_OK);
                 out.write(gson.toJson(priceList));
                 System.out.println("Data loaded successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Data not found");
+                System.out.println("Data not found");
             }
-
-
-
-//            resp.setStatus(HttpServletResponse.SC_OK);
-//            out.write(String.valueOf(jsonObj));
-//            System.out.println("Data loaded successfully");
-//        } else {
-//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            out.write("Data not found");
-//            System.out.println("Data not found");
-//        }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");
             System.out.println("Authorization failed");
         }
-
-
-
-
     }
-
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -142,200 +122,6 @@ public class PackagePricingController extends HttpServlet {
             PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
             newPackagePricing.setPackageId(packageId);
             newPackagePricing.setDel(gson.fromJson(deliverables, DeliverablesModel.class));
-//            switch (category) {
-//                case 1:
-//                    try {
-//
-////                    newPackagePricing.setcategory(category);
-//                        newPackagePricing.setPackageId(packageId);
-////                    newPackagePricing.setType(type);
-//
-//                        System.out.println(newPackagePricing.getType());
-//
-////                    System.out.println(newPackagePricing.getPricePackageId());
-////                    System.out.println(newPackagePricing.getType());
-////
-////                    System.out.println(newPackagePricing.getDeliveryDuration());
-////
-////                    System.out.println(newPackagePricing.getNoOfRevisions());
-////                    System.out.println(newPackagePricing.getPrice());
-////                    System.out.println(newPackagePricing.getPackageId());
-////                    System.out.println(newPackagePricing.getNoOfConcepts());
-//
-//                        int result1 = insertPricePackageData(newPackagePricing);
-//
-//                        JsonObject resultJson = new JsonObject();
-//                        resultJson.addProperty("pricePackageId", result1);
-//
-//                        System.out.println("price package id : "+result1);
-//
-//
-//                        if (result1>0){
-//                            LogoDesignDeliverables newDeliverables = gson.fromJson(deliverables, LogoDesignDeliverables.class);
-//
-//                            newDeliverables.setPricePackageId(result1);
-//                            int result2 = insertLDDeliverables(newDeliverables);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                resultJson.addProperty("message", "price package details inserted successfully");
-////                            out.write("price package details inserted successfully");
-//                                System.out.println("price package details inserted successfully");
-//                                out.print(resultJson.toString());
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not inserted");
-//                                System.out.println("price package details did not inserted");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not inserted");
-//                            System.out.println("price package details did not inserted");
-//                        }
-//
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//
-//                    break;
-//                case 2:
-//
-//                    try {
-//
-////                    newPackagePricing.setcategory(category);
-//                        newPackagePricing.setPackageId(packageId);
-////
-//                        int result1 = insertPricePackageData(newPackagePricing);
-//
-//                        JsonObject resultJson = new JsonObject();
-//                        resultJson.addProperty("pricePackageId", result1);
-//
-//                        System.out.println("price package id : "+result1);
-//
-//
-//                        if (result1>0){
-//                            IllustrationDeliverables newDeliverables = gson.fromJson(deliverables, IllustrationDeliverables.class);
-//
-//                            newDeliverables.setPricePackageID(result1);
-//
-//                            System.out.println(newDeliverables.getBackground_Scene());
-//                            int result2 = insertIDeliverables(newDeliverables);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                resultJson.addProperty("message", "price package details inserted successfully");
-////                            out.write("price package details inserted successfully");
-//                                System.out.println("price package details inserted successfully");
-//                                out.print(resultJson.toString());
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not inserted");
-//                                System.out.println("price package details did not inserted");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not inserted");
-//                            System.out.println("price package details did not inserted");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                    break;
-//                case 3:
-//
-//
-//                    try {
-//
-//                        newPackagePricing.setPackageId(packageId);
-//
-//                        int result1 = insertPricePackageData(newPackagePricing);
-//
-//                        JsonObject resultJson = new JsonObject();
-//                        resultJson.addProperty("pricePackageId", result1);
-//
-//                        System.out.println("price package id : "+result1);
-//
-//
-//                        if (result1>0){
-//                            FlyerDesignDeliverables newDeliverables = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
-//
-//                            newDeliverables.setPricePackageID(result1);
-//                            int result2 = insertFDDeliverables(newDeliverables);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                resultJson.addProperty("message", "price package details inserted successfully");
-////                            out.write("price package details inserted successfully");
-//                                System.out.println("price package details inserted successfully");
-//                                out.print(resultJson.toString());
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not inserted");
-//                                System.out.println("price package details did not inserted");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not inserted");
-//                            System.out.println("price package details did not inserted");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                    break;
-//                case 4:
-//
-//                    try {
-//
-//                        newPackagePricing.setPackageId(packageId);
-//
-//                        int result1 = insertPricePackageData(newPackagePricing);
-//
-//                        JsonObject resultJson = new JsonObject();
-//                        resultJson.addProperty("pricePackageId", result1);
-//
-//                        System.out.println("price package id : "+result1);
-//
-//
-//                        if (result1>0){
-//                            BannerDesignDeliverables newDeliverables = gson.fromJson(deliverables, BannerDesignDeliverables.class);
-//
-//                            newDeliverables.setPricePackageID(result1);
-//                            int result2 = insertBDDeliverables(newDeliverables);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                resultJson.addProperty("message", "price package details inserted successfully");
-////                            out.write("price package details inserted successfully");
-//                                System.out.println("price package details inserted successfully");
-//                                out.print(resultJson.toString());
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not inserted");
-//                                System.out.println("price package details did not inserted");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not inserted");
-//                            System.out.println("price package details did not inserted");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    break;
-//                default:
-//
-//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                    out.write("Invalid category");
-//                    System.out.println("Invalid category");
-//                    break;
-//            }
 
             PricePackageService service = new PricePackageService();
             int result1 = service.insertPricePackageData(newPackagePricing);
