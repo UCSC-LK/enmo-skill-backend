@@ -99,7 +99,10 @@
         <servlet-name>order</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OrderController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>categoryData</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.DesignCategoryController</servlet-class>
+    </servlet>
 
 
 
@@ -240,6 +243,10 @@
     <servlet-mapping>
         <servlet-name>order</servlet-name>
         <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>categoryData</servlet-name>
+        <url-pattern>/categorydata</url-pattern>
     </servlet-mapping>
 
 </web-app>
