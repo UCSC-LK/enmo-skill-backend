@@ -16,7 +16,7 @@ import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDelive
 
 public class PricePackageService {
 
-    public static List<PackagePricing> fetchData(int packageId){
+    public List<PackagePricing> fetchData(int packageId){
         List<PackagePricing> pricingList;
         pricingList = getPricePackage(packageId);
 
@@ -239,7 +239,7 @@ public class PricePackageService {
         }
     }
 
-    public static List<PackagePricing> getPricePackage(int packageId) {
+    public List<PackagePricing> getPricePackage(int packageId) {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -247,11 +247,13 @@ public class PricePackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            query = "SELECT * " +
-                    "FROM package_pricing pp " +
-                    "LEFT JOIN " +
-                    "package_deliverables pd ON pp.price_package_id=pd.price_package_id "+
-                    "WHERE pp.package_id=?;";
+//            query = "SELECT * " +
+//                    "FROM package_pricing pp " +
+//                    "LEFT JOIN " +
+//                    "package_deliverables pd ON pp.price_package_id=pd.price_package_id "+
+//                    "WHERE pp.package_id=?;";
+            query = "SELECT * FROM package_pricing pp LEFT JOIN price_package_deliverables pd "
+                    + "ON pp.price_package_id = pd.price_package_id WHERE package_id = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1,packageId);
             resultSet = preparedStatement.executeQuery();
@@ -260,23 +262,34 @@ public class PricePackageService {
 
             while (resultSet.next()) {
 
-                PackageDeliverables newDeliverables = new PackageDeliverables();
+                DeliverablesModel newDeliverables = new DeliverablesModel();
+                newDeliverables.setCategoryId(resultSet.getInt("category"));
+                newDeliverables.setDeliverablesId(resultSet.getInt("deliverables_id"));
                 newDeliverables.setPricePackageId(resultSet.getInt("price_package_id"));
-                newDeliverables.setDeliverablesCount(resultSet.getInt("deliverables_count"));
-                newDeliverables.setTransparentFile(resultSet.getInt("transparent_file"));
-                newDeliverables.setVectorFile(resultSet.getInt("vector_file"));
-                newDeliverables.setPrintableFile(resultSet.getInt("printable_file"));
-                newDeliverables.setMockup(resultSet.getInt("mockup"));
-                newDeliverables.setSourceFile(resultSet.getInt("source_file"));
-                newDeliverables.setSocialMediaKit(resultSet.getInt("social_media_kit"));
-                newDeliverables.setHighResolution(resultSet.getInt("high_resolution"));
-                newDeliverables.setBackground_scene(resultSet.getInt("background_scene"));
-                newDeliverables.setColour(resultSet.getInt("colour"));
-                newDeliverables.setFullBody(resultSet.getInt("full_body"));
-                newDeliverables.setCommercialUse(resultSet.getInt("commercial_use"));
-                newDeliverables.setDoubleSided(resultSet.getInt("double_sided"));
-                newDeliverables.setCustomGraphics(resultSet.getInt("custom_graphics"));
-                newDeliverables.setPhotoEditing(resultSet.getInt("photo_editing"));
+                newDeliverables.setDel_1(resultSet.getInt("del_1"));
+                newDeliverables.setDel_2(resultSet.getInt("del_2"));
+                newDeliverables.setDel_3(resultSet.getInt("del_3"));
+                newDeliverables.setDel_4(resultSet.getInt("del_4"));
+                newDeliverables.setDel_5(resultSet.getInt("del_5"));
+
+
+//                PackageDeliverables newDeliverables = new PackageDeliverables();
+//                newDeliverables.setPricePackageId(resultSet.getInt("price_package_id"));
+//                newDeliverables.setDeliverablesCount(resultSet.getInt("deliverables_count"));
+//                newDeliverables.setTransparentFile(resultSet.getInt("transparent_file"));
+//                newDeliverables.setVectorFile(resultSet.getInt("vector_file"));
+//                newDeliverables.setPrintableFile(resultSet.getInt("printable_file"));
+//                newDeliverables.setMockup(resultSet.getInt("mockup"));
+//                newDeliverables.setSourceFile(resultSet.getInt("source_file"));
+//                newDeliverables.setSocialMediaKit(resultSet.getInt("social_media_kit"));
+//                newDeliverables.setHighResolution(resultSet.getInt("high_resolution"));
+//                newDeliverables.setBackground_scene(resultSet.getInt("background_scene"));
+//                newDeliverables.setColour(resultSet.getInt("colour"));
+//                newDeliverables.setFullBody(resultSet.getInt("full_body"));
+//                newDeliverables.setCommercialUse(resultSet.getInt("commercial_use"));
+//                newDeliverables.setDoubleSided(resultSet.getInt("double_sided"));
+//                newDeliverables.setCustomGraphics(resultSet.getInt("custom_graphics"));
+//                newDeliverables.setPhotoEditing(resultSet.getInt("photo_editing"));
 
                 PackagePricing newPackagePricing = new PackagePricing();
                 newPackagePricing.setPricePackageId(resultSet.getInt("price_package_id"));
@@ -286,7 +299,7 @@ public class PricePackageService {
                 newPackagePricing.setPrice(resultSet.getFloat("price"));
                 newPackagePricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
                 newPackagePricing.setPackageId(resultSet.getInt("package_id"));
-                newPackagePricing.setDeliverables(newDeliverables);
+                newPackagePricing.setDel(newDeliverables);
 
 
                 packagePricings.add(newPackagePricing);

@@ -52,7 +52,8 @@ public class PackagePricingController extends HttpServlet {
 //            StringBuilder sb = fetchData(packageId, category);
 
             List<PackagePricing> priceList = new ArrayList<>();
-            priceList = fetchData(packageId);
+            PricePackageService service = new PricePackageService();
+            priceList = service.fetchData(packageId);
 
 
             if (priceList == null){
@@ -126,7 +127,7 @@ public class PackagePricingController extends HttpServlet {
                 jsonObject = jsonElement.getAsJsonObject();
 
                 // Create separate JsonObjects for "deliverables" and the rest
-                deliverables = jsonObject.getAsJsonObject("deliverables");
+                deliverables = jsonObject.getAsJsonObject("del");
 
                 // Remove "deliverables" from the original JsonObject
                 jsonObject.remove("deliverables");
@@ -140,7 +141,7 @@ public class PackagePricingController extends HttpServlet {
             Gson gson = new Gson();
             PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
             newPackagePricing.setPackageId(packageId);
-            newPackagePricing.setDeliverables(gson.fromJson(deliverables, PackageDeliverables.class));
+            newPackagePricing.setDel(gson.fromJson(deliverables, DeliverablesModel.class));
 //            switch (category) {
 //                case 1:
 //                    try {
@@ -415,7 +416,7 @@ public class PackagePricingController extends HttpServlet {
                 jsonObject = jsonElement.getAsJsonObject();
 
                 // Create separate JsonObjects for "deliverables" and the rest
-                deliverables = jsonObject.getAsJsonObject("deliverables");
+                deliverables = jsonObject.getAsJsonObject("del");
 
                 // Remove "deliverables" from the original JsonObject
                 jsonObject.remove("deliverables");
@@ -430,7 +431,7 @@ public class PackagePricingController extends HttpServlet {
             PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
             newPackagePricing.setPackageId(packageId);
             newPackagePricing.setPricePackageId(pricePackageId);
-            newPackagePricing.setDeliverables(gson.fromJson(deliverables,PackageDeliverables.class));
+            newPackagePricing.setDel(gson.fromJson(deliverables,DeliverablesModel.class));
 
             int result1 = updatePricePackageData(newPackagePricing);
 
@@ -460,133 +461,6 @@ public class PackagePricingController extends HttpServlet {
                 System.out.println("price package details did not updated");
             }
 
-//                    System.out.println("price package id : "+result1);
-//            switch (category) {
-//                case 1:
-//                    try {
-//
-//                        if (result1>0){
-//                            LogoDesignDeliverables newDeliverables1 = gson.fromJson(deliverables, LogoDesignDeliverables.class);
-//
-//                            newDeliverables1.setPricePackageId(pricePackageId);
-//                            int result2 = updateLDDeliverables(newDeliverables1);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                out.write("price package details updated successfully");
-//                                System.out.println("price package details updated successfully");
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not updated");
-//                                System.out.println("price package details did not updated");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not updated");
-//                            System.out.println("price package details did not updated");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//
-//                    break;
-//                case 2:
-//
-//                    try{
-//
-//                        if (result1>0){
-//                            IllustrationDeliverables newDeliverables2 = gson.fromJson(deliverables, IllustrationDeliverables.class);
-//
-//
-//                            newDeliverables2.setPricePackageID(pricePackageId);
-//                            int result2 = updateIllustDeliverables(newDeliverables2);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                out.write("price package details updated successfully");
-//                                System.out.println("price package details updated successfully");
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not updated");
-//                                System.out.println("price package details did not updated");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not updated");
-//                            System.out.println("price package details did not updated");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    break;
-//                case 3:
-//
-//                    try{
-//
-//                        if (result1>0){
-//                            FlyerDesignDeliverables newDeliverables3 = gson.fromJson(deliverables, FlyerDesignDeliverables.class);
-//
-//                            newDeliverables3.setPricePackageID(pricePackageId);
-//                            int result2 = updateFDDeliverables(newDeliverables3);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                out.write("price package details updated successfully");
-//                                System.out.println("price package details updated successfully");
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not updated");
-//                                System.out.println("price package details did not updated");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not updated");
-//                            System.out.println("price package details did not updated");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    break;
-//                case 4:
-//
-//                    try{
-//
-//                        if (result1>0){
-//                            BannerDesignDeliverables newDeliverables4 = gson.fromJson(deliverables, BannerDesignDeliverables.class);
-//
-//                            newDeliverables4.setPricePackageID(pricePackageId);
-//                            int result2 = updateBDDeliverables(newDeliverables4);
-//
-//                            if (result2>0){
-//                                resp.setStatus(HttpServletResponse.SC_OK);
-//                                out.write("price package details updated successfully");
-//                                System.out.println("price package details updated successfully");
-//                            } else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                out.write("price package details did not updated");
-//                                System.out.println("price package details did not updated");
-//                            }
-//                        } else {
-//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                            out.write("price package details did not updated");
-//                            System.out.println("price package details did not updated");
-//                        }
-//
-//                    } catch (JsonSyntaxException | JsonIOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    break;
-//                default:
-//
-//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                    out.write("invalid type");
-//                    System.out.println("invalid type");
-//                    break;
-//            }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");
