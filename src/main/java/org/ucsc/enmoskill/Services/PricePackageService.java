@@ -109,7 +109,7 @@ public class PricePackageService {
 
 
 
-    public  static int updatePricePackageData(PackagePricing newPackagePricing){
+    public int updatePricePackageData(PackagePricing newPackagePricing){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         int result = 0;

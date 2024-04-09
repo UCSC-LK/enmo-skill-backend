@@ -102,7 +102,7 @@ public class PackageDeliverablesService {
         }
     }
 
-    public int updatePackageDeliverables(PackagePricing pricing){
+    public int updatePackageDeliverables(DeliverablesModel deliverables){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         int result = 0;
@@ -120,14 +120,14 @@ public class PackageDeliverablesService {
                     "WHERE deliverables_id = ?;";
 
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1,pricing.getDel().getPricePackageId());
-            preparedStatement.setInt(2,pricing.getDel().getCategoryId());
-            preparedStatement.setInt(3,pricing.getDel().getDel_1());
-            preparedStatement.setInt(4,pricing.getDel().getDel_2());
-            preparedStatement.setInt(5,pricing.getDel().getDel_3());
-            preparedStatement.setInt(6,pricing.getDel().getDel_4());
-            preparedStatement.setInt(7,pricing.getDel().getDel_5());
-            preparedStatement.setInt(8,pricing.getDel().getDeliverablesId());
+            preparedStatement.setInt(1,deliverables.getPricePackageId());
+            preparedStatement.setInt(2,deliverables.getCategoryId());
+            preparedStatement.setInt(3,deliverables.getDel_1());
+            preparedStatement.setInt(4,deliverables.getDel_2());
+            preparedStatement.setInt(5,deliverables.getDel_3());
+            preparedStatement.setInt(6,deliverables.getDel_4());
+            preparedStatement.setInt(7,deliverables.getDel_5());
+            preparedStatement.setInt(8,deliverables.getDeliverablesId());
 
             result = preparedStatement.executeUpdate();
 
