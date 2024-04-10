@@ -80,7 +80,7 @@ public class PackagePricingController extends HttpServlet {
         tokenInfo = tokenService.getTokenInfo(token);
 
 
-        int category = Integer.parseInt(req.getParameter("category"));
+//        int category = Integer.parseInt(req.getParameter("category"));
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
         if (tokenService.isTokenValid(token)){
@@ -245,13 +245,33 @@ public class PackagePricingController extends HttpServlet {
 
 
         int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
-        int packageId = Integer.parseInt(req.getParameter("packageId"));
+        int deliverablesId = Integer.parseInt(req.getParameter("deliverablesId"));
 
+        System.out.println(deliverablesId);
         if (tokenService.isTokenValid(token)){
 
             // extract the request body
             BufferedReader reader = req.getReader();
             PackagePricing pricing = gson.fromJson(reader, PackagePricing.class);
+            pricing.setPricePackageId(pricePackageId);
+
+            DeliverablesModel deliverables = pricing.getDel();
+            deliverables.setPricePackageId(pricePackageId);
+            deliverables.setDeliverablesId(deliverablesId);
+            pricing.setDel(deliverables);
+
+            System.out.println(pricing.getDel().getPricePackageId());
+            System.out.println(pricing.getDel().getCategoryId());
+            System.out.println(pricing.getDel().getDeliverablesId());
+            System.out.println(pricing.getDel().getDel_1());
+            System.out.println(pricing.getDel().getDel_2());
+            System.out.println(pricing.getDel().getDel_3());
+            System.out.println(pricing.getDel().getDel_4());
+            System.out.println(pricing.getDel().getDel_5());
+
+
+
+
 
             // update pricing data
             PricePackageService pricePackageService = new PricePackageService();
@@ -269,8 +289,8 @@ public class PackagePricingController extends HttpServlet {
                     System.out.println("Data updated successfully");
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data update unsuccessful");
-                    System.out.println("Data update unsuccessful");
+                    out.write("Data del update unsuccessful");
+                    System.out.println("Data del update unsuccessful");
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

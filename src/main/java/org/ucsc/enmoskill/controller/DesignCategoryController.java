@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 public class DesignCategoryController extends HttpServlet {
 
@@ -32,17 +33,36 @@ public class DesignCategoryController extends HttpServlet {
         if (tokenService.isTokenValid(token)){
 
             DesignCategoryService service = new DesignCategoryService();
-            DesignCategoryModel categoryData = service.getCategory(categoryId);
 
-            if (categoryData != null){
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.write(gson.toJson(categoryData));
-                System.out.println("Category data found");
+            // get all data
+            if (categoryId == 0){
+                List<DesignCategoryModel> list = service.getAllData();
+
+                if (list != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(list));
+                    System.out.println("Category data found");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Category data not found");
+                    System.out.println("Category data not found");
+                }
+                // get a specific category data
             } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Category data not found");
-                System.out.println("Category data not found");
+                DesignCategoryModel categoryData = service.getCategory(categoryId);
+
+                if (categoryData != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(categoryData));
+                    System.out.println("Category data found");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Category data not found");
+                    System.out.println("Category data not found");
+                }
             }
+
+
 
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
