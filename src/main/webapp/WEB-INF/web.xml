@@ -19,11 +19,11 @@
         </init-param>
         <init-param>
             <param-name>cors.allowed.headers</param-name>
-            <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection</param-value>
+            <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection,endpoint</param-value>
         </init-param>
         <init-param>
             <param-name>cors.exposed.headers</param-name>
-            <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection</param-value>
+            <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection,endpoint</param-value>
         </init-param>
         <init-param>
             <param-name>cors.support.credentials</param-name>
