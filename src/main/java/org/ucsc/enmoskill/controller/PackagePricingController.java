@@ -21,12 +21,6 @@ import org.ucsc.enmoskill.model.*;
 import org.ucsc.enmoskill.model.Package;
 import org.ucsc.enmoskill.utils.TokenService;
 
-import static org.ucsc.enmoskill.Services.BannerDesDeliverablesService.*;
-import static org.ucsc.enmoskill.Services.FlyerDesDeliverablesService.*;
-import static org.ucsc.enmoskill.Services.IllustrationDeliverablesService.*;
-import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.*;
-import static org.ucsc.enmoskill.Services.PackageService.*;
-import static org.ucsc.enmoskill.Services.PricePackageService.*;
 
 public class PackagePricingController extends HttpServlet {
 

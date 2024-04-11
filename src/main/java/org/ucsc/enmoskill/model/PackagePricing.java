@@ -17,9 +17,9 @@ public class PackagePricing {
 
     private DeliverablesModel del;
 
-    private HashMap<String, Integer> delMap;
+//    private HashMap<String, Integer> delMap;
 
-    private DesignCategoryModel criteria;
+//    private DesignCategoryModel criteria;
 
     public PackagePricing(){
     }
@@ -77,13 +77,13 @@ public class PackagePricing {
         this.noOfConcepts = noOfConcepts;
     }
 
-    public void setDelMap(HashMap<String, Integer> delMap) {
-        this.delMap = delMap;
-    }
+//    public void setDelMap(HashMap<String, Integer> delMap) {
+//        this.delMap = delMap;
+//    }
 
-    public void setCriteria(DesignCategoryModel criteria) {
-        this.criteria = criteria;
-    }
+//    public void setCriteria(DesignCategoryModel criteria) {
+//        this.criteria = criteria;
+//    }
 
     public void setPackageId(int packageId) {
         this.packageId = packageId;
@@ -117,15 +117,15 @@ public class PackagePricing {
         return packageId;
     }
 
-    public HashMap<String, Integer> getDelMap() {
-        return delMap;
-    }
+//    public HashMap<String, Integer> getDelMap() {
+//        return delMap;
+//    }
 
     public DeliverablesModel getDel() {
         return del;
     }
 
-    public DesignCategoryModel getCriteria() {
-        return criteria;
-    }
+//    public DesignCategoryModel getCriteria() {
+//        return criteria;
+//    }
 }

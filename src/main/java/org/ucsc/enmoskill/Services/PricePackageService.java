@@ -55,57 +55,57 @@ public class PricePackageService {
         }
     }
 
-    public static float getBronzePrice(int packageId){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        float result = 0.0F;
-
-        try{
-            con = DatabaseConnection.initializeDatabase();
-
-            String query = "SELECT price FROM package_pricing WHERE type='bronze' AND package_id=?;";
-
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, packageId);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = resultSet.getFloat("price");
-            }
-
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static float getPlatinumPrice(int packageId){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        float result = 0.0F;
-
-        try{
-            con = DatabaseConnection.initializeDatabase();
-
-            String query = "SELECT price FROM package_pricing WHERE type='platinum' AND package_id=?;";
-
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, packageId);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = resultSet.getFloat("price");
-            }
-
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public static float getBronzePrice(int packageId){
+//        Connection con = null;
+//        PreparedStatement preparedStatement = null;
+//        ResultSet resultSet = null;
+//        float result = 0.0F;
+//
+//        try{
+//            con = DatabaseConnection.initializeDatabase();
+//
+//            String query = "SELECT price FROM package_pricing WHERE type='bronze' AND package_id=?;";
+//
+//            preparedStatement = con.prepareStatement(query);
+//            preparedStatement.setInt(1, packageId);
+//
+//            resultSet = preparedStatement.executeQuery();
+//
+//            if (resultSet.next()) {
+//                result = resultSet.getFloat("price");
+//            }
+//
+//            return result;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public static float getPlatinumPrice(int packageId){
+//        Connection con = null;
+//        PreparedStatement preparedStatement = null;
+//        ResultSet resultSet = null;
+//        float result = 0.0F;
+//
+//        try{
+//            con = DatabaseConnection.initializeDatabase();
+//
+//            String query = "SELECT price FROM package_pricing WHERE type='platinum' AND package_id=?;";
+//
+//            preparedStatement = con.prepareStatement(query);
+//            preparedStatement.setInt(1, packageId);
+//
+//            resultSet = preparedStatement.executeQuery();
+//
+//            if (resultSet.next()) {
+//                result = resultSet.getFloat("price");
+//            }
+//
+//            return result;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 
@@ -233,8 +233,8 @@ public class PricePackageService {
                 newPackagePricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
                 newPackagePricing.setPackageId(resultSet.getInt("package_id"));
                 newPackagePricing.setDel(newDeliverables);
-                newPackagePricing.setDelMap(delMap);
-                newPackagePricing.setCriteria(categoryModel);
+//                newPackagePricing.setDelMap(delMap);
+//                newPackagePricing.setCriteria(categoryModel);
 
 
                 packagePricings.add(newPackagePricing);
