@@ -47,6 +47,8 @@ public class SupprtModel {
 //        this.subject = result.getString("subject");
         this.date = result.getString("date");
         this.roleID=result.getInt("userlevelID");
+        this.status=result.getInt("status");
+        this.admin=result.getString("assign_ad");
     }
 
     public SupprtModel(ResultSet result, String comment,boolean agent) throws SQLException {
@@ -106,15 +108,18 @@ public class SupprtModel {
 
     }
 
-    public String setHistoryData(){
-
-
+    public String setReply(){
         String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
                 "SELECT t.ref_no, ?, ?, ? "+
                 "FROM ticket t "+
                 "WHERE (t.status = 2 OR t.status = 1) AND t.ref_no = " + ref_no;
-
-
+        return query;
+    }
+    public String setReply2(){
+        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
+                "SELECT t.ref_no, ?, ?, ? "+
+                "FROM ticket t "+
+                "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no = " + ref_no;
         return query;
     }
 

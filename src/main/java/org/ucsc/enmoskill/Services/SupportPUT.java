@@ -36,9 +36,13 @@ public class SupportPUT {
 
         }else {
             supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+            String query1=null;
+            if(tokenInfo.isAgent()){
+                query1 = this.supportObj.setReply();
+            } else if (tokenInfo.isAdmin()) {
+                query1 = this.supportObj.setReply2();
+            }
 
-            String query1 = this.supportObj.setHistoryData();//insert data form ticket table to ticket_history table
-//            String query2 = this.supportObj.getUpdatedQuery();//update ticket table
 
             Date Today= new Date();
             String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);

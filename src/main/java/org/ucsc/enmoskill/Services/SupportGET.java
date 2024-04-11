@@ -74,13 +74,13 @@ public class SupportGET {
 
             if(popup != null){
                 System.out.println(userid);
-                query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID DESC";
+                query = "SELECT t.*,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID DESC";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, popup);
 //                preparedStatement.setString(2, userid);
             } else if(TicketId != null){
 
-                query = "SELECT t.description,t.subject,t.date,t.status,t.order,t.packages,t.fileURL,t.urgent FROM enmo_database.ticket t WHERE ref_no = ? AND requesterID = ?";
+                query = "SELECT t.description,t.subject,t.date,t.status,t.order,t.packages,t.fileURL,t.urgent,t.assign_ad FROM enmo_database.ticket t WHERE ref_no = ? AND requesterID = ?";
                 preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, TicketId);
                 preparedStatement.setString(2, userid);
@@ -135,8 +135,7 @@ public class SupportGET {
 
 
         if(popup != null){
-
-            query = "SELECT t.* ,ur.userlevelID  FROM enmo_database.ticket_history t JOIN user_level_mapping ur ON t.requesterID = ur.userID WHERE ticketID = ?  ORDER BY updateID DESC";
+            query = "SELECT th.* ,ur.userlevelID,t.status,t.assign_ad  FROM enmo_database.ticket_history th JOIN user_level_mapping ur ON th.requesterID = ur.userID JOIN ticket t ON t.ref_no=th.ticketID WHERE ticketID = ?  ORDER BY updateID DESC";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, popup);
 

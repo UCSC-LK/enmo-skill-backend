@@ -36,9 +36,7 @@ public class SupportAgentGET {
                 Gson gson = new Gson();
 
 
-                if (tokenInfo.isAgent()){
-
-                    System.out.println("01");
+                if (tokenInfo.isAgent() || tokenInfo.isAdmin()){
 
                     String query = "SELECT c.*,u.username FROM enmo_database.contact_support_agent c JOIN users u ON c.userid = u.userID ORDER BY username";
 

@@ -155,24 +155,20 @@ public class SupportOptions {
 
         if(decision.equals("Reject")) {
             query =  "UPDATE enmo_database.ticket t " +
-                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
                     "SET t.status = 4 " +
-                    "WHERE ((t.status = 2 AND ta.ticket_id ="+ ticketId +") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
-            
+                    "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no= "+ ticketId;
 
         } else if (decision.equals("Clos")) {
-
             query = "UPDATE enmo_database.ticket t " +
-                    "LEFT JOIN ticket_admin ta ON (t.ref_no = ta.ticket_id AND t.status = 2) " +
                     "SET t.status = 3 " +
-                    "WHERE ((t.status = 2 AND ta.ticket_id ="+ ticketId +") OR (t.status = 1 AND t.ref_no = "+ticketId+"))";
+                    "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no= "+ ticketId;
+
         }
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             int row = preparedStatement.executeUpdate(query);
 
             if (row > 0) {
-                connection.commit(); // Commit transaction--------------
                 return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
             } else {
                 return new ResponsModel("The ticket cannot be " + decision + "ed", HttpServletResponse.SC_NOT_IMPLEMENTED);

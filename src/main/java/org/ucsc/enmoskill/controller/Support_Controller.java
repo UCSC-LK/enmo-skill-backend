@@ -30,7 +30,8 @@ public class Support_Controller extends HttpServlet {
 
                 SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
 
-                if (supportmodel.getDescription()!=null&&supportmodel.getSubject()!=null){
+                if(supportmodel.getDescription() != null && !supportmodel.getDescription().isEmpty() &&
+                        supportmodel.getSubject() != null && !supportmodel.getSubject().isEmpty()){
 
                     SupportPOST service = new SupportPOST(supportmodel,tokenInfo);
                     ResponsModel responsModel = service.Run();
