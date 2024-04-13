@@ -47,8 +47,8 @@ public class SupprtModel {
 //        this.subject = result.getString("subject");
         this.date = result.getString("date");
         this.roleID=result.getInt("userlevelID");
-        this.status=result.getInt("status");
-        this.admin=result.getString("assign_ad");
+//        this.status=result.getInt("status");
+//        this.admin=result.getString("assign_ad");
     }
 
     public SupprtModel(ResultSet result, String comment,boolean agent) throws SQLException {

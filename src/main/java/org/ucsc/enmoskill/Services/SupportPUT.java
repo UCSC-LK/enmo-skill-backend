@@ -8,10 +8,7 @@ import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,17 +34,18 @@ public class SupportPUT {
         }else {
             supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
             String query1=null;
-            if(tokenInfo.isAgent()){
-                query1 = this.supportObj.setReply();
-            } else if (tokenInfo.isAdmin()) {
+            int flag =0;
+            if(tokenInfo.isAdmin()){
                 query1 = this.supportObj.setReply2();
+            } else{
+                query1 = this.supportObj.setReply();
             }
+
+            if(tokenInfo.isAgent() || tokenInfo.isAdmin()){flag=1;}
 
 
             Date Today= new Date();
             String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-            System.out.println(query1);
 
             PreparedStatement preparedStatement = connection.prepareStatement(query1);
 //            preparedStatement.setInt(1, supportObj.getRef_no());
@@ -73,7 +71,22 @@ public class SupportPUT {
 //            }
 
             if (rowsAffected>0) {
+                if(flag==1){
+                    String userId=null;
+                    String ticketId=null;
 
+                    String query = "SELECT t.requesterID FROM ticket t WHERE t.ref_no="+supportObj.getRef_no();
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+
+                    ResultSet resultSet = preparedStatement1.executeQuery();
+                    while (resultSet.next()){
+                        userId = resultSet.getString("requesterID");
+                    }
+
+                    ticketId = String.valueOf(supportObj.getRef_no());
+                    SendEmail sendEmail = new SendEmail(ticketId,userId);
+                    sendEmail.setdata("reply");
+                }
 //                    response.getWriter().write("Data Updated successfully!");
 //                    response.setStatus(HttpServletResponse.SC_CREATED)
                 return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);

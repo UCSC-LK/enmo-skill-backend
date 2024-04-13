@@ -5,8 +5,10 @@ import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,7 +20,7 @@ public class SupportOptions {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run(String agentID, String ticketId, String decision, String toAdmin,String ugent) throws SQLException {
+    public ResponsModel Run(String agentID, String ticketId, String decision, String toAdmin,String ugent) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -39,6 +41,8 @@ public class SupportOptions {
             int row = preparedStatement.executeUpdate(query);
 
             if(row>0){
+                SendEmail sendEmail = new SendEmail(ticketId,agentID);
+                sendEmail.setdata("agent");
                 return new ResponsModel("Ticket assign successful!", HttpServletResponse.SC_OK);
             }else{
                 return new ResponsModel("Ticket assign failed!", HttpServletResponse.SC_NOT_IMPLEMENTED);
@@ -83,15 +87,18 @@ public class SupportOptions {
         return null;
     }
     
-    private ResponsModel setStatusAgent(Connection connection , String decision, String ticketId) throws SQLException {
+    private ResponsModel setStatusAgent(Connection connection , String decision, String ticketId) throws SQLException, IOException {
 
         String query=null;
+        String status=null;
 
         if(decision.equals("Reject")) {
             query = "UPDATE enmo_database.ticket SET status = 4 " +
                     "WHERE" +
                     " (status = 1 OR (agentID=" + tokenInfo.getUserId() + " AND status = 2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
+
+            status="reject";
         } else if (decision.equals("Clos")) {
 
             query = "UPDATE enmo_database.ticket t SET t.status = 3 " +
@@ -99,12 +106,27 @@ public class SupportOptions {
                     " (status=1 OR (agentID=" + tokenInfo.getUserId() + " AND status=2 AND assign_ad = 0))" +
                     " AND ref_no=" + ticketId;
 
+            status="close";
+
         }
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         int row = preparedStatement.executeUpdate(query);
 
         if(row>0){
+
+                String userId=null;
+
+                String query1 = "SELECT t.requesterID FROM ticket t WHERE t.ref_no="+ticketId;
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+
+                ResultSet resultSet = preparedStatement1.executeQuery();
+                while (resultSet.next()){
+                    userId = resultSet.getString("requesterID");
+                }
+
+                SendEmail sendEmail = new SendEmail(ticketId,userId);
+                sendEmail.setdata(status);
             return new ResponsModel("The ticket was " + decision+"ed", HttpServletResponse.SC_OK);
         }else{
             connection.rollback(); // Rollback if the second query fails---
@@ -149,26 +171,41 @@ public class SupportOptions {
 
     }
 
-    private ResponsModel setStatusAdmin(Connection connection , String decision, String ticketId) throws SQLException {
+    private ResponsModel setStatusAdmin(Connection connection , String decision, String ticketId) throws SQLException, IOException {
 
         String query=null;
+        String status=null;
 
         if(decision.equals("Reject")) {
             query =  "UPDATE enmo_database.ticket t " +
                     "SET t.status = 4 " +
                     "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no= "+ ticketId;
+            status = "reject";
 
         } else if (decision.equals("Clos")) {
             query = "UPDATE enmo_database.ticket t " +
                     "SET t.status = 3 " +
                     "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no= "+ ticketId;
-
+            status = "close";
         }
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             int row = preparedStatement.executeUpdate(query);
 
             if (row > 0) {
+                String userId=null;
+
+                String query1 = "SELECT t.requesterID FROM ticket t WHERE t.ref_no="+ticketId;
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+
+                ResultSet resultSet = preparedStatement1.executeQuery();
+                while (resultSet.next()){
+                    userId = resultSet.getString("requesterID");
+                }
+
+                SendEmail sendEmail = new SendEmail(ticketId,userId);
+                sendEmail.setdata(status);
+
                 return new ResponsModel("The ticket was " + decision + "ed", HttpServletResponse.SC_OK);
             } else {
                 return new ResponsModel("The ticket cannot be " + decision + "ed", HttpServletResponse.SC_NOT_IMPLEMENTED);

@@ -135,7 +135,7 @@ public class SupportGET {
 
 
         if(popup != null){
-            query = "SELECT th.* ,ur.userlevelID,t.status,t.assign_ad  FROM enmo_database.ticket_history th JOIN user_level_mapping ur ON th.requesterID = ur.userID JOIN ticket t ON t.ref_no=th.ticketID WHERE ticketID = ?  ORDER BY updateID DESC";
+            query = "SELECT th.* ,ur.userlevelID FROM enmo_database.ticket_history th JOIN user_level_mapping ur ON th.requesterID = ur.userID JOIN ticket t ON t.ref_no=th.ticketID WHERE ticketID = ?  ORDER BY updateID DESC";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, popup);
 
