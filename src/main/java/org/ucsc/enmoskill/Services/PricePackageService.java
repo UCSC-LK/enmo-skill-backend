@@ -17,6 +17,48 @@ import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDelive
 
 public class PricePackageService {
 
+    public PackagePricing getapricePackage(int pricePackageId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            query = "SELECT * FROM package_pricing WHERE price_package_id = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, pricePackageId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet != null){
+                PackagePricing pricing = new PackagePricing();
+
+                while (resultSet.next()){
+                    pricing.setPricePackageId(resultSet.getInt("price_package_id"));
+                    pricing.setType(resultSet.getString("type"));
+                    pricing.setPrice(resultSet.getInt("price"));
+                    pricing.setPackageId(resultSet.getInt("package_id"));
+                    pricing.setDeliveryDuration(resultSet.getString("delivery_duration"));
+                    pricing.setNoOfRevisions(resultSet.getString("no_of_revisions"));
+                    pricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
+
+                }
+                return pricing;
+            }
+            return null;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
     public HashMap<String, Integer> createHashMap(DeliverablesModel deliverables){
         
         // hashmap object
