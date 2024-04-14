@@ -32,10 +32,10 @@ public class PackagePricingController extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         Gson gson = new Gson();
-//        TokenService tokenService = new TokenService();
-//        String token = tokenService.getTokenFromHeader(req);
-//
-//        tokenInfo = tokenService.getTokenInfo(token);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
