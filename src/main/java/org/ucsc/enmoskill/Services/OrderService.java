@@ -1,11 +1,23 @@
 package org.ucsc.enmoskill.Services;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.Order;
+import org.ucsc.enmoskill.model.ProposalModel;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.*;
 
 public class OrderService {
+
+    private HttpServletResponse resp;
+
+    public OrderService(HttpServletResponse resp){
+        this.resp = resp;
+    }
 
     public double findFee(int orderId){
         Connection con = null;
@@ -124,9 +136,6 @@ public class OrderService {
                     order.setPrice(resultSet.getInt("price"));
                     order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
                 }
-
-
-
                 return order;
 
             }
@@ -137,53 +146,85 @@ public class OrderService {
 
     }
 
-    public int updateOrder(Order order){
+    public void getAllDesignerOrderDetails(int designer_userID) {
         Connection con = null;
         PreparedStatement preparedStatement = null;
-        int result;
+        ResultSet resultSet = null;
 
+        Order order;
         try {
             con = DatabaseConnection.initializeDatabase();
-
-            String query = "UPDATE orders SET requirements=?, created_time=?, status=?, client_userID=?, designer_userID=?, package_id=?, price=?, platform_fee_id=? WHERE order_id=?;";
+            String query = "SELECT * FROM orders WHERE designer_userID = ?;";
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, order.getRequirements());
-            preparedStatement.setTimestamp(2, order.getCreatedTime());
-            preparedStatement.setInt(3, order.getStatus());
-            preparedStatement.setInt(4, order.getClientId());
-            preparedStatement.setInt(5, order.getDesignerId());
-            preparedStatement.setInt(6, order.getPackageId());
-            preparedStatement.setInt(7, order.getPrice());
-            preparedStatement.setInt(8, order.getPlatformFeeId());
-            preparedStatement.setInt(9, order.getOrderId());
+            preparedStatement.setInt(1, designer_userID);
 
+            resultSet = preparedStatement.executeQuery();
 
-            result = preparedStatement.executeUpdate();
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
 
-            return result;
+            while (resultSet.next()) {
+                order = new Order(resultSet);
+                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                jsonArray.add(jsonObject);
+            }
 
-        } catch (SQLException e) {
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+            System.out.println("Orders : " + jsonArray);
+
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public int deleteOrder(int orderId){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        int result;
+        public int updateOrder (Order order){
+            Connection con = null;
+            PreparedStatement preparedStatement = null;
+            int result;
 
-        try {
-            con = DatabaseConnection.initializeDatabase();
-            String query = "DELETE FROM orders WHERE order_id = ?";
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1,orderId);
-            result = preparedStatement.executeUpdate();
+            try {
+                con = DatabaseConnection.initializeDatabase();
 
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+                String query = "UPDATE orders SET requirements=?, created_time=?, status=?, client_userID=?, designer_userID=?, package_id=?, price=?, platform_fee_id=? WHERE order_id=?;";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setString(1, order.getRequirements());
+                preparedStatement.setTimestamp(2, order.getCreatedTime());
+                preparedStatement.setInt(3, order.getStatus());
+                preparedStatement.setInt(4, order.getClientId());
+                preparedStatement.setInt(5, order.getDesignerId());
+                preparedStatement.setInt(6, order.getPackageId());
+                preparedStatement.setInt(7, order.getPrice());
+                preparedStatement.setInt(8, order.getPlatformFeeId());
+                preparedStatement.setInt(9, order.getOrderId());
+
+
+                result = preparedStatement.executeUpdate();
+
+                return result;
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
 
+        public int deleteOrder ( int orderId){
+            Connection con = null;
+            PreparedStatement preparedStatement = null;
+            int result;
 
+            try {
+                con = DatabaseConnection.initializeDatabase();
+                String query = "DELETE FROM orders WHERE order_id = ?";
+                preparedStatement = con.prepareStatement(query);
+                preparedStatement.setInt(1, orderId);
+                result = preparedStatement.executeUpdate();
+
+                return result;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }
     }
-}

@@ -32,15 +32,17 @@ public class PackagePricingController extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         Gson gson = new Gson();
-        TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);
-
-        tokenInfo = tokenService.getTokenInfo(token);
+//        TokenService tokenService = new TokenService();
+//        String token = tokenService.getTokenFromHeader(req);
+//
+//        tokenInfo = tokenService.getTokenInfo(token);
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
+
         //check validity of token
         if (tokenService.isTokenValid(token)){
+
 
             PricePackageService newService = new PricePackageService();
             List<PackagePricing> priceList;
@@ -60,6 +62,7 @@ public class PackagePricingController extends HttpServlet {
             out.write("Authorization failed");
             System.out.println("Authorization failed");
         }
+
     }
 
     @Override

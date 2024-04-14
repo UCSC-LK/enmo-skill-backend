@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,9 +20,9 @@ public class Order {
 
     public Order(){}
 
-    public Order(int orderId, String createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
+    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
         this.orderId = orderId;
-//        this.createdTime = createdTime;
+        this.createdTime = createdTime;
         this.requirements = requirements;
         this.status = status;
         this.designerId = designerId;
@@ -32,7 +34,7 @@ public class Order {
         // Parse and set createdTime
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a");
         try {
-            Date parsedDate = dateFormat.parse(createdTime);
+            Date parsedDate = dateFormat.parse(String.valueOf(createdTime));
             this.createdTime = new Timestamp(parsedDate.getTime());
         } catch (ParseException e) {
             e.printStackTrace();
@@ -40,16 +42,29 @@ public class Order {
         }
     }
 
-    public Order(int orderId, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
-        this.orderId = orderId;
-        this.requirements = requirements;
-        this.status = status;
-        this.designerId = designerId;
-        this.clientId = clientId;
-        this.packageId = packageId;
-        this.price = price;
-        this.platformFeeId = platformFeeId;
+//    public Order(int orderId, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
+//        this.orderId = orderId;
+//        this.requirements = requirements;
+//        this.status = status;
+//        this.designerId = designerId;
+//        this.clientId = clientId;
+//        this.packageId = packageId;
+//        this.price = price;
+//        this.platformFeeId = platformFeeId;
+//    }
+
+    public Order(ResultSet resultSet) throws SQLException {
+        this.orderId = resultSet.getInt("order_id");
+        this.createdTime = resultSet.getTimestamp("created_time");
+        this.requirements = resultSet.getString("requirements");
+        this.status = resultSet.getInt("status");
+        this.designerId = resultSet.getInt("designer_userID");
+        this.clientId = resultSet.getInt("client_userID");
+        this.packageId = resultSet.getInt("package_id");
+        this.price = resultSet.getInt("price");
+        this.platformFeeId = resultSet.getInt("platform_fee_id");
     }
+
 
     public int getPackageId() {
         return packageId;
