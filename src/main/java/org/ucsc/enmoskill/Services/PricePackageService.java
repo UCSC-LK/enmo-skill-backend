@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.ucsc.enmoskill.Services.BannerDesDeliverablesService.getBDDeliverables;
@@ -16,7 +17,71 @@ import static org.ucsc.enmoskill.Services.LogoDesDeliverablesService.getLDDelive
 
 public class PricePackageService {
 
-    public static List<PackagePricing> fetchData(int packageId){
+    public PackagePricing getapricePackage(int pricePackageId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String query = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            query = "SELECT * FROM package_pricing WHERE price_package_id = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, pricePackageId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet != null){
+                PackagePricing pricing = new PackagePricing();
+
+                while (resultSet.next()){
+                    pricing.setPricePackageId(resultSet.getInt("price_package_id"));
+                    pricing.setType(resultSet.getString("type"));
+                    pricing.setPrice(resultSet.getInt("price"));
+                    pricing.setPackageId(resultSet.getInt("package_id"));
+                    pricing.setDeliveryDuration(resultSet.getString("delivery_duration"));
+                    pricing.setNoOfRevisions(resultSet.getString("no_of_revisions"));
+                    pricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
+
+                }
+                return pricing;
+            }
+            return null;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
+    public HashMap<String, Integer> createHashMap(DeliverablesModel deliverables){
+        
+        // hashmap object
+        HashMap<String, Integer> delMap = new HashMap<String, Integer>();
+        
+        //get the relevant category details
+//        DeliverablesModel delModel = pricing.getDel();
+        DesignCategoryService newService = new DesignCategoryService();
+
+        DesignCategoryModel model = newService.getCategory(deliverables.getCategoryId());
+
+        delMap.put(model.getDel_1(), deliverables.getDel_1());
+        delMap.put(model.getDel_2(), deliverables.getDel_2());
+        delMap.put(model.getDel_3(), deliverables.getDel_3());
+        delMap.put(model.getDel_4(), deliverables.getDel_4());
+        delMap.put(model.getDel_5(), deliverables.getDel_5());
+
+
+        return delMap;
+        
+    }
+
+    public List<PackagePricing> fetchData(int packageId){
         List<PackagePricing> pricingList;
         pricingList = getPricePackage(packageId);
 
@@ -27,140 +92,66 @@ public class PricePackageService {
 
             return pricingList;
 
-
-
-
-
-//            System.out.println(pricingList.size());
-//
-//            StringBuilder jsonObj = new StringBuilder("[");
-//
-//            for (PackagePricing pricing : pricingList) {
-//                int pricePackageId = pricing.getPricePackageId();
-//
-//                System.out.println(pricePackageId);
-//                Gson gson = new Gson();
-//
-//                // Convert pricing object to JSON
-//                String jsonPricing = gson.toJson(pricing);
-//                String jsonDeliverables = null;
-//
-//
-//                PackageDeliverablesService service = new PackageDeliverablesService();
-//                PackageDeliverables deliverables = service.getPackageDeliverables(pricePackageId);
-//
-////              Convert deliverables object to JSON
-//                jsonDeliverables = gson.toJson(deliverables);
-//
-//
-////                switch (category) {
-////                    case 1:
-////                        LogoDesignDeliverables deliverables1 = getLDDeliverables(pricePackageId);
-////
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables1);
-////
-////                        break;
-////
-////                    case 2:
-////                        IllustrationDeliverables deliverables2 = getIllusDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables2);
-////                        break;
-////
-////                    case 3:
-////                        FlyerDesignDeliverables deliverables3 = getFDDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables3);
-////                        break;
-////
-////                    default:
-////                        BannerDesignDeliverables deliverables4 = getBDDeliverables(pricePackageId);
-////                        // Convert deliverables object to JSON
-////                        jsonDeliverables = gson.toJson(deliverables4);
-////                        break;
-////                }
-//
-//
-//                // Create a JSON object for pricing
-//                StringBuilder jsonResult = new StringBuilder(jsonPricing);
-//
-//                // Add a new field for deliverables within the pricing JSON object
-//                jsonResult.insert(jsonResult.length() - 1, ", \"deliverables\":" + jsonDeliverables);
-//
-//                jsonObj.append(jsonResult);
-//                jsonObj.append(",");
-////                System.out.println(jsonResult);
-//
-//            }
-//
-//            int lastIndex = jsonObj.length() - 1;
-//            jsonObj.deleteCharAt(lastIndex);
-//            jsonObj.append("]");
-//
-////            System.out.println(jsonObj);
-//            return jsonObj;
-
         } else{
             return null;
         }
     }
 
-    public static float getBronzePrice(int packageId){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        float result = 0.0F;
+//    public static float getBronzePrice(int packageId){
+//        Connection con = null;
+//        PreparedStatement preparedStatement = null;
+//        ResultSet resultSet = null;
+//        float result = 0.0F;
+//
+//        try{
+//            con = DatabaseConnection.initializeDatabase();
+//
+//            String query = "SELECT price FROM package_pricing WHERE type='bronze' AND package_id=?;";
+//
+//            preparedStatement = con.prepareStatement(query);
+//            preparedStatement.setInt(1, packageId);
+//
+//            resultSet = preparedStatement.executeQuery();
+//
+//            if (resultSet.next()) {
+//                result = resultSet.getFloat("price");
+//            }
+//
+//            return result;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public static float getPlatinumPrice(int packageId){
+//        Connection con = null;
+//        PreparedStatement preparedStatement = null;
+//        ResultSet resultSet = null;
+//        float result = 0.0F;
+//
+//        try{
+//            con = DatabaseConnection.initializeDatabase();
+//
+//            String query = "SELECT price FROM package_pricing WHERE type='platinum' AND package_id=?;";
+//
+//            preparedStatement = con.prepareStatement(query);
+//            preparedStatement.setInt(1, packageId);
+//
+//            resultSet = preparedStatement.executeQuery();
+//
+//            if (resultSet.next()) {
+//                result = resultSet.getFloat("price");
+//            }
+//
+//            return result;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-        try{
-            con = DatabaseConnection.initializeDatabase();
-
-            String query = "SELECT price FROM package_pricing WHERE type='bronze' AND package_id=?;";
-
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, packageId);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = resultSet.getFloat("price");
-            }
-
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static float getPlatinumPrice(int packageId){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        float result = 0.0F;
-
-        try{
-            con = DatabaseConnection.initializeDatabase();
-
-            String query = "SELECT price FROM package_pricing WHERE type='platinum' AND package_id=?;";
-
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, packageId);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = resultSet.getFloat("price");
-            }
-
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
-
-    public  static int updatePricePackageData(PackagePricing newPackagePricing){
+    public int updatePricePackageData(PackagePricing newPackagePricing){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         int result = 0;
@@ -203,7 +194,7 @@ public class PricePackageService {
         PreparedStatement preparedStatement = null;
         int result = 0;
 
-//        package_pricing(price_package_id, type, delivery_duration, no_of_revisions, price, no_of_concepts, packageID)
+//
         try {
             con = DatabaseConnection.initializeDatabase();
 
@@ -239,7 +230,7 @@ public class PricePackageService {
         }
     }
 
-    public static List<PackagePricing> getPricePackage(int packageId) {
+    public List<PackagePricing> getPricePackage(int packageId) {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -247,11 +238,9 @@ public class PricePackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            query = "SELECT * " +
-                    "FROM package_pricing pp " +
-                    "LEFT JOIN " +
-                    "package_deliverables pd ON pp.price_package_id=pd.price_package_id "+
-                    "WHERE pp.package_id=?;";
+
+            query = "SELECT * FROM package_pricing pp LEFT JOIN price_package_deliverables pd "
+                    + "ON pp.price_package_id = pd.price_package_id WHERE package_id = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1,packageId);
             resultSet = preparedStatement.executeQuery();
@@ -260,23 +249,22 @@ public class PricePackageService {
 
             while (resultSet.next()) {
 
-                PackageDeliverables newDeliverables = new PackageDeliverables();
+                DeliverablesModel newDeliverables = new DeliverablesModel();
+                newDeliverables.setCategoryId(resultSet.getInt("category"));
+                newDeliverables.setDeliverablesId(resultSet.getInt("deliverables_id"));
                 newDeliverables.setPricePackageId(resultSet.getInt("price_package_id"));
-                newDeliverables.setDeliverablesCount(resultSet.getInt("deliverables_count"));
-                newDeliverables.setTransparentFile(resultSet.getInt("transparent_file"));
-                newDeliverables.setVectorFile(resultSet.getInt("vector_file"));
-                newDeliverables.setPrintableFile(resultSet.getInt("printable_file"));
-                newDeliverables.setMockup(resultSet.getInt("mockup"));
-                newDeliverables.setSourceFile(resultSet.getInt("source_file"));
-                newDeliverables.setSocialMediaKit(resultSet.getInt("social_media_kit"));
-                newDeliverables.setHighResolution(resultSet.getInt("high_resolution"));
-                newDeliverables.setBackground_scene(resultSet.getInt("background_scene"));
-                newDeliverables.setColour(resultSet.getInt("colour"));
-                newDeliverables.setFullBody(resultSet.getInt("full_body"));
-                newDeliverables.setCommercialUse(resultSet.getInt("commercial_use"));
-                newDeliverables.setDoubleSided(resultSet.getInt("double_sided"));
-                newDeliverables.setCustomGraphics(resultSet.getInt("custom_graphics"));
-                newDeliverables.setPhotoEditing(resultSet.getInt("photo_editing"));
+                newDeliverables.setDel_1(resultSet.getInt("del_1"));
+                newDeliverables.setDel_2(resultSet.getInt("del_2"));
+                newDeliverables.setDel_3(resultSet.getInt("del_3"));
+                newDeliverables.setDel_4(resultSet.getInt("del_4"));
+                newDeliverables.setDel_5(resultSet.getInt("del_5"));
+
+                // create the hashmap
+                HashMap<String, Integer> delMap = createHashMap(newDeliverables);
+
+                //Designcategory model
+                DesignCategoryService categoryService = new DesignCategoryService();
+                DesignCategoryModel categoryModel = categoryService.getCategory(newDeliverables.getCategoryId());
 
                 PackagePricing newPackagePricing = new PackagePricing();
                 newPackagePricing.setPricePackageId(resultSet.getInt("price_package_id"));
@@ -286,7 +274,9 @@ public class PricePackageService {
                 newPackagePricing.setPrice(resultSet.getFloat("price"));
                 newPackagePricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
                 newPackagePricing.setPackageId(resultSet.getInt("package_id"));
-                newPackagePricing.setDeliverables(newDeliverables);
+                newPackagePricing.setDel(newDeliverables);
+//                newPackagePricing.setDelMap(delMap);
+//                newPackagePricing.setCriteria(categoryModel);
 
 
                 packagePricings.add(newPackagePricing);
