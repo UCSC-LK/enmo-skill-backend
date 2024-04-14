@@ -15,5 +15,12 @@
       <jdbc-url>jdbc:mysql://localhost:3306/database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="@enmoskill.eastus.cloudapp.azure.com" uuid="48974a83-ef46-4772-8d7e-9f98bdda980d">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://enmoskill.eastus.cloudapp.azure.com:3306</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
