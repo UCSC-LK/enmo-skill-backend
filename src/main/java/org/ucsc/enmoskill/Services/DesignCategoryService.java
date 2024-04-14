@@ -164,4 +164,22 @@ public class DesignCategoryService {
             }
         }
     }
+
+    public int deleteCategory(int categoryId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            query = "DELETE FROM design_categories WHERE category_id=?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, categoryId);
+            result = preparedStatement.executeUpdate();
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

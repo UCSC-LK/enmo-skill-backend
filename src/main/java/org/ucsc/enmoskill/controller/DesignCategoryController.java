@@ -172,4 +172,48 @@ public class DesignCategoryController extends HttpServlet {
             System.out.println("Authorization failed");
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        Gson gson = new Gson();
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isAdmin()){
+                // get query parameter
+                int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+
+                // call delete function
+                DesignCategoryService service = new DesignCategoryService();
+                int result = service.deleteCategory(categoryId);
+
+                if (result > 0){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write("Data deleted successfully");
+                    System.out.println("Data deleted successfully");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Data delete unsuccessful");
+                    System.out.println("Data delete unsuccessful");
+                }
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write("Authorization failed");
+                System.out.println("Authorization failed");
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+
+
+
+    }
 }
