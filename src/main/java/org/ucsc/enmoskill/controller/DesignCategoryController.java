@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -65,6 +66,55 @@ public class DesignCategoryController extends HttpServlet {
 
 
         } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+
+        Gson gson = new Gson();
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isAdmin()){
+
+                // read the request body
+                BufferedReader reader = req.getReader();
+
+                // create a class
+                DesignCategoryModel newCategory = gson.fromJson(reader, DesignCategoryModel.class);
+
+                System.out.println(newCategory.getCategory());
+                System.out.println(newCategory.getDel_1());
+                System.out.println(newCategory.getDel_2());
+
+
+                DesignCategoryService service = new DesignCategoryService();
+                int result  = service.createCategory(newCategory);
+
+                if (result > 0){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write("Data inserted successfully");
+                    System.out.println("Data inserted successfully");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Data insertion unsuccessful");
+                    System.out.println("Data insertion unsuccessful");
+                }
+            }else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write("Authorization failed");
+                System.out.println("Authorization failed");
+            }
+        }else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");
             System.out.println("Authorization failed");

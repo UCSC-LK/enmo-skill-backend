@@ -98,4 +98,29 @@ public class DesignCategoryService {
             throw new RuntimeException(e);
         }
     }
+
+    public int createCategory(DesignCategoryModel newCategory){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            query = "INSERT INTO design_categories(category, del_1, del_2, del_3, del_4, del_5)"+
+                    "VALUES(?,?,?,?,?,?);";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1,newCategory.getCategory());
+            preparedStatement.setString(2,newCategory.getDel_1());
+            preparedStatement.setString(3,newCategory.getDel_2());
+            preparedStatement.setString(4,newCategory.getDel_3());
+            preparedStatement.setString(5,newCategory.getDel_4());
+            preparedStatement.setString(6,newCategory.getDel_5());
+
+            result = preparedStatement.executeUpdate();
+
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
