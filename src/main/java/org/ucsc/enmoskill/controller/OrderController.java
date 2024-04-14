@@ -18,6 +18,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static java.lang.System.out;
+
 public class OrderController extends HttpServlet {
 
     private TokenService.TokenInfo tokenInfo;
@@ -42,7 +44,7 @@ public class OrderController extends HttpServlet {
 
             newOrder.setClientId(clientId);
 
-            OrderService service = new OrderService();
+            OrderService service = new OrderService(resp);
 
             newOrder = service.setFee(newOrder);
 
@@ -84,25 +86,48 @@ public class OrderController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        int clientId = Integer.parseInt(tokenInfo.getUserId());
+        int userId = Integer.parseInt(tokenInfo.getUserId());
 
-        int orderId = Integer.parseInt(req.getParameter("orderId"));
+        Integer orderId = null; // Initialize orderId as null
+
+        String orderIdParam = req.getParameter("orderId");
+        if (orderIdParam != null && !orderIdParam.isEmpty()) {
+            try {
+                orderId = Integer.parseInt(orderIdParam);
+            } catch (NumberFormatException e) {
+                // Handle the case where orderIdParam cannot be parsed into an integer
+                e.printStackTrace(); // Log the error
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("Invalid orderId parameter"); // Return an error response
+                return; // Exit the method
+            }
+        }
+
 
         if (tokenService.isTokenValid(token)){
-            if (tokenInfo.isClient()){
-                OrderService service = new OrderService();
-
-                Order order = service.getOrderDetails(orderId);
-
-                if (order != null){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(order));
-                    System.out.println("Order details found");
+            if (tokenInfo.isClient() || tokenInfo.isDesigner()){
+                if (orderId == null){
+                    System.out.println("Ordersssss details found");
+                    OrderService service = new OrderService(resp);
+                    service.getAllDesignerOrderDetails(userId);
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Order details not found");
-                    System.out.println("Order details not found");
+                    OrderService service = new OrderService(resp);
+                    Order order = service.getOrderDetails(orderId);
+
+                    if (order != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(order));
+                        out.println("Orders : " + order);
+                        System.out.println("Order details found");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Order details not found");
+                        out.println("NoOrders : " );
+                        System.out.println("Order details not found");
+                    }
+
                 }
+
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -134,7 +159,7 @@ public class OrderController extends HttpServlet {
                 BufferedReader reader = req.getReader();
                 Order order = gson.fromJson(reader,Order.class);
 
-                OrderService service = new OrderService();
+                OrderService service = new OrderService(resp);
 
                 int result1 = service.updateOrder(order);
 //                System.out.println(result1);
@@ -186,7 +211,7 @@ public class OrderController extends HttpServlet {
 
         if (tokenService.isTokenValid(token)) {
 
-            OrderService service = new OrderService();
+            OrderService service = new OrderService(resp);
 
             int result = service.deleteOrder(orderId);
 
