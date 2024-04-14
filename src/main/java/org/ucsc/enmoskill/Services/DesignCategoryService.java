@@ -121,6 +121,47 @@ public class DesignCategoryService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
+        }
+    }
+
+    public int updateCategoryData(DesignCategoryModel designCategory){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            query = "UPDATE design_categories SET category=?, del_1=?, del_2=?, del_3=?, del_4=?, del_5=? WHERE category_id=?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1,designCategory.getCategory());
+            preparedStatement.setString(2,designCategory.getDel_1());
+            preparedStatement.setString(3,designCategory.getDel_2());
+            preparedStatement.setString(4,designCategory.getDel_3());
+            preparedStatement.setString(5,designCategory.getDel_4());
+            preparedStatement.setString(6,designCategory.getDel_5());
+            preparedStatement.setInt(7,designCategory.getCategoryId());
+            result = preparedStatement.executeUpdate();
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exceptions during closing connections if needed
+            }
         }
     }
 }

@@ -102,7 +102,7 @@ public class DesignCategoryController extends HttpServlet {
 
                 if (result > 0){
                     resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data inserted successfully");
+                    out.write(" inserted successfully");
                     System.out.println("Data inserted successfully");
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -115,6 +115,58 @@ public class DesignCategoryController extends HttpServlet {
                 System.out.println("Authorization failed");
             }
         }else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        Gson gson = new Gson();
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        // get query parameter
+        int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isAdmin()){
+
+                // read the request body
+                BufferedReader reader = req.getReader();
+                // handle payload
+                DesignCategoryModel categoryModel = gson.fromJson(reader, DesignCategoryModel.class);
+
+                // set category id
+                categoryModel.setCategoryId(categoryId);
+
+                // update the data
+                DesignCategoryService service = new DesignCategoryService();
+                int result = service.updateCategoryData(categoryModel);
+
+                if (result > 0){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write("Data updated successfully");
+                    System.out.println("Data upated successfully");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Data update unsuccessful");
+                    System.out.println("Data update unsuccessful");
+                }
+
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write("Authorization failed");
+                System.out.println("Authorization failed");
+            }
+
+        } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");
             System.out.println("Authorization failed");
