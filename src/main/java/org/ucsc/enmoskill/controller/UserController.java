@@ -37,42 +37,69 @@ public class UserController extends HttpServlet {
         if (tokenService.isTokenValid(token)){
             if (tokenInfo.isAdmin()){
                 // extract query params
-                int roleNo = Integer.parseInt(req.getParameter("role"));
-                int status = Integer.parseInt(req.getParameter("status"));
+                String roleNoParam = req.getParameter("role");
+                String statusParam = req.getParameter("status");
+                String userIdParam = req.getParameter("userId");
 
-                UserSer service = new UserSer();
-                List<UserFullModel> userList1 = new ArrayList<>();
-                List<UserFullModel> userList2 = new ArrayList<>();
+                // CHECK WHETHER THIS PARM EXISTS
+                if (userIdParam == null){
 
-                int recordCount;
+                    // convert into integer
+                    int roleNo = Integer.parseInt(roleNoParam);
+                    int status = Integer.parseInt(statusParam);
 
-                do{
-                    if (roleNo == 2) {
-                        // get user data
-                        userList1 = service.getAllDesigners();
+                    UserSer service = new UserSer();
+                    List<UserFullModel> userList1 = new ArrayList<>();
+                    List<UserFullModel> userList2 = new ArrayList<>();
 
-                    } else if (roleNo == 1) {
-                        System.out.println("not implemented yet");
+                    int recordCount;
+
+                    do{
+                        if (roleNo == 2) {
+                            // get user data
+                            userList1 = service.getAllDesigners();
+
+                        } else if (roleNo == 1) {
+                            System.out.println("not implemented yet");
+                        }
+
+                        // fetch user record count
+                        recordCount = service.countUserRecords();
+                        System.out.println("record count: "+recordCount);
+                        System.out.println("list length: "+ userList1.size());
+                    } while (recordCount != userList1.size());
+
+                    userList2 = service.filterUsers(userList1, roleNo, status);
+
+                    if (userList2 != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(userList2));
+                        System.out.println("User data retrieved successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("User data retrieval unsuccessful");
+                        System.out.println("User data retrieval unsuccessful");
+
+                    }
+                } else {
+
+                    int userId = Integer.parseInt(userIdParam);
+
+                    UserSer service = new UserSer();
+                    UserFullModel user = service.getAdesigner(userId);
+
+                    if (user != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(user));
+                        System.out.println("User data retrieved successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("User data retrieval unsuccessful");
+                        System.out.println("User data retrieval unsuccessful");
                     }
 
-                    // fetch user record count
-                    recordCount = service.countUserRecords();
-                    System.out.println("record count: "+recordCount);
-                    System.out.println("list length: "+ userList1.size());
-                } while (recordCount != userList1.size());
-
-                userList2 = service.filterUsers(userList1, roleNo, status);
-
-                if (userList2 != null){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(userList2));
-                    System.out.println("User data retrieved successfully");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("User data retrieval unsuccessful");
-                    System.out.println("User data retrieval unsuccessful");
-
                 }
+
 
             }else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
