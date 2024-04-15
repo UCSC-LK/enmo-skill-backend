@@ -83,8 +83,6 @@ public class UserSer {
                     "    user_level_mapping m ON d.userId = m.userID " +
                     "GROUP BY u.userID;";
             preparedStatement = con.prepareStatement(query);
-//            preparedStatement.setInt(1,role);
-//            preparedStatement.setInt(2,status);
 
             resultSet = preparedStatement.executeQuery();
 
@@ -106,6 +104,76 @@ public class UserSer {
                 userFull.setUser(user);
                 userFull.setFname(resultSet.getString("fname"));
                 userFull.setLname(resultSet.getString("lname"));
+                userFull.setStatus(resultSet.getInt("status"));
+                userFull.setJoinedDate(resultSet.getString("joinedDate"));
+
+                userList.add(userFull);
+            }
+
+            return userList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public List<UserFullModel> getAllClients(){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT" +
+                    "    u.userID," +
+                    "    u.username," +
+                    "    u.email," +
+                    "    u.contact_no," +
+                    "    u.url," +
+                    "    c.description," +
+                    "    c.NIC," +
+                    "    c.joinedDate," +
+                    "    c.country," +
+                    "    u.name, "+
+                    "    u.status,"+
+                    "    m.userlevelID "+
+                    "FROM" +
+                    "    users u " +
+                    "LEFT JOIN" +
+                    "    client c ON u.userID = c.userid " +
+                    "LEFT JOIN" +
+                    "    user_level_mapping m ON c.userid = m.userID " +
+                    "GROUP BY u.userID;";
+            preparedStatement = con.prepareStatement(query);
+
+            resultSet = preparedStatement.executeQuery();
+
+            List<UserFullModel> userList = new ArrayList<>();
+
+            while (resultSet.next()){
+                UserFullModel userFull = new UserFullModel();
+                User user = new User();
+
+                user.setId(resultSet.getInt("userID"));
+                user.setContact_no(resultSet.getString("contact_no"));
+                user.setEmail(resultSet.getString("email"));
+                user.setDescription(resultSet.getString("description"));
+                user.setNIC(resultSet.getString("NIC"));
+                user.setUsername(resultSet.getString("username"));
+                user.setName(resultSet.getString("name"));
+                user.setUrl(resultSet.getString("url"));
+                user.setCountry(resultSet.getString("country"));
+                user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+
+                userFull.setUser(user);
                 userFull.setStatus(resultSet.getInt("status"));
                 userFull.setJoinedDate(resultSet.getString("joinedDate"));
 
@@ -215,6 +283,69 @@ public class UserSer {
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
                     userFull.setLname(resultSet.getString("lname"));
+                    userFull.setStatus(resultSet.getInt("status"));
+                    userFull.setJoinedDate(resultSet.getString("joinedDate"));
+                }
+                return userFull;
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public UserFullModel getAclient(int userId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT" +
+                    "    u.userID," +
+                    "    u.username," +
+                    "    u.email," +
+                    "    u.contact_no," +
+                    "    u.url," +
+                    "    c.description," +
+                    "    c.NIC," +
+                    "    c.joinedDate," +
+                    "    c.country," +
+                    "    u.name, "+
+                    "    u.status,"+
+                    "    m.userlevelID "+
+                    "FROM" +
+                    "    users u " +
+                    "LEFT JOIN" +
+                    "    client c ON u.userID = c.userid " +
+                    "LEFT JOIN" +
+                    "    user_level_mapping m ON c.userid = m.userID " +
+                    "WHERE u.userID = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+
+            resultSet  = preparedStatement.executeQuery();
+
+
+            if (resultSet != null){
+
+                UserFullModel userFull = new UserFullModel();
+                User user = new User();
+
+                while (resultSet.next()){
+
+                    user.setId(resultSet.getInt("userID"));
+                    user.setContact_no(resultSet.getString("contact_no"));
+                    user.setEmail(resultSet.getString("email"));
+                    user.setDescription(resultSet.getString("description"));
+                    user.setNIC(resultSet.getString("NIC"));
+                    user.setUsername(resultSet.getString("username"));
+                    user.setName(resultSet.getString("name"));
+                    user.setUrl(resultSet.getString("url"));
+                    user.setCountry(resultSet.getString("country"));
+                    user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+
+                    userFull.setUser(user);
                     userFull.setStatus(resultSet.getInt("status"));
                     userFull.setJoinedDate(resultSet.getString("joinedDate"));
                 }

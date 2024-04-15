@@ -41,11 +41,13 @@ public class UserController extends HttpServlet {
                 String statusParam = req.getParameter("status");
                 String userIdParam = req.getParameter("userId");
 
+                int roleNo = Integer.parseInt(roleNoParam);
+
+
                 // CHECK WHETHER THIS PARM EXISTS
                 if (userIdParam == null){
 
                     // convert into integer
-                    int roleNo = Integer.parseInt(roleNoParam);
                     int status = Integer.parseInt(statusParam);
 
                     UserSer service = new UserSer();
@@ -60,7 +62,7 @@ public class UserController extends HttpServlet {
                             userList1 = service.getAllDesigners();
 
                         } else if (roleNo == 1) {
-                            System.out.println("not implemented yet");
+                            userList1 = service.getAllClients();
                         }
 
                         // fetch user record count
@@ -84,9 +86,16 @@ public class UserController extends HttpServlet {
                 } else {
 
                     int userId = Integer.parseInt(userIdParam);
-
                     UserSer service = new UserSer();
-                    UserFullModel user = service.getAdesigner(userId);
+                    UserFullModel user = new UserFullModel();
+
+                    if (roleNo == 2){
+                        user = service.getAdesigner(userId);
+
+                    } else if (roleNo == 1) {
+                        user = service.getAclient(userId);
+                    }
+
 
                     if (user != null){
                         resp.setStatus(HttpServletResponse.SC_OK);
