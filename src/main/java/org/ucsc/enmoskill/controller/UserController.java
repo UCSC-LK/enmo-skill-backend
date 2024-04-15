@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ucsc.enmoskill.model.BuyerRequestModel;
@@ -39,13 +40,32 @@ public class UserController extends HttpServlet {
                 int roleNo = Integer.parseInt(req.getParameter("role"));
                 int status = Integer.parseInt(req.getParameter("status"));
 
-                // get user data
                 UserSer service = new UserSer();
-                List<UserFullModel> userList = service.getUsers(roleNo, status);
+                List<UserFullModel> userList1 = new ArrayList<>();
+                List<UserFullModel> userList2 = new ArrayList<>();
 
-                if (userList != null){
+                int recordCount;
+
+                do{
+                    if (roleNo == 2) {
+                        // get user data
+                        userList1 = service.getAllDesigners();
+
+                    } else if (roleNo == 1) {
+                        System.out.println("not implemented yet");
+                    }
+
+                    // fetch user record count
+                    recordCount = service.countUserRecords();
+                    System.out.println("record count: "+recordCount);
+                    System.out.println("list length: "+ userList1.size());
+                } while (recordCount != userList1.size());
+
+                userList2 = service.filterUsers(userList1, roleNo, status);
+
+                if (userList2 != null){
                     resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(userList));
+                    out.write(gson.toJson(userList2));
                     System.out.println("User data retrieved successfully");
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

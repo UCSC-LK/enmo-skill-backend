@@ -55,7 +55,7 @@ public class UserSer {
 
 
 
-    public List<UserFullModel> getUsers(int role, int status){
+    public List<UserFullModel> getAllDesigners(){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -81,12 +81,10 @@ public class UserSer {
                     "    designer d ON u.userID = d.userid " +
                     "LEFT JOIN" +
                     "    user_level_mapping m ON d.userId = m.userID " +
-                    "WHERE" +
-                    "    m.userlevelID = ? AND u.status = ? "+
                     "GROUP BY u.userID;";
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1,role);
-            preparedStatement.setInt(2,status);
+//            preparedStatement.setInt(1,role);
+//            preparedStatement.setInt(2,status);
 
             resultSet = preparedStatement.executeQuery();
 
@@ -127,6 +125,41 @@ public class UserSer {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public int countUserRecords(){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT COUNT(userID) FROM users;";
+            preparedStatement = con.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+
+            // Move the cursor to the first row
+            resultSet.next();
+
+            // Retrieve the count value from the ResultSet
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<UserFullModel> filterUsers(List<UserFullModel> list, int role, int status){
+
+        List<UserFullModel> newList = new ArrayList<>();
+
+        for (UserFullModel userModel : list) {
+            User user = userModel.getUser();
+
+            if (userModel.getStatus() == status && String.valueOf(role).equals(user.getUser_role())){
+                newList.add(userModel);
+            }
+        }
+        return newList;
     }
 
 }
