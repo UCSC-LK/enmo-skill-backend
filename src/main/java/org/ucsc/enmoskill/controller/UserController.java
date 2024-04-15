@@ -10,18 +10,61 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.List;
 
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
+import org.ucsc.enmoskill.model.UserFullModel;
 import org.ucsc.enmoskill.utils.Hash;
 import org.ucsc.enmoskill.utils.TokenService;
 
 public class UserController extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        TokenService.TokenInfo tokenInfo;
 
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        Gson gson = new Gson();
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isAdmin()){
+                // extract query params
+                int roleNo = Integer.parseInt(req.getParameter("role"));
+                int status = Integer.parseInt(req.getParameter("status"));
+
+                // get user data
+                UserSer service = new UserSer();
+                List<UserFullModel> userList = service.getUsers(roleNo, status);
+
+                if (userList != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(userList));
+                    System.out.println("User data retrieved successfully");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("User data retrieval unsuccessful");
+                    System.out.println("User data retrieval unsuccessful");
+
+                }
+
+            }else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write("Authorization failed");
+                System.out.println("Authorization failed");
+            }
+
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
     }
 
     @Override
