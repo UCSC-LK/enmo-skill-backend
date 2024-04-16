@@ -67,6 +67,7 @@ public class UserSer {
                     "    d.display_name," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    d.description," +
                     "    d.NIC," +
@@ -100,6 +101,7 @@ public class UserSer {
                 user.setUsername(resultSet.getString("display_name"));
                 user.setUrl(resultSet.getString("url"));
                 user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                user.setPassword(resultSet.getString("password"));
 
                 userFull.setUser(user);
                 userFull.setFname(resultSet.getString("fname"));
@@ -137,6 +139,7 @@ public class UserSer {
                     "    u.username," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    c.description," +
                     "    c.NIC," +
@@ -172,6 +175,7 @@ public class UserSer {
                 user.setUrl(resultSet.getString("url"));
                 user.setCountry(resultSet.getString("country"));
                 user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                user.setPassword(resultSet.getString("password"));
 
                 userFull.setUser(user);
                 userFull.setStatus(resultSet.getInt("status"));
@@ -242,6 +246,7 @@ public class UserSer {
                     "    d.display_name," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    d.description," +
                     "    d.NIC," +
@@ -279,6 +284,7 @@ public class UserSer {
                     user.setUsername(resultSet.getString("display_name"));
                     user.setUrl(resultSet.getString("url"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                    user.setPassword(resultSet.getString("password"));
 
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
@@ -305,6 +311,7 @@ public class UserSer {
                     "    u.userID," +
                     "    u.username," +
                     "    u.email," +
+                    "    u.password,"+
                     "    u.contact_no," +
                     "    u.url," +
                     "    c.description," +
@@ -344,6 +351,7 @@ public class UserSer {
                     user.setUrl(resultSet.getString("url"));
                     user.setCountry(resultSet.getString("country"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                    user.setPassword(resultSet.getString("password"));
 
                     userFull.setUser(user);
                     userFull.setStatus(resultSet.getInt("status"));
