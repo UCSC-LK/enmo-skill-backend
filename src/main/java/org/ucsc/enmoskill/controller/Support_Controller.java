@@ -48,6 +48,7 @@ public class Support_Controller extends HttpServlet {
             }
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("Please login");
         }
 
     }
