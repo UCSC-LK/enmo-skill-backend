@@ -11,18 +11,57 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.ucsc.enmoskill.model.BuyerRequestModel;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.User;
 
 import com.google.gson.Gson;
+import org.ucsc.enmoskill.model.UserFullModel;
 import org.ucsc.enmoskill.utils.Hash;
 import org.ucsc.enmoskill.utils.TokenService;
 
 public class UserController extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        TokenService.TokenInfo tokenInfo;
+
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        Gson gson = new Gson();
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
+
+        tokenInfo = tokenService.getTokenInfo(token);
+
+        if (tokenService.isTokenValid(token)){
+            if (tokenInfo.isAdmin()){
+                // extract query params
+                String roleNoParam = req.getParameter("role");
+                String statusParam = req.getParameter("status");
+                String userIdParam = req.getParameter("userId");
+
+                int roleNo = Integer.parseInt(roleNoParam);
+
+
+                // CHECK WHETHER THIS PARM EXISTS
+                if (userIdParam == null){
+
+                    // convert into integer
+                    int status = Integer.parseInt(statusParam);
+
+                    UserSer service = new UserSer();
+                    List<UserFullModel> userList1 = new ArrayList<>();
+                    List<UserFullModel> userList2 = new ArrayList<>();
+
+                    int recordCount;
+
+                    do{
+                        if (roleNo == 2) {
+                            // get user data
+                            userList1 = service.getAllDesigners();
 
         resp.setContentType("application/json");
         TokenService tokenService = new TokenService();
@@ -82,16 +121,8 @@ public class UserController extends HttpServlet {
             // Insert data into the database
             int isSuccess = newuser.isInsertionSuccessful(newUser);
             if (isSuccess==1) {
-                ClientDetailsPUT service = new ClientDetailsPUT(user);
-                ResponsModel res = service.SaveUser();
-                if(res.getResStatus()==HttpServletResponse.SC_CREATED){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Registration successfully");
-                }else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Registration failed");
-                }
-
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write("Registration successfully");
 //                System.out.println("Registration successful");
             } else if(isSuccess==2){
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

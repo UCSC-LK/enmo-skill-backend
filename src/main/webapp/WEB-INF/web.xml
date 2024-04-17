@@ -100,8 +100,14 @@
         <servlet-name>chats</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.ChatsController</servlet-class>
     </servlet>
-
-
+    <servlet>
+        <servlet-name>order</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.OrderController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>categoryData</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.DesignCategoryController</servlet-class>
+    </servlet>
 
 
 
@@ -153,7 +159,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.SupportAgentController</servlet-class>
     </servlet>
 
-
+    <servlet>
+        <servlet-name>pricepackage</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
+    </servlet>
 
 
 
@@ -250,6 +259,17 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>order</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>categoryData</servlet-name>
+        <url-pattern>/categorydata</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>pricepackage</servlet-name>
+        <url-pattern>/pricepackage</url-pattern>
+    </servlet-mapping>
 
 </web-app>

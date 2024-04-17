@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class TokenService {
-    private static final Key SIGNING_KEY,SIGNING_KEY2 ;
+    public static final Key SIGNING_KEY,SIGNING_KEY2 ;
     private final long EXPIRATION_TIME_HOUR = 3600000;
     private final long EXPIRATION_TIME_DAY = 86400000;
 //    private static final Key SIGNING_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
@@ -83,7 +83,7 @@ public class TokenService {
     }
 
 
-    private static Key getSigningKey() {
+    public static Key getSigningKey() {
         return SIGNING_KEY;
     }
 
