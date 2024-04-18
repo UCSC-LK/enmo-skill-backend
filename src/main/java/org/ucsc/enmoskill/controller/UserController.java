@@ -36,7 +36,7 @@ public class UserController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1) {
             if (tokenInfo.isAdmin()){
                 // extract query params
                 String roleNoParam = req.getParameter("role");
@@ -63,26 +63,74 @@ public class UserController extends HttpServlet {
                             // get user data
                             userList1 = service.getAllDesigners();
 
-        resp.setContentType("application/json");
-        TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);
-        if (tokenService.isTokenValidState(token) == 1) {
-            TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
-            if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
-                UserGet userGet = new UserGet(tokenInfo);
-                ResponsModel res = userGet.Run();
-                resp.setStatus(res.getResStatus());
-                resp.getWriter().write(res.getResMassage());
-            }else {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            }
+                        } else if (roleNo == 1) {
+                            userList1 = service.getAllClients();
+                        }
 
-        } else if (tokenService.isTokenValidState(token) == 2) {
+                        // fetch user record count
+                        recordCount = service.countUserRecords();
+                        System.out.println("record count: "+recordCount);
+                        System.out.println("list length: "+ userList1.size());
+                    } while (recordCount != userList1.size());
+
+                    userList2 = service.filterUsers(userList1, roleNo, status);
+
+                    if (userList2 != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(userList2));
+                        System.out.println("User data retrieved successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("User data retrieval unsuccessful");
+                        System.out.println("User data retrieval unsuccessful");
+
+                    }
+                } else {
+
+                    int userId = Integer.parseInt(userIdParam);
+                    UserSer service = new UserSer();
+                    UserFullModel user = new UserFullModel();
+
+                    if (roleNo == 2){
+                        user = service.getAdesigner(userId);
+
+                    } else if (roleNo == 1) {
+                        user = service.getAclient(userId);
+                    }
+
+
+                    if (user != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(user));
+                        System.out.println("User data retrieved successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("User data retrieval unsuccessful");
+                        System.out.println("User data retrieval unsuccessful");
+                    }
+
+                }
+
+
+            }else {
+                resp.setContentType("application/json");
+                if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
+                    UserGet userGet = new UserGet(tokenInfo);
+                    ResponsModel res = userGet.Run();
+                    resp.setStatus(res.getResStatus());
+                    resp.getWriter().write(res.getResMassage());
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+
+            }
+            }else if (tokenService.isTokenValidState(token) == 2) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         }
+
 
     }
 

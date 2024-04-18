@@ -163,6 +163,10 @@
         <servlet-name>pricepackage</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>notification</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.NotificationController</servlet-class>
+    </servlet>
 
 
 
@@ -215,7 +219,10 @@
         <servlet-name>chats</servlet-name>
         <url-pattern>/chats</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>notification</servlet-name>
+        <url-pattern>/notification</url-pattern>
+    </servlet-mapping>
 
 
 
