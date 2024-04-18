@@ -7,18 +7,23 @@ public class DesignerDashboardModel {
     public double userRatings;
     ProfileModel profileModel;
     public int designerId;
+    public int cancelledOrders;
+
+    public String profileImg;
 
     public DesignerDashboardModel(){
 
     }
 
-    public DesignerDashboardModel(int pendingOrders, int completedOrders, Double totalEarnings, double userRatings, ProfileModel profileModel, int designerId){
+    public DesignerDashboardModel(int pendingOrders, int completedOrders, Double totalEarnings, double userRatings, ProfileModel profileModel, int designerId, int cancelledOrders, String profileImg){
         this.pendingOrders=pendingOrders;
         this.profileModel = profileModel;
         this.completedOrders = completedOrders;
         this.userRatings = userRatings;
         this.totalEarnings = totalEarnings;
         this.designerId = designerId;
+        this.cancelledOrders = cancelledOrders;
+        this.profileImg = profileImg;
     }
 
     public ProfileModel getProfileModel() {
@@ -39,6 +44,18 @@ public class DesignerDashboardModel {
 
     public int getDesignerId() {
         return designerId;
+    }
+
+    public int getPendingOrders() {
+        return pendingOrders;
+    }
+
+    public String getProfileImg() {
+        return profileImg;
+    }
+
+    public int getCancelledOrders() {
+        return cancelledOrders;
     }
 
     public void setProfileModel(ProfileModel profileModel) {
@@ -63,5 +80,13 @@ public class DesignerDashboardModel {
 
     public void setDesignerId(int designerId) {
         this.designerId = designerId;
+    }
+
+    public void setCancelledOrders(int cancelledOrders) {
+        this.cancelledOrders = cancelledOrders;
+    }
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 }

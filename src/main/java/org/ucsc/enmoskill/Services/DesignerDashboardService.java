@@ -18,33 +18,80 @@ public class DesignerDashboardService {
     String query = null;
 
 
-    public DesignerDashboardModel getData(int designerId){
+//    public DesignerDashboardModel getData(int designerId){
+//        con = DatabaseConnection.initializeDatabase();
+//
+//        query = "SELECT o.designerId, o.pending_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url  FROM designer_overview o, users u WHERE o.designerID = u.userID AND designerID = ?;";
+//        try {
+//            preparedStatement = con.prepareStatement(query);
+//            preparedStatement.setInt(1, designerId);
+//            resultSet = preparedStatement.executeQuery();
+//
+//            if (resultSet != null){
+//                DesignerDashboardModel dashboardModel = new DesignerDashboardModel();
+//
+//                while (resultSet.next()){
+//                    dashboardModel.setCompletedOrders(resultSet.getInt("completed_orders"));
+//                    dashboardModel.setPendingOrders(resultSet.getInt("pending_orders"));
+//                    dashboardModel.setCancelledOrders(resultSet.getInt("cancelled_orders"));
+//                    dashboardModel.setTotalEarnings(resultSet.getInt("total_earnings"));
+//                    dashboardModel.setDesignerId(resultSet.getInt("designerId"));
+//                    dashboardModel.setUserRatings(resultSet.getDouble("user_ratings"));
+//                    dashboardModel.setProfileImg(resultSet.getString("url"));
+//
+//                }
+//
+//                return dashboardModel;
+//            }
+//            return null;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+
+    public DesignerDashboardModel getData(int designerId) {
         con = DatabaseConnection.initializeDatabase();
 
-        query = "SELECT * FROM designer_overview WHERE designerID = ?;";
+        if (con == null) {
+            throw new RuntimeException("Failed to connect to database");
+        }
+
+        query = "SELECT o.designerId, o.pending_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url  FROM designer_overview o, users u WHERE o.designerID = u.userID AND designerID = ?;";
+
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, designerId);
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet != null){
+            if (resultSet != null) {
                 DesignerDashboardModel dashboardModel = new DesignerDashboardModel();
 
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     dashboardModel.setCompletedOrders(resultSet.getInt("completed_orders"));
                     dashboardModel.setPendingOrders(resultSet.getInt("pending_orders"));
+                    dashboardModel.setCancelledOrders(resultSet.getInt("cancelled_orders"));
                     dashboardModel.setTotalEarnings(resultSet.getInt("total_earnings"));
                     dashboardModel.setDesignerId(resultSet.getInt("designerId"));
                     dashboardModel.setUserRatings(resultSet.getDouble("user_ratings"));
-
+                    dashboardModel.setProfileImg(resultSet.getString("url"));
                 }
 
                 return dashboardModel;
             }
             return null;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
         }
-
     }
+
 }

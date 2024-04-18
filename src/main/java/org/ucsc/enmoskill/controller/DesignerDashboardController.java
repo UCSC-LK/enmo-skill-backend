@@ -31,7 +31,16 @@ public class DesignerDashboardController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        int designerUserId = Integer.parseInt(tokenInfo.getUserId());
+        int designerUserId = 0;
+        try {
+            designerUserId = Integer.parseInt(tokenInfo.getUserId());
+            // rest of the code
+        } catch (NumberFormatException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("Invalid user ID");
+            System.out.println("Invalid user ID: " + e.getMessage());
+            return;
+        }
 
         if (tokenService.isTokenValid(token)){
             if (tokenInfo.isDesigner()){
@@ -53,9 +62,13 @@ public class DesignerDashboardController extends HttpServlet {
 
                             profile = gson.fromJson(String.valueOf(profilejson), ProfileModel.class);
                             dashboardModel.setProfileModel(profile);
-
+//                            System.out.println(responsModel.getResMassage());
                         } catch (SQLException e) {
+                            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            out.write("Database error");
+                            System.out.println("SQL Error: " + e.getMessage());
                             e.printStackTrace();
+                            return;
                         }
 
                         resp.setStatus(HttpServletResponse.SC_OK);
