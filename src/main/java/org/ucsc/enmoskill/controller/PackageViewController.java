@@ -25,7 +25,7 @@ public class PackageViewController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        System.out.println("get called");
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
         Gson gson = new Gson();
@@ -140,7 +140,7 @@ public class PackageViewController extends HttpServlet {
                             viewModel.setProfileModel(profile);
 
                         } catch (SQLException e) {
-                            throw new RuntimeException(e);
+                            e.printStackTrace();
                         }
 
                         // fetch package pricing data

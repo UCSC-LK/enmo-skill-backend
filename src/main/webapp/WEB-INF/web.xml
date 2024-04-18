@@ -156,6 +156,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>designerdashboard</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -254,6 +258,10 @@
     <servlet-mapping>
         <servlet-name>pricepackage</servlet-name>
         <url-pattern>/pricepackage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>designerdashboard</servlet-name>
+        <url-pattern>/designerdashboard</url-pattern>
     </servlet-mapping>
 
 </web-app>
