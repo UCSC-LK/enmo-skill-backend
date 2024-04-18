@@ -6,6 +6,7 @@ import org.ucsc.enmoskill.utils.OTPhash;
 import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class OtpGET {
     private TokenService.TokenInfo tokenInfo;
@@ -13,7 +14,7 @@ public class OtpGET {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run(){
+    public ResponsModel Run() throws IOException {
 
         OTPhash otphash = new OTPhash();
         String ranNum=otphash.randomNumGen();
@@ -25,7 +26,14 @@ public class OtpGET {
 
         otpModel otpmodel = new otpModel(ranNum,hashString);
 
-        return new ResponsModel(hashString, HttpServletResponse.SC_CREATED);
+
+        boolean result = otphash.sendOTP("0716676968",otpmodel.getOtp());
+
+        if(result){
+            return new ResponsModel(hashString, HttpServletResponse.SC_CREATED);
+        }else{
+            return new ResponsModel("Try again!", HttpServletResponse.SC_CREATED);
+        }
 
     }
 

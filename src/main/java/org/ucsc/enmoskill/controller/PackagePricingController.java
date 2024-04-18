@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.*;
-import org.*;
+
 
 import org.ucsc.enmoskill.model.*;
 import org.ucsc.enmoskill.model.Package;
