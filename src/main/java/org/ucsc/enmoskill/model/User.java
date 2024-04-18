@@ -53,7 +53,7 @@ public class User {
 
     // Setter for name
     public void setEmail(String email) {
-        this.username = email;
+        this.email = email;
     }
     // Getter for name
     public String getUsername() {
@@ -137,6 +137,10 @@ public class User {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public User() {
+
     }
 }
 
