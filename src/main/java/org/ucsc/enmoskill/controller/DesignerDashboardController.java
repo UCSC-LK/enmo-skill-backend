@@ -53,28 +53,32 @@ public class DesignerDashboardController extends HttpServlet {
                     // get profile data
                     ProfileModel profile = new ProfileModel(dashboardModel.getDesignerId(), "Designer", null, null, null, null, null, null);
 
-                    if (profile.CheckReqiredFields()){
-                        ProfileGET servise = new ProfileGET(profile,resp);
-                        try{
-                            StringBuilder profilejson = new StringBuilder();
-                            ResponsModel responsModel= servise.Run();
-                            profilejson.append(responsModel.getResMassage());
+//                    if (profile.CheckReqiredFields()){
+//                        ProfileGET servise = new ProfileGET(profile,resp);
+//                        try{
+//                            StringBuilder profilejson = new StringBuilder();
+//                            ResponsModel responsModel= servise.Run();
+//                            profilejson.append(responsModel.getResMassage());
+//
+//                            profile = gson.fromJson(String.valueOf(profilejson), ProfileModel.class);
+//                            dashboardModel.setProfileModel(profile);
+////                            System.out.println(responsModel.getResMassage());
+//                        } catch (SQLException e) {
+//                            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//                            out.write("Database error");
+//                            System.out.println("SQL Error: " + e.getMessage());
+//                            e.printStackTrace();
+//                            return;
+//                        }
+//
+//                        resp.setStatus(HttpServletResponse.SC_OK);
+//                        out.write(gson.toJson(dashboardModel));
+//                        System.out.println("Data loaded successfully");
+//                    }
 
-                            profile = gson.fromJson(String.valueOf(profilejson), ProfileModel.class);
-                            dashboardModel.setProfileModel(profile);
-//                            System.out.println(responsModel.getResMassage());
-                        } catch (SQLException e) {
-                            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            out.write("Database error");
-                            System.out.println("SQL Error: " + e.getMessage());
-                            e.printStackTrace();
-                            return;
-                        }
-
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(dashboardModel));
-                        System.out.println("Data loaded successfully");
-                    }
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(dashboardModel));
+                    System.out.println("Data loaded successfully");
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

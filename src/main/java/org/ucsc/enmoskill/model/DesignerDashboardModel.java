@@ -8,7 +8,6 @@ public class DesignerDashboardModel {
     ProfileModel profileModel;
     public int designerId;
     public int cancelledOrders;
-
     public String profileImg;
 
     public DesignerDashboardModel(){
