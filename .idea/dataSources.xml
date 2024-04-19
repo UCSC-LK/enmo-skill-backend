@@ -8,14 +8,7 @@
       <jdbc-url>jdbc:mysql://database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com:3306/enmo_database</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com@localhost" uuid="fd1bdade-f857-4881-a96c-f795b4d0e77b">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="@enmoskill.eastus.cloudapp.azure.com" uuid="48974a83-ef46-4772-8d7e-9f98bdda980d">
+    <data-source source="LOCAL" name="azure" uuid="8fa5abc2-fdb3-4554-8c6d-79af8c10a2c3">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

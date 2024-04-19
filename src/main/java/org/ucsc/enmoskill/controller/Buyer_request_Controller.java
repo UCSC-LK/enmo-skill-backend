@@ -29,11 +29,13 @@ public class Buyer_request_Controller extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             BuyerRequestGET service = new BuyerRequestGET(resp,tokenInfo);
             service.Run();
-        }else {
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
@@ -72,35 +74,51 @@ public class Buyer_request_Controller extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         String reqesttid= req.getParameter("requestID");
-        if(reqesttid!=null){
-            try {
-                new BuyerRequestDELETE(reqesttid,resp);
-            } catch (SQLException e) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                throw new RuntimeException(e);
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+        if(tokenService.isTokenValid(token)){
+            if(reqesttid!=null){
+                try {
+                    new BuyerRequestDELETE(reqesttid,resp,tokenInfo);
+                } catch (SQLException e) {
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    throw new RuntimeException(e);
+                }
+            }
+            else {
+                resp.getWriter().write("Invalid Parameter");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
         }
-        else {
-            resp.getWriter().write("Invalid Parameter");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
+
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         resp.setContentType("application/json");
-        try (BufferedReader reader = req.getReader()){
-            BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
-            if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getRequestID()!=0&&buyerRequestModel.getBudget()!=0){
-                BuyerRequestPUT service = new BuyerRequestPUT(resp,buyerRequestModel);
-                service.Run();
-            }else {
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+        if (tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            try (BufferedReader reader = req.getReader()){
+                BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
+                buyerRequestModel.setUserID(Integer.parseInt(tokenInfo.getUserId()));
+                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getRequestID()!=0&&buyerRequestModel.getBudget()!=0){
+                    BuyerRequestPUT service = new BuyerRequestPUT(resp,buyerRequestModel);
+                    service.Run();
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("Required Field Missing");
+                }
+            } catch (Exception e) {
+                resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Required Field Missing");
             }
-        } catch (Exception e) {
-            resp.getWriter().write(e.toString());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
     }
 }
