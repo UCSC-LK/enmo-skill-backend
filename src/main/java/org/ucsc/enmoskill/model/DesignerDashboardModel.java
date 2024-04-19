@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.util.List;
+
 public class DesignerDashboardModel {
     public int pendingOrders;
     public int completedOrders;
@@ -9,6 +11,7 @@ public class DesignerDashboardModel {
     public int designerId;
     public int cancelledOrders;
     public String profileImg;
+    List<NotificationModel> notifications;
 
     public DesignerDashboardModel(){
 
@@ -57,6 +60,10 @@ public class DesignerDashboardModel {
         return cancelledOrders;
     }
 
+    public List<NotificationModel> getNotifications() {
+        return notifications;
+    }
+
     public void setProfileModel(ProfileModel profileModel) {
         this.profileModel = profileModel;
     }
@@ -87,5 +94,9 @@ public class DesignerDashboardModel {
 
     public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public void setNotifications(List<NotificationModel> notifications) {
+        this.notifications = notifications;
     }
 }

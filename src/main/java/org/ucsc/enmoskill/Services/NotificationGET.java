@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.MessageModel;
 import org.ucsc.enmoskill.model.NotificationModel;
+import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ public class NotificationGET {
         this.response = response;
         this.tokenInfo = tokenInfo;
     }
-    public void Run() {
+    public ResponsModel Run() {
         String query ="SELECT t.*  FROM enmo_database.notifications t WHERE userId = "+tokenInfo.getUserId()+" ORDER BY date desc LIMIT 50";
         Connection connection = DatabaseConnection.initializeDatabase();
         PreparedStatement preparedStatement = null;
@@ -43,7 +44,11 @@ public class NotificationGET {
             jsonObject.addProperty("count",count);
             jsonObject.add("notifications",jsonArray);
 
-
+            if (!jsonObject.toString().isEmpty()){
+                return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
+            }else{
+                return new ResponsModel("Notifications data not found",HttpServletResponse.SC_NOT_FOUND);
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
