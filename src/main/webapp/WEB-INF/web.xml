@@ -160,6 +160,16 @@
         <servlet-class>org.ucsc.enmoskill.controller.OTPController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>BillingInformation</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.BillingInformationController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>orderTprice</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.OrderPriceController</servlet-class>
+    </servlet>
+
+
 
 
 
@@ -266,6 +276,16 @@
     <servlet-mapping>
         <servlet-name>OTP</servlet-name>
         <url-pattern>/otp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillingInformation</servlet-name>
+        <url-pattern>/billingInformation</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>orderTprice</servlet-name>
+        <url-pattern>/orderTprice</url-pattern>
     </servlet-mapping>
 
 
