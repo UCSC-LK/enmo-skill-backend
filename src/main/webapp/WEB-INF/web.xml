@@ -176,7 +176,10 @@
         <servlet-name>orderTprice</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OrderPriceController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>warning</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.WarningController</servlet-class>
+    </servlet>
 
 
 
@@ -319,6 +322,9 @@
         <servlet-name>orderTprice</servlet-name>
         <url-pattern>/orderTprice</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>warning</servlet-name>
+        <url-pattern>/warning</url-pattern>
+    </servlet-mapping>
 
 </web-app>

@@ -115,14 +115,15 @@ public class UserSer {
             return userList;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
     }
@@ -187,14 +188,15 @@ public class UserSer {
             return userList;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
     }
