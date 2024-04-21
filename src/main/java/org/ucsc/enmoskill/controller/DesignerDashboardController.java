@@ -79,49 +79,40 @@ public class DesignerDashboardController extends HttpServlet {
                         return;
                     }
 
+                    // get notifications
                     NotificationGET notificationService = new NotificationGET(resp,tokenInfo);
                     ResponsModel responsModel = notificationService.Run();
-//                    System.out.println(responsModel.getResMassage());
+
+                    // convert the notification string to a json object
                     JsonObject jsonObject = new Gson().fromJson(responsModel.getResMassage(), JsonObject.class);
 
-                    JsonArray notificationsArray = jsonObject.getAsJsonArray("notifications");
+                    // check whether the notifications array is empty
+                    if (jsonObject.get("count").getAsInt() > 0){
 
-                    List<NotificationModel> notificationsList = new ArrayList<>();
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+                        // extract only the notifications array
+                        JsonArray notificationsArray = jsonObject.getAsJsonArray("notifications");
 
-                    for (int i = 0; i < notificationsArray.size(); i++) {
-                        JsonObject notificationObject = notificationsArray.get(i).getAsJsonObject();
+                        List<NotificationModel> notificationsList = new ArrayList<>();
 
-                        int notificationID = notificationObject.get("notificationID").getAsInt();
-                        int userId = notificationObject.get("userid").getAsInt();
-                        String content = notificationObject.get("content").getAsString();
-                        String type = notificationObject.get("type").getAsString();
-                        int status = notificationObject.get("status").getAsInt();
-//                        Date date = Date.valueOf(notificationObject.get("date").getAsString());
-                        Date date = null;
-                        try {
-                            date = new Date(sdf.parse(notificationObject.get("date").getAsString()).getTime());
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
+                        // iterate and covert each into an notificationmodel object
+                        for (int i = 0; i < notificationsArray.size(); i++) {
+                            JsonObject notificationObject = notificationsArray.get(i).getAsJsonObject();
+                            NotificationModel notificationModel = gson.fromJson(notificationObject, NotificationModel.class);
+
+                            // append to list
+                            notificationsList.add(notificationModel);
+
+                            // add the notification list to the dashboard model
+                            dashboardModel.setNotifications(notificationsList);
                         }
-
-                        NotificationModel notification = new NotificationModel(notificationID, userId, content, type, status, date);
-                        notificationsList.add(notification);
-
-                        dashboardModel.setNotifications(notificationsList);
+                    } else {
+                        dashboardModel.setNotifications(null);
                     }
 
-//                    // Print the list of notifications
-//                    for (NotificationModel notification : notificationsList) {
-//                        System.out.println("Notification ID: " + notification.getNotificationID());
-//                        System.out.println("User ID: " + notification.getUserid());
-//                        System.out.println("Content: " + notification.getContent());
-//                        System.out.println("Type: " + notification.getType());
-//                        System.out.println("Status: " + notification.getStatus());
-//                        System.out.println("Date: " + notification.getDate());
-//                        System.out.println("-----------------------------");
-//                    }
+                    // fetch messages
 
+
+//
 
                     resp.setStatus(HttpServletResponse.SC_OK);
                     out.write(gson.toJson(dashboardModel));
