@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WarningService {
 
@@ -40,7 +42,44 @@ public class WarningService {
             }
         }
 
+    }
 
-//        return 0;
+    public List<WarningModel> getWarnings(int userId){
+        con = DatabaseConnection.initializeDatabase();
+        String query = "SELECT * FROM warning WHERE user_id = ?;";
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            resultSet = preparedStatement.executeQuery();
+
+            List<WarningModel> list = new ArrayList<>();
+
+            if (resultSet != null){
+                WarningModel warningModel = new WarningModel();
+                while (resultSet.next()){
+                    warningModel.setWarningId(resultSet.getInt("warning_id"));
+                    warningModel.setReason(resultSet.getString("reason"));
+                    warningModel.setDate(resultSet.getDate("date"));
+                    warningModel.setUserId(resultSet.getInt("user_id"));
+                    warningModel.setTicketId(resultSet.getInt("ticket_id"));
+
+                    list.add(warningModel);
+                }
+                return list;
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+        }
     }
 }
