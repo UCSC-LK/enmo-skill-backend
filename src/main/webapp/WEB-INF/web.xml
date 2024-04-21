@@ -168,6 +168,10 @@
         <servlet-name>orderTprice</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OrderPriceController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ernings</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ErningsController</servlet-class>
+    </servlet>
 
 
 
@@ -286,6 +290,11 @@
     <servlet-mapping>
         <servlet-name>orderTprice</servlet-name>
         <url-pattern>/orderTprice</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ernings</servlet-name>
+        <url-pattern>/ernings</url-pattern>
     </servlet-mapping>
 
 
