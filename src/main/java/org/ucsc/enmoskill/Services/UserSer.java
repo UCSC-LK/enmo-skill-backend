@@ -177,6 +177,8 @@ public class UserSer {
                 user.setCountry(resultSet.getString("country"));
                 user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
                 user.setPassword(resultSet.getString("password"));
+                user.setUsername(resultSet.getString("username"));
+
 
                 userFull.setUser(user);
                 userFull.setStatus(resultSet.getInt("status"));
@@ -287,7 +289,7 @@ public class UserSer {
                     user.setUrl(resultSet.getString("url"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
                     user.setPassword(resultSet.getString("password"));
-
+                    user.setName(resultSet.getString("name"));
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
                     userFull.setLname(resultSet.getString("lname"));

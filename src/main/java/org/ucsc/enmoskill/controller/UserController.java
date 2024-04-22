@@ -101,6 +101,7 @@ public class UserController extends HttpServlet {
 
 
                     if (user != null){
+                        System.out.println(user.getUser().getName());
                         resp.setStatus(HttpServletResponse.SC_OK);
                         out.write(gson.toJson(user));
                         System.out.println("User data retrieved successfully");
