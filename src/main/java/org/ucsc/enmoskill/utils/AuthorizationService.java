@@ -14,7 +14,7 @@ import static org.ucsc.enmoskill.utils.TokenService.getSigningKey;
 
 public class AuthorizationService {
 
-    public AuthorizationResults authorize(String jwtToken, String userLevelID) {
+    public AuthorizationResults authorize(String jwtToken, String[] userLevelIDs) {
         if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
             jwtToken = jwtToken.substring(7); // Remove "Bearer " prefix
 
@@ -33,8 +33,10 @@ public class AuthorizationService {
                 out.println("jwtUserLevelID JWT -- : " + jwtUserLevelID);
                 out.println("userID JWT -- : " + userId);
 
-                if (userLevelID.equals(jwtUserLevelID)) {
-                    return new AuthorizationResults(userId, jwtUserLevelID);
+                for (String userLevelID : userLevelIDs) {
+                    if (userLevelID.equals(jwtUserLevelID)) {
+                        return new AuthorizationResults(userId, jwtUserLevelID);
+                    }
                 }
             } catch (JwtException e) {
                 // Handle exceptions accordingly

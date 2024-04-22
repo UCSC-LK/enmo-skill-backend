@@ -5,28 +5,102 @@ import java.sql.SQLException;
 
 public class ProposalModel {
 
-    private String proposalID ,duration ,budget,userID , requestID;
-    private String date, description ;
+    private String proposalID ,deliveryDuration ,price,userID , requestID;
+    private String title, description , packageId  ,pricingPackage;
 
-    public ProposalModel(String proposalID, String duration, String budget , String userID, String date, String description ,String requestID){
+    private String designerId;
+    private String clientId;
+
+    public ProposalModel(String proposalID,String packageId,String pricingPackage, String duration, String budget , String userID, String date, String description ,String requestID, String designerId, String clientId){
         this.proposalID = proposalID;
-        this.duration = duration;
-        this.budget = budget;
+        this.deliveryDuration = duration;
+        this.price = budget;
         this.userID = userID;
-        this.date = date;
+        this.title = date;
         this.description =description;
         this.requestID = requestID;
+        this.packageId = packageId;
+        this.pricingPackage = pricingPackage;
+        this.designerId = designerId;
+        this.clientId = clientId;
     }
 
     public ProposalModel(ResultSet resultSet) throws SQLException {
         this.proposalID = resultSet.getString("proposalID");
-        this.duration = resultSet.getString("duration");
-        this.budget = resultSet.getString("budget");
+        this.deliveryDuration = resultSet.getString("duration");
+        this.price = resultSet.getString("price");
         this.userID = resultSet.getString("userID");
-        this.date = resultSet.getString("date");
+        this.title = resultSet.getString("title");
         this.description = resultSet.getString("description");
         this.requestID = resultSet.getString("requestID");
+        this.pricingPackage = resultSet.getString("pricingPackage");
+        this.packageId = resultSet.getString("packageId");
+        this.designerId = resultSet.getString("designer_userID");
+        this.clientId = resultSet.getString("client_userID");
     }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getDesignerId() {
+        return designerId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setDesignerId(String designerId) {
+        this.designerId = designerId;
+    }
+
+    public void setRequestID(String requestID) {
+        this.requestID = requestID;
+    }
+
+
+    public String getDeliveryDuration() {
+        return deliveryDuration;
+    }
+
+    public void setDeliveryDuration(String deliveryDuration) {
+        this.deliveryDuration = deliveryDuration;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public String getPricingPackage() {
+        return pricingPackage;
+    }
+
+    public void setPricingPackage(String pricingPackage) {
+        this.pricingPackage = pricingPackage;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+
 
     public String getProposalID() {
         return proposalID;
@@ -37,19 +111,19 @@ public class ProposalModel {
     }
 
     public String getDuration() {
-        return duration;
+        return deliveryDuration;
     }
 
     public void setDuration(String duration) {
-        this.duration = duration;
+        this.deliveryDuration = duration;
     }
 
     public String getBudget() {
-        return budget;
+        return price;
     }
 
     public void setBudget(String budget) {
-        this.budget = budget;
+        this.price = budget;
     }
 
     public String getUserID() {
@@ -61,11 +135,11 @@ public class ProposalModel {
     }
 
     public String getDate() {
-        return date;
+        return title;
     }
 
     public void setDate(String date) {
-        this.date = date;
+        this.title = date;
     }
 
     public String getDescription() {
