@@ -27,6 +27,8 @@ public class FileHandlerControler extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String endpointUrl = request.getHeader("endpoint");
+
         if (ServletFileUpload.isMultipartContent(request)) {
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -62,7 +64,7 @@ public class FileHandlerControler extends HttpServlet {
                                 .build();
 
 
-                        String objectKey = "profile_pics/" + fileName;
+                        String objectKey = endpointUrl+"/" + fileName;
 
 
                         s3Client.putObject(PutObjectRequest.builder()

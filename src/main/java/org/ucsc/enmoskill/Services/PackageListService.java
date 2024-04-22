@@ -863,21 +863,21 @@ public class PackageListService {
 //        }
 //    }
 
-    public static List<Package> unwrap(ResultSet resultSet){
-        List<Package> packages = new ArrayList<>();
-
-        try {
-            while (resultSet.next()){
-                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"), resultSet.getTimestamp("insertion_time"));
-                packages.add(newPackage);
-            }
-            return packages;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
+//    public static List<Package> unwrap(ResultSet resultSet){
+//        List<Package> packages = new ArrayList<>();
+//
+//        try {
+//            while (resultSet.next()){
+//                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"), resultSet.getTimestamp("insertion_time"));
+//                packages.add(newPackage);
+//            }
+//            return packages;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//
+//    }
 
     public List<PackageBlockModel> getPackages(){
         Connection con = null;
