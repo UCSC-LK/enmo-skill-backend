@@ -108,7 +108,10 @@
         <servlet-name>categoryData</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.DesignCategoryController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>bann</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.BannController</servlet-class>
+    </servlet>
 
 
 
@@ -180,15 +183,26 @@
         <servlet-name>orderTprice</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OrderPriceController</servlet-class>
     </servlet>
+
     <servlet>
         <servlet-name>ernings</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.ErningsController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>warning</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.WarningController</servlet-class>
     </servlet>
 
 
 
 
 
+
+
+    <servlet>
+        <servlet-name>designerdashboard</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -299,6 +313,10 @@
         <servlet-name>pricepackage</servlet-name>
         <url-pattern>/pricepackage</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>designerdashboard</servlet-name>
+        <url-pattern>/designerdashboard</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>OTP</servlet-name>
@@ -320,5 +338,13 @@
         <url-pattern>/ernings</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>warning</servlet-name>
+        <url-pattern>/warning</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>bann</servlet-name>
+        <url-pattern>/bann</url-pattern>
+    </servlet-mapping>
 
 </web-app>

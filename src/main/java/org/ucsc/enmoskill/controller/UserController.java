@@ -76,6 +76,7 @@ public class UserController extends HttpServlet {
                     userList2 = service.filterUsers(userList1, roleNo, status);
 
                     if (userList2 != null){
+                        log(userList2.toString());
                         resp.setStatus(HttpServletResponse.SC_OK);
                         out.write(gson.toJson(userList2));
                         System.out.println("User data retrieved successfully");
@@ -100,6 +101,7 @@ public class UserController extends HttpServlet {
 
 
                     if (user != null){
+                        System.out.println(user.getUser().getName());
                         resp.setStatus(HttpServletResponse.SC_OK);
                         out.write(gson.toJson(user));
                         System.out.println("User data retrieved successfully");
