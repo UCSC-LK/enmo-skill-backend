@@ -29,7 +29,7 @@ public class ErningsModel {
 ;
         this.begin=begin;
         this.active=active;
-        this.all=all;
+        this.all=available;
         this.available=available-all;
         this.lastDate=lastDate;
         this.lastAmount=lastAmount;
