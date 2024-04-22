@@ -109,9 +109,11 @@ public class PackagePricingController extends HttpServlet {
                     responseJson.addProperty("pricePackageId", result1);
 
                     if (result2 > 0){
+                        responseJson.addProperty("deliverablesId", result2);
+
                         responseJson.addProperty("message", "Data inserted successfully");
                         resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(String.valueOf(responseJson));
+                        out.write(gson.toJson(responseJson));
                         System.out.println("Data inserted successfully");
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

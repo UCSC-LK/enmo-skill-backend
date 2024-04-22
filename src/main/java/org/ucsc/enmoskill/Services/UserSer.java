@@ -67,6 +67,7 @@ public class UserSer {
                     "    d.display_name," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    d.description," +
                     "    d.NIC," +
@@ -100,6 +101,7 @@ public class UserSer {
                 user.setUsername(resultSet.getString("display_name"));
                 user.setUrl(resultSet.getString("url"));
                 user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                user.setPassword(resultSet.getString("password"));
 
                 userFull.setUser(user);
                 userFull.setFname(resultSet.getString("fname"));
@@ -113,14 +115,15 @@ public class UserSer {
             return userList;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
     }
@@ -137,6 +140,7 @@ public class UserSer {
                     "    u.username," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    c.description," +
                     "    c.NIC," +
@@ -172,6 +176,9 @@ public class UserSer {
                 user.setUrl(resultSet.getString("url"));
                 user.setCountry(resultSet.getString("country"));
                 user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                user.setPassword(resultSet.getString("password"));
+                user.setUsername(resultSet.getString("username"));
+
 
                 userFull.setUser(user);
                 userFull.setStatus(resultSet.getInt("status"));
@@ -183,14 +190,15 @@ public class UserSer {
             return userList;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch dashboard data", e);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
     }
@@ -242,6 +250,7 @@ public class UserSer {
                     "    d.display_name," +
                     "    u.email," +
                     "    u.contact_no," +
+                    "    u.password," +
                     "    u.url," +
                     "    d.description," +
                     "    d.NIC," +
@@ -279,7 +288,8 @@ public class UserSer {
                     user.setUsername(resultSet.getString("display_name"));
                     user.setUrl(resultSet.getString("url"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
-
+                    user.setPassword(resultSet.getString("password"));
+                    user.setName(resultSet.getString("name"));
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
                     userFull.setLname(resultSet.getString("lname"));
@@ -305,6 +315,7 @@ public class UserSer {
                     "    u.userID," +
                     "    u.username," +
                     "    u.email," +
+                    "    u.password,"+
                     "    u.contact_no," +
                     "    u.url," +
                     "    c.description," +
@@ -344,6 +355,7 @@ public class UserSer {
                     user.setUrl(resultSet.getString("url"));
                     user.setCountry(resultSet.getString("country"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
+                    user.setPassword(resultSet.getString("password"));
 
                     userFull.setUser(user);
                     userFull.setStatus(resultSet.getInt("status"));

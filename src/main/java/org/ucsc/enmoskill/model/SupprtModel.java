@@ -6,17 +6,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no,status,agentID;
+    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID,complainantID;
 
-    private String description,subject,date,role,email,userName,url;
+    private String description,subject,date,role,email,userName,url,fileURL,admin;
 
-    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID) {
+    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL,String admin,int complainantID) {
         this.requesterID = requesterID;
         this.ref_no = ref_no;
         this.description = description;
         this.subject = subject;
         this.role = role;
         this.agentID=agentID;
+        this.order=order;
+        this.packages=packages;
+        this.urgent=urgent;
+        this.fileURL=fileURL;
+        this.admin=admin;
+        this.complainantID=complainantID;
+
     }
     public SupprtModel(ResultSet result) throws SQLException {
         this.requesterID = result.getInt("requesterID");
@@ -25,6 +32,11 @@ public class SupprtModel {
         this.subject = result.getString("subject");
         this.date = result.getString("date");
         this.status = result.getInt("status");
+        this.order = result.getInt("order");
+        this.packages = result.getInt("packages");
+        this.urgent=result.getInt("urgent");
+        this.fileURL = result.getString("fileURL");
+        this.admin = result.getString("assign_ad");
 
     }
 
@@ -32,15 +44,36 @@ public class SupprtModel {
         this.requesterID = result.getInt("requesterID");
         this.ref_no = result.getInt("ticketID");
         this.description = result.getString("description");
-        this.subject = result.getString("subject");
+//        this.subject = result.getString("subject");
         this.date = result.getString("date");
+        this.roleID=result.getInt("userlevelID");
+//        this.status=result.getInt("status");
+//        this.admin=result.getString("assign_ad");
     }
+
+    public SupprtModel(ResultSet result, String comment,boolean agent) throws SQLException {
+        this.agentID = result.getInt("agent_id");
+        this.date = result.getString("date");
+        this.description = result.getString("comment");
+    }
+
+//    public SupprtModel(ResultSet result,boolean agent,boolean adminComment) throws SQLException {
+//        this.ref_no = result.getInt("ticket_id");
+//        this.agentID = result.getInt("agent_id");
+//        this.agent_description = result.getString("agent_description");
+//        this.description = result.getString("comment");
+//        this.date = result.getString("date");
+//    }
 
     public SupprtModel(ResultSet result, String TicketID,int a) throws SQLException {
         this.description = result.getString("description");
         this.subject = result.getString("subject");
         this.date = result.getString("date");
         this.status = result.getInt("status");
+        this.order = result.getInt("order");
+        this.packages = result.getInt("packages");
+        this.urgent=result.getInt("urgent");
+        this.fileURL = result.getString("fileURL");
     }
 
     public SupprtModel(ResultSet result,boolean agent) throws SQLException {
@@ -55,7 +88,11 @@ public class SupprtModel {
         this.role = result.getString("userlevelID");;
         this.agentID=result.getInt("agentID");
         this.url=result.getString("url");
-
+        this.order = result.getInt("order");
+        this.packages = result.getInt("packages");
+        this.urgent=result.getInt("urgent");
+        this.fileURL = result.getString("fileURL");
+        this.admin = result.getString("assign_ad");
     }
 
 
@@ -64,32 +101,73 @@ public class SupprtModel {
 //        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 //        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,status) VALUES (\""+description+"\", \'"+Date+"\',"+ requesterID+", \""+subject+"\",1)";
 
-        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,status) VALUES ( ?,?,?,?,1)";
+        String query="INSERT INTO enmo_database.ticket (description, date, requesterID, subject,fileURL, `order`,`packages`, `status`) VALUES (?, ?, ?, ?, COALESCE(?, ''), ?,?, 1)";
+
 
         return query;
 
     }
 
-    public String setHistoryData(){
-        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID, subject)\n" +
-                "SELECT ref_no, description, date, requesterID, subject\n" +
-                "FROM ticket\n" +
-                "WHERE ref_no = \'" + ref_no+"\' AND status = 1" ;
+    public String setReply(){
+        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
+                "SELECT t.ref_no, ?, ?, ? "+
+                "FROM ticket t "+
+                "WHERE (t.status = 2 OR t.status = 1) AND t.ref_no = " + ref_no;
+        return query;
+    }
+    public String setReply2(){
+        String query = "INSERT INTO enmo_database.ticket_history (ticketID, description, date, requesterID) " +
+                "SELECT t.ref_no, ?, ?, ? "+
+                "FROM ticket t "+
+                "WHERE (t.status = 2 OR t.status = 1) AND t.assign_ad=1 AND t.ref_no = " + ref_no;
         return query;
     }
 
-    public String getUpdatedQuery(){
+//    public String getUpdatedQuery(){
+//
+////        Date Today= new Date();
+////        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//
+////        String query ="UPDATE enmo_database.ticket t SET t.description = \"" + description + "\", t.subject = \"" + subject + "\", t.date = \'" + Date + "\'\n" +
+////                        "WHERE t.ref_no="+ref_no;
+//
+//        String query ="UPDATE enmo_database.ticket SET description = ?, subject = ?, date =? "+
+//                       "WHERE ref_no="+ref_no;
+//
+//        return query;
+//    }
 
-//        Date Today= new Date();
-//        String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 
-//        String query ="UPDATE enmo_database.ticket t SET t.description = \"" + description + "\", t.subject = \"" + subject + "\", t.date = \'" + Date + "\'\n" +
-//                        "WHERE t.ref_no="+ref_no;
+    public int getUrgent() {
+        return urgent;
+    }
 
-        String query ="UPDATE enmo_database.ticket SET description = ?, subject = ?, date =? "+
-                       "WHERE ref_no="+ref_no;
+    public void setUrgent(int urgent) {
+        this.urgent = urgent;
+    }
 
-        return query;
+    public String getFileURL() {
+        return fileURL;
+    }
+
+    public void setFileURL(String fileURL) {
+        this.fileURL = fileURL;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public int getPackages() {
+        return packages;
+    }
+
+    public void setPackages(int packages) {
+        this.packages = packages;
     }
 
     public int getRequesterID() {
@@ -122,5 +200,12 @@ public class SupprtModel {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+    public void setComplainantID(int complainantID) {
+        this.complainantID = complainantID;
+    }
+
+    public int getComplainantID() {
+        return complainantID;
     }
 }

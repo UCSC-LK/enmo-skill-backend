@@ -5,10 +5,7 @@ import org.ucsc.enmoskill.model.DeliverablesModel;
 import org.ucsc.enmoskill.model.PackageDeliverables;
 import org.ucsc.enmoskill.model.PackagePricing;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class PackageDeliverablesService {
 
@@ -26,7 +23,7 @@ public class PackageDeliverablesService {
             query = "INSERT INTO price_package_deliverables"+
                     "(price_package_id, category, del_1, del_2, del_3, del_4, del_5) "+
                     "VALUES(?,?,?,?,?,?,?)";
-            preparedStatement = con.prepareStatement(query);
+            preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ;
             preparedStatement.setInt(1, deliverablesModel.getPricePackageId());
             preparedStatement.setInt(2, deliverablesModel.getCategoryId());
@@ -38,7 +35,19 @@ public class PackageDeliverablesService {
 
             result = preparedStatement.executeUpdate();
 
-            return result;
+            if (result > 0) {
+                // Retrieve the auto-generated keys (including the primary key)
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+
+                    } else {
+                        throw new SQLException("Creating price package failed, no ID obtained.");
+                    }
+                }
+            }
+
+            return 0;
 
 
 

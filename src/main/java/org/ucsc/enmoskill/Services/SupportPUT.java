@@ -8,10 +8,7 @@ import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,39 +33,69 @@ public class SupportPUT {
 
         }else {
             supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
-
-            String query1 = this.supportObj.setHistoryData();//insert data form ticket table to ticket_history table
-            String query2 = this.supportObj.getUpdatedQuery();//update ticket table
-
-
-            PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-            int rowsAffected1 = preparedStatement1.executeUpdate();
-            int rowsAffected2=0;
-
-            if(rowsAffected1>0){
-
-                Date Today= new Date();
-                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
-
-                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
-                preparedStatement2.setString(1, supportObj.getDescription());
-                preparedStatement2.setString(2, supportObj.getSubject());
-                preparedStatement2.setString(3, Date);
-
-                rowsAffected2 = preparedStatement2.executeUpdate();
+            String query1=null;
+            int flag =0;
+            if(tokenInfo.isAdmin()){
+                query1 = this.supportObj.setReply2();
+            } else{
+                query1 = this.supportObj.setReply();
             }
 
-            if (rowsAffected2 > 0) {
+            if(tokenInfo.isAgent() || tokenInfo.isAdmin()){flag=1;}
 
+
+            Date Today= new Date();
+            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query1);
+//            preparedStatement.setInt(1, supportObj.getRef_no());
+
+            preparedStatement.setString(1, supportObj.getDescription());
+            preparedStatement.setString(2, Date);
+            preparedStatement.setString(3, tokenInfo.getUserId());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+
+//            if(rowsAffected1>0){
+//
+//                Date Today= new Date();
+//                String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
+//
+//                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+//                preparedStatement2.setString(1, supportObj.getDescription());
+//                preparedStatement2.setString(2, supportObj.getSubject());
+//                preparedStatement2.setString(3, Date);
+//
+//                rowsAffected2 = preparedStatement2.executeUpdate();
+//            }
+
+            if (rowsAffected>0) {
+                if(flag==1){
+                    String userId=null;
+                    String ticketId=null;
+
+                    String query = "SELECT t.requesterID FROM ticket t WHERE t.ref_no="+supportObj.getRef_no();
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+
+                    ResultSet resultSet = preparedStatement1.executeQuery();
+                    while (resultSet.next()){
+                        userId = resultSet.getString("requesterID");
+                    }
+
+                    ticketId = String.valueOf(supportObj.getRef_no());
+                    SendEmail sendEmail = new SendEmail(ticketId,userId);
+                    sendEmail.setdata("reply");
+                }
 //                    response.getWriter().write("Data Updated successfully!");
-//                    response.setStatus(HttpServletResponse.SC_CREATED);
+//                    response.setStatus(HttpServletResponse.SC_CREATED)
                 return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);
 
             } else {
 
-                String deleteQuery = "DELETE FROM enmo_database.ticket_history WHERE ticketID = " + supportObj.getRef_no();
-                Statement deleteStatement = connection.createStatement();
-                deleteStatement.executeUpdate(deleteQuery);
+//                String deleteQuery = "DELETE FROM enmo_database.ticket_history WHERE ticketID = " + supportObj.getRef_no();
+//                Statement deleteStatement = connection.createStatement();
+//                deleteStatement.executeUpdate(deleteQuery);
 
 //                    response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 //                    response.getWriter().write("Data Updating Failed!");
