@@ -10,9 +10,10 @@ import java.util.Date;
 import java.util.Map;
 
 public class TokenService {
-    private static final Key SIGNING_KEY,SIGNING_KEY2 ;
+    public static final Key SIGNING_KEY,SIGNING_KEY2 ;
     private final long EXPIRATION_TIME_HOUR = 3600000;
     private final long EXPIRATION_TIME_DAY = 86400000;
+//    private static final Key SIGNING_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     static {
             String signingKeyString = "TFSysTS6s^8$Sgsr#havtFGse5ajFtaeCAuhAUTAWdc%f";
             SIGNING_KEY = new SecretKeySpec(signingKeyString.getBytes(), SignatureAlgorithm.HS256.getJcaName());
@@ -51,6 +52,19 @@ public class TokenService {
             return false;
         }
     }
+    public  int isTokenValidState(String token) {
+        try {
+            Jwts.parser().setSigningKey(getSigningKey()).parseClaimsJws(token);
+            return 1;
+        }//write a expired token
+        catch (ExpiredJwtException e) {
+            return 2;
+        }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     public  String getTokenFromHeader(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -69,7 +83,7 @@ public class TokenService {
     }
 
 
-    private static Key getSigningKey() {
+    public static Key getSigningKey() {
         return SIGNING_KEY;
     }
 

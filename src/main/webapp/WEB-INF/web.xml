@@ -19,11 +19,11 @@
         </init-param>
         <init-param>
             <param-name>cors.allowed.headers</param-name>
-            <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection</param-value>
+            <param-value>Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Content-Length,Connection,endpoint</param-value>
         </init-param>
         <init-param>
             <param-name>cors.exposed.headers</param-name>
-            <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection</param-value>
+            <param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Type,Content-Length,Content-Encoding,Connection,endpoint</param-value>
         </init-param>
         <init-param>
             <param-name>cors.support.credentials</param-name>
@@ -68,6 +68,11 @@
         <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
 
     </servlet>
+    <servlet>
+        <servlet-name>profile_pic</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.Profile_Pic_Controler</servlet-class>
+
+    </servlet>
 
 
 
@@ -95,8 +100,14 @@
         <servlet-name>chats</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.ChatsController</servlet-class>
     </servlet>
-
-
+    <servlet>
+        <servlet-name>order</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.OrderController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>categoryData</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.DesignCategoryController</servlet-class>
+    </servlet>
 
 
 
@@ -127,7 +138,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.PackageViewController</servlet-class>
     </servlet>
 
-
+    <servlet>
+        <servlet-name>payment</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PaymentControler</servlet-class>
+    </servlet>
 
 
     <servlet>
@@ -145,7 +159,14 @@
         <servlet-class>org.ucsc.enmoskill.controller.SupportAgentController</servlet-class>
     </servlet>
 
-
+    <servlet>
+        <servlet-name>pricepackage</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>notification</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.NotificationController</servlet-class>
+    </servlet>
 
 
 
@@ -166,7 +187,15 @@
         <url-pattern>/package/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>profile_pic</servlet-name>
+        <url-pattern>/profile_pic</url-pattern>
+    </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>payment</servlet-name>
+        <url-pattern>/payment</url-pattern>
+    </servlet-mapping>
 
 
     <servlet-mapping>
@@ -190,7 +219,10 @@
         <servlet-name>chats</servlet-name>
         <url-pattern>/chats</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>notification</servlet-name>
+        <url-pattern>/notification</url-pattern>
+    </servlet-mapping>
 
 
 
@@ -234,6 +266,17 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>order</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>categoryData</servlet-name>
+        <url-pattern>/categorydata</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>pricepackage</servlet-name>
+        <url-pattern>/pricepackage</url-pattern>
+    </servlet-mapping>
 
 </web-app>
