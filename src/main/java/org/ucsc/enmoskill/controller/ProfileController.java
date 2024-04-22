@@ -29,7 +29,7 @@ public class ProfileController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
 
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
@@ -53,9 +53,11 @@ public class ProfileController extends HttpServlet {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
 
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

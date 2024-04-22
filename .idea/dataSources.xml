@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="enmo_database@database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com" uuid="61e8add4-b482-4780-be0f-c9cffdf66649">
+    <data-source source="LOCAL" name="Enmo db" uuid="61e8add4-b482-4780-be0f-c9cffdf66649">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com:3306/enmo_database</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com@localhost" uuid="fd1bdade-f857-4881-a96c-f795b4d0e77b">
+    <data-source source="LOCAL" name="@enmoskill.eastus.cloudapp.azure.com" uuid="428df4d0-0204-4043-bff0-a6adfbabb036">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/database-enmo.c3fcdmakjqbw.us-east-1.rds.amazonaws.com</jdbc-url>
+      <jdbc-url>jdbc:mysql://enmoskill.eastus.cloudapp.azure.com:3306</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

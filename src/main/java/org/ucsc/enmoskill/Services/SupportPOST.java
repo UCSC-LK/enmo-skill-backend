@@ -33,8 +33,12 @@ public class SupportPOST {
 
         }else {
 
-            supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
 
+            if(tokenInfo.isAgent()){
+                supportObj.setRequesterID(supportObj.getComplainantID());
+            } else if (tokenInfo.isClient() || tokenInfo.isDesigner()) {
+                supportObj.setRequesterID(Integer.parseInt(tokenInfo.getUserId()));
+            }
             String query = this.supportObj.getQuery();
 
             try {
@@ -46,6 +50,9 @@ public class SupportPOST {
                 preparedStatement.setString(2, Date);
                 preparedStatement.setInt(3, supportObj.getRequesterID());
                 preparedStatement.setString(4, supportObj.getSubject());
+                preparedStatement.setString(5, supportObj.getFileURL());
+                preparedStatement.setInt(6, supportObj.getOrder());
+                preparedStatement.setInt(7, supportObj.getPackages());
 
                 int rowsAffected = preparedStatement.executeUpdate();
 

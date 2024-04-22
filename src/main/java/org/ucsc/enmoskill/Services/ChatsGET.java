@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.ChatModel;
+import org.ucsc.enmoskill.model.ResponsModel;
+import org.ucsc.enmoskill.model.User;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,8 +30,12 @@ public class ChatsGET {
              " WHEN c.user_1 = u.userid THEN u2.username" +
              " ELSE u1.username" +
              " END AS other_user_username," +
+             " CASE" +
+             " WHEN c.user_1 = u.userid THEN u2.url "+
+             " ELSE u1.url "+
+             " END AS other_user_url," +
              " cm.chat_id AS chat_id,"+
-             " m.content AS last_message_content" +
+             " m.content AS last_message_content " +
              " FROM chat c" +
              " INNER JOIN chat_mapping cm ON c.chat_id = cm.chat_id" +
              " INNER JOIN massage m ON cm.msg_id = m.msg_id" +

@@ -19,7 +19,7 @@ public class SupportAgentController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)) {
+        if(tokenService.isTokenValidState(token)==1) {
             TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
 
             if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null) {
@@ -35,6 +35,10 @@ public class SupportAgentController extends HttpServlet {
                     throw new RuntimeException(e);
                 }
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
     }

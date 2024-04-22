@@ -46,7 +46,7 @@ public class BuyerRequestModel {
             return quary;
         }
         if(Type.equals("update")){
-            String quary =" UPDATE enmo_database.jobs t SET t.title = '"+this.title+"',  t.discription = '"+this.discription+"', t.duration = "+this.duration+",t.budget ="+this.budget+", t.sample_work_url=\'"+this.sample_work_url+"\' WHERE t.requestID ="+this.requestID  ;
+            String quary =" UPDATE enmo_database.jobs t SET t.title = '"+this.title+"',  t.discription = '"+this.discription+"', t.duration = "+this.duration+",t.budget ="+this.budget+", t.sample_work_url=\'"+this.sample_work_url+"\' WHERE t.requestID ="+this.requestID +" AND t.userID ="+this.userID;
             return quary;
         }
         return null;
