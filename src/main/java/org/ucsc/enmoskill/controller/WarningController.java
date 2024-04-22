@@ -95,7 +95,7 @@ public class WarningController extends HttpServlet {
 
 
             } else {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
 
         }else if (tokenService.isTokenValidState(token) == 2) {

@@ -17,6 +17,7 @@ public class Order {
     private int packageId;
     private int price;
     private int platformFeeId;
+    private int pricePackageId;
 
     public Order(){}
 
@@ -136,6 +137,14 @@ public class Order {
 
     public void setRequirements(String requirements) {
         this.requirements = requirements;
+    }
+
+    public void setPricePackageId(int pricePackageId) {
+        this.pricePackageId = pricePackageId;
+    }
+
+    public int getPricePackageId() {
+        return pricePackageId;
     }
 
 
