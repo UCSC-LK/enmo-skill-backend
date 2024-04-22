@@ -2,7 +2,9 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import org.ucsc.enmoskill.Services.ErningsGET;
+import org.ucsc.enmoskill.Services.ErningsOPTIONS;
 import org.ucsc.enmoskill.Services.ErningsPUT;
+import org.ucsc.enmoskill.Services.SupportOptions;
 import org.ucsc.enmoskill.model.ErningsModel;
 import org.ucsc.enmoskill.model.ResponsModel;
 import org.ucsc.enmoskill.model.SupprtModel;
@@ -82,4 +84,37 @@ public class ErningsController extends HttpServlet {
         }
     }
 
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+
+
+        if(tokenService.isTokenValid(token)){
+            TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
+            if(tokenInfo.isDesigner()){
+                ErningsOPTIONS service = new ErningsOPTIONS(tokenInfo);
+                if(req.getParameter("orderID")!=null){
+                   String orderID=req.getParameter("orderID");
+
+                    ResponsModel responsModel = null;
+                    try {
+                        responsModel = service.Run(orderID);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    resp.getWriter().write(responsModel.getResMassage());
+                    resp.setStatus(responsModel.getResStatus());
+                }
+
+            }else{
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().write("Please login again");
+            }
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("Please login again");
+        }
+    }
 }
