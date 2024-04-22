@@ -51,18 +51,17 @@ public class BannController extends HttpServlet {
                 int result = service.insertBann(bann);
 
                 if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data inserted successfully");
-                    System.out.println("Data inserted successfully");
+
+                    service.send(bann.getUserId(), resp);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.write("Data didn't insert");
-                    System.out.println("Data didn't insert");
+                    out.write("Problem occurred while suspending the account");
+                    System.out.println("Problem occurred while suspending the account");
                 }
 
 
             } else {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
 
         }else if (tokenService.isTokenValidState(token) == 2) {
