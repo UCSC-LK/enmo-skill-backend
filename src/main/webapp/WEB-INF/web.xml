@@ -68,6 +68,11 @@
         <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
 
     </servlet>
+    <servlet>
+        <servlet-name>profile_pic</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.Profile_Pic_Controler</servlet-class>
+
+    </servlet>
 
 
 
@@ -133,7 +138,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.PackageViewController</servlet-class>
     </servlet>
 
-
+    <servlet>
+        <servlet-name>payment</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.PaymentControler</servlet-class>
+    </servlet>
 
 
     <servlet>
@@ -154,6 +162,10 @@
     <servlet>
         <servlet-name>pricepackage</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>notification</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.NotificationController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>OTP</servlet-name>
@@ -196,7 +208,15 @@
         <url-pattern>/package/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>profile_pic</servlet-name>
+        <url-pattern>/profile_pic</url-pattern>
+    </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>payment</servlet-name>
+        <url-pattern>/payment</url-pattern>
+    </servlet-mapping>
 
 
     <servlet-mapping>
@@ -220,7 +240,10 @@
         <servlet-name>chats</servlet-name>
         <url-pattern>/chats</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>notification</servlet-name>
+        <url-pattern>/notification</url-pattern>
+    </servlet-mapping>
 
 
 

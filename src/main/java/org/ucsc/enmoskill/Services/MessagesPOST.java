@@ -28,6 +28,21 @@ public class MessagesPOST {
 
 
         try {
+
+            String chatCheckQuery = "SELECT * FROM chat WHERE chat_id = "+data.getChatid();
+            PreparedStatement chatCheckStatement = connection.prepareStatement(chatCheckQuery);
+            ResultSet chatCheckResult = chatCheckStatement.executeQuery();
+            if (chatCheckResult.next()) {
+                if (chatCheckResult.getInt("user_1") != Integer.parseInt(data.getUser()) && chatCheckResult.getInt("user_2") != Integer.parseInt(data.getUser())) {
+                    response.getWriter().write("User not in chat");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+
+            }
+
+
+
             String massageQuery = "INSERT INTO massage (content, time, date) VALUES (?, UNIX_TIMESTAMP() * 1000, CURDATE())";
             String chatMappingQuery = "INSERT INTO chat_mapping (chat_id, msg_id, receiver) VALUES (?, ?, ?)";
 

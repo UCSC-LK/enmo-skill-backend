@@ -43,9 +43,7 @@ public class User {
     public String getInsertUserDetails(){
         return String.format("UPDATE users SET name = '%s',contact_no = '%s',url = '%s' WHERE userid = %s;",this.name,this.contact_no,this.url,this.id);
     }
-    public String getInsertClientDetails(){
-        return String.format("INSERT INTO client (userid,  description, NIC, joinedDate, country) VALUES (%s, '%s', '%s',  CURDATE(), '%s');",this.id,this.description,this.NIC,this.country);
-    }
+
 
     public String getEmail() {
         return email;
