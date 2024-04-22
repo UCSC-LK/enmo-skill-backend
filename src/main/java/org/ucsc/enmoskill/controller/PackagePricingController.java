@@ -39,6 +39,11 @@ public class PackagePricingController extends HttpServlet {
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
+        if (tokenService.isTokenValid(token)){
+            // fetch the category of the price package
+//            Package pkgObj = getPackage(packageId);
+//            int category = pkgObj.getCategory();
+//            System.out.println("Category is :"+category);
 
         //check validity of token
         if (tokenService.isTokenValid(token)){
@@ -57,6 +62,22 @@ public class PackagePricingController extends HttpServlet {
                 out.write("Data not found");
                 System.out.println("Data not found");
             }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write("Authorization failed");
+            System.out.println("Authorization failed");
+        }
+
+
+
+//            resp.setStatus(HttpServletResponse.SC_OK);
+//            out.write(String.valueOf(jsonObj));
+//            System.out.println("Data loaded successfully");
+//        } else {
+//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            out.write("Data not found");
+//            System.out.println("Data not found");
+//        }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.write("Authorization failed");

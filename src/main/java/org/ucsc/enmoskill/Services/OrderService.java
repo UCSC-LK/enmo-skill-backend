@@ -178,6 +178,38 @@ public class OrderService {
         }
     }
 
+    public void getAllClientOrderDetails(int client_userID) {
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        Order order;
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "SELECT * FROM orders WHERE client_userID = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, client_userID);
+
+            resultSet = preparedStatement.executeQuery();
+
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
+
+            while (resultSet.next()) {
+                order = new Order(resultSet);
+                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                jsonArray.add(jsonObject);
+            }
+
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+            System.out.println("Orders : " + jsonArray);
+
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
         public int updateOrder (Order order){
             Connection con = null;
             PreparedStatement preparedStatement = null;

@@ -62,7 +62,6 @@
         <servlet-class>org.ucsc.enmoskill.controller.Support_Controller</servlet-class>
     </servlet>
 
-
     <servlet>
         <servlet-name>package</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
@@ -81,8 +80,6 @@
         <servlet-name>proposal</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.ProposalController</servlet-class>
     </servlet>
-
-
 
     <servlet>
         <servlet-name>file</servlet-name>
@@ -163,6 +160,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name> order_details</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.OrderDetailsController</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>pricepackage</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
     </servlet>
@@ -204,6 +206,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>order_details</servlet-name>
+        <url-pattern>/orderDetails</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>buyer_request</servlet-name>

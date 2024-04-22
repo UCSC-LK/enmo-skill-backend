@@ -42,9 +42,9 @@ public class ProposalController extends HttpServlet {
         if (jwtToken != null) {
 
             AuthorizationService authService = new AuthorizationService();
-            String expectedUserLevelID = "2"; // Set your expected userLevelID here
+            String[] expectedUserLevelIDs = {"1", "2"}; // Set your expected userLevelIDs here
 
-            AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
+            AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelIDs);
 
             if (authResult != null) {
                 String userID = authResult.getUserID();
@@ -54,12 +54,22 @@ public class ProposalController extends HttpServlet {
                 out.println("AuthresultlevelID: " + userLevelID);
 
                 if (userLevelID != null && userID != null) {
-                    if (proBRlist.getProposalid() == null) {
-                        ProposalGETSer service = new ProposalGETSer(resp);
-                        service.GetAllProposals(connection, userID);
-                    } else {
-                        ProposalGETSer service = new ProposalGETSer(resp);
-                        service.GetProposal(connection, proBRlist.getProposalid(), userID, resp);
+                    if("2".equals(userLevelID)) {
+                        if (proBRlist.getProposalid() == null) {
+                            ProposalGETSer service = new ProposalGETSer(resp);
+                            service.GetAllDesignersProposals(connection, userID);
+                        } else {
+                            ProposalGETSer service = new ProposalGETSer(resp);
+                            service.GetProposal(connection, proBRlist.getProposalid(), userID, resp);
+                        }
+                    } else if ("1".equals(userLevelID)) {
+                        if (proBRlist.getProposalid() == null) {
+                            ProposalGETSer service = new ProposalGETSer(resp);
+                            service.GetAllClientsProposals(connection, userID);
+                        } else {
+                            ProposalGETSer service = new ProposalGETSer(resp);
+                            service.GetProposal(connection, proBRlist.getProposalid(), userID, resp);
+                        }
                     }
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -90,11 +100,12 @@ public class ProposalController extends HttpServlet {
 
             Pro_CR proBRlist = new Pro_CR(req);
 
-            out.println("getDuration: " + proposal.getDuration());
+            out.println("Duration" + proposal.getDeliveryDuration());
             out.println("getDescription: " + proposal.getDescription());
-            out.println("getBudget: " + proposal.getBudget());
-            out.println("getDate: " + proposal.getDate());
-            out.println("getUserID: " + proposal.getUserID());
+            out.println("getPrice: " + proposal.getPrice());
+            out.println("getTitle: " + proposal.getTitle());
+            out.println("getPricingPackage: " + proposal.getPricingPackage());
+            out.println("getPackageId: " + proposal.getPackageId());
 
             // Get the JWT token from the request header
             String jwtToken = req.getHeader("Authorization");
@@ -104,19 +115,20 @@ public class ProposalController extends HttpServlet {
 
                 // Use the AuthorizationService to authorize the request
                 AuthorizationService authService = new AuthorizationService();
-                String expectedUserLevelID = "2"; // Set your expected userLevelID here
+                String[] expectedUserLevelID = {"2"}; // Set your expected userLevelID here
 
                 AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
 
                 if (authResult != null) {
-                    String userID = authResult.getUserID();
+                    String designerID = authResult.getUserID();
                     String userLevelID = authResult.getJwtUserLevelID();
 
-                    if (userID != null && userLevelID != null && proposal.getBudget() != null
+                    if (designerID != null && userLevelID != null && proposal.getBudget() != null
                             && proposal.getDescription() != null && proposal.getDuration() != null) {
 
+                        proposal.setDesignerId(designerID);
                         ProposalPOSTSer proposalPOSTSer = new ProposalPOSTSer();
-                        boolean isSuccess = proposalPOSTSer.isInsertionSuccessful(proposal, proBRlist, userID);
+                        boolean isSuccess = proposalPOSTSer.isInsertionSuccessful(proposal, proBRlist);
 
                         if (isSuccess) {
                             resp.setStatus(HttpServletResponse.SC_OK);
@@ -166,7 +178,7 @@ public class ProposalController extends HttpServlet {
 
             // Use the AuthorizationService to authorize the request
             AuthorizationService authService = new AuthorizationService();
-            String expectedUserLevelID = "2"; // Set your expected userLevelID here
+            String[] expectedUserLevelID = {"2"}; // Set your expected userLevelID here
 
             AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
 
@@ -229,7 +241,7 @@ public class ProposalController extends HttpServlet {
 
             // Use the AuthorizationService to authorize the request
             AuthorizationService authService = new AuthorizationService();
-            String expectedUserLevelID = "2"; // Set your expected userLevelID here
+            String[] expectedUserLevelID = {"2"}; // Set your expected userLevelID here
 
             AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
 
