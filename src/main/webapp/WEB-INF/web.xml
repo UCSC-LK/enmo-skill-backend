@@ -167,6 +167,10 @@
         <servlet-class>org.ucsc.enmoskill.controller.PricingDataController</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>notification</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.NotificationController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>OTP</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OTPController</servlet-class>
     </servlet>
@@ -179,6 +183,11 @@
         <servlet-name>orderTprice</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.OrderPriceController</servlet-class>
     </servlet>
+
+    <servlet>
+        <servlet-name>ernings</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ErningsController</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>warning</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.WarningController</servlet-class>
@@ -187,10 +196,8 @@
 
 
 
-    <servlet>
-        <servlet-name>notification</servlet-name>
-        <servlet-class>org.ucsc.enmoskill.controller.NotificationController</servlet-class>
-    </servlet>
+
+
 
     <servlet>
         <servlet-name>designerdashboard</servlet-name>
@@ -325,6 +332,12 @@
         <servlet-name>orderTprice</servlet-name>
         <url-pattern>/orderTprice</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ernings</servlet-name>
+        <url-pattern>/ernings</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>warning</servlet-name>
         <url-pattern>/warning</url-pattern>

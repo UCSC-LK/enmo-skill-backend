@@ -21,7 +21,7 @@ public class OrderPriceController extends HttpServlet {
 
 
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
             String packegeID=null;
@@ -39,9 +39,10 @@ public class OrderPriceController extends HttpServlet {
             resp.getWriter().write(responsModel.getResMassage());
             resp.setStatus(responsModel.getResStatus());
 
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login");
         }
     }
 }

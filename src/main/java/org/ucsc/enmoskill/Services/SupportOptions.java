@@ -30,34 +30,33 @@ public class SupportOptions {
 //            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        }
+        }else{
+            //assign a agent ----------------------------------------------------------------
+            if(agentID!= null){
+                String query ="UPDATE enmo_database.ticket t SET t.agentID="+agentID+",t.status=2 " +
+                        "WHERE t.agentID=0 AND t.assign_ad=0 AND t.ref_no="+ticketId;
+                System.out.println(query);
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                int row = preparedStatement.executeUpdate(query);
 
-        //assign a agent ----------------------------------------------------------------
-        if(agentID!= null){
-            String query ="UPDATE enmo_database.ticket t SET t.agentID="+agentID+",t.status=2 " +
-                          "WHERE t.agentID=0 AND t.assign_ad=0 AND t.ref_no="+ticketId;
-            System.out.println(query);
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            int row = preparedStatement.executeUpdate(query);
+                if(row>0){
+                    SendEmail sendEmail = new SendEmail(ticketId,agentID);
+                    sendEmail.setdata("agent");
+                    return new ResponsModel("Ticket assign successful!", HttpServletResponse.SC_OK);
+                }else{
+                    return new ResponsModel("Ticket assign failed!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                }
 
-            if(row>0){
-                SendEmail sendEmail = new SendEmail(ticketId,agentID);
-                sendEmail.setdata("agent");
-                return new ResponsModel("Ticket assign successful!", HttpServletResponse.SC_OK);
-            }else{
-                return new ResponsModel("Ticket assign failed!", HttpServletResponse.SC_NOT_IMPLEMENTED);
-            }
-
-        } else if(decision != null){
+            } else if(decision != null){
 
 
-            if(tokenInfo.isAdmin()){
-                ResponsModel responsModel = setStatusAdmin(connection,decision,ticketId);
-                return responsModel;
-            }else if(tokenInfo.isAgent()){
-                ResponsModel responsModel = setStatusAgent(connection,decision,ticketId);
-                return responsModel;
-            }
+                if(tokenInfo.isAdmin()){
+                    ResponsModel responsModel = setStatusAdmin(connection,decision,ticketId);
+                    return responsModel;
+                }else if(tokenInfo.isAgent()){
+                    ResponsModel responsModel = setStatusAgent(connection,decision,ticketId);
+                    return responsModel;
+                }
 //        }else if(ticketId != null){
 //            Date Today= new Date();
 //            String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
@@ -75,15 +74,14 @@ public class SupportOptions {
 //            }else{
 //                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
 //            }
-        }else if(toAdmin != null){
+            }else if(toAdmin != null){
                 ResponsModel responsModel = assignToAgrnt(connection,toAdmin,ticketId);
                 return responsModel;
-        }else if (ugent !=null){
-            ResponsModel responsModel = markUgent(connection,ugent,ticketId);
-            return responsModel;
+            }else if (ugent !=null){
+                ResponsModel responsModel = markUgent(connection,ugent,ticketId);
+                return responsModel;
+            }
         }
-
-        
         return null;
     }
     

@@ -3,9 +3,7 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.OtpGET;
-import org.ucsc.enmoskill.Services.SupportGET;
 import org.ucsc.enmoskill.model.ResponsModel;
-import org.ucsc.enmoskill.model.SupprtModel;
 import org.ucsc.enmoskill.model.otpModel;
 import org.ucsc.enmoskill.utils.OTPhash;
 import org.ucsc.enmoskill.utils.TokenService;
@@ -24,7 +22,7 @@ public class OTPController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
             OtpGET service = new OtpGET(tokenInfo);
@@ -33,9 +31,10 @@ public class OTPController extends HttpServlet {
 
             res.getWriter().write(responsModel.getResMassage());
             res.setStatus(responsModel.getResStatus());
+        }else if(tokenService.isTokenValidState(token)==2){
+            res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            res.getWriter().write("Please login");
         }
     }
 
@@ -45,7 +44,7 @@ public class OTPController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
 
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             try (BufferedReader reader = req.getReader()){
@@ -63,9 +62,10 @@ public class OTPController extends HttpServlet {
             resp.getWriter().write(e.toString());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
-        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        resp.getWriter().write("Please login");
-    }
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 }
