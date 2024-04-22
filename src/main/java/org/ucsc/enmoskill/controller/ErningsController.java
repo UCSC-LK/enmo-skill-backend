@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import org.ucsc.enmoskill.Services.ErningsGET;
 import org.ucsc.enmoskill.Services.ErningsOPTIONS;
 import org.ucsc.enmoskill.Services.ErningsPUT;
-import org.ucsc.enmoskill.Services.SupportOptions;
 import org.ucsc.enmoskill.model.ErningsModel;
 import org.ucsc.enmoskill.model.ResponsModel;
-import org.ucsc.enmoskill.model.SupprtModel;
 import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.ServletException;
@@ -26,7 +24,7 @@ public class ErningsController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if (tokenService.isTokenValid(token)) {
+        if (tokenService.isTokenValidState(token)==1) {
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null ){
 
@@ -48,9 +46,10 @@ public class ErningsController extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 resp.getWriter().write("Please login");
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login");
         }
     }
 
@@ -59,7 +58,7 @@ public class ErningsController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if (tokenService.isTokenValid(token)) {
+        if (tokenService.isTokenValidState(token)==1) {
 
             TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
             try (BufferedReader reader = req.getReader()) {
@@ -78,9 +77,10 @@ public class ErningsController extends HttpServlet {
                 resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login");
         }
     }
 
@@ -90,7 +90,7 @@ public class ErningsController extends HttpServlet {
         String token = tokenService.getTokenFromHeader(req);
 
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             if(tokenInfo.isDesigner()){
                 ErningsOPTIONS service = new ErningsOPTIONS(tokenInfo);
@@ -112,9 +112,10 @@ public class ErningsController extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 resp.getWriter().write("Please login again");
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login again");
         }
     }
 }
