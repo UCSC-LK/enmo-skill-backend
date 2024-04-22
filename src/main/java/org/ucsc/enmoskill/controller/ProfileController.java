@@ -53,7 +53,7 @@ public class ProfileController extends HttpServlet {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
 
             }
         }else if(tokenService.isTokenValidState(token)==2){

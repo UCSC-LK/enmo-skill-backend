@@ -30,7 +30,7 @@ public class BillingInformationController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             tokenInfo = tokenService.getTokenInfo(token);
 
             BillingInformationGET service = new BillingInformationGET(tokenInfo);
@@ -44,9 +44,10 @@ public class BillingInformationController extends HttpServlet {
 
             resp.getWriter().write(responsModel.getResMassage());
             resp.setStatus(responsModel.getResStatus());
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login");
         }
 
 
@@ -56,7 +57,7 @@ public class BillingInformationController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             try (BufferedReader reader = req.getReader()){
 
@@ -79,7 +80,11 @@ public class BillingInformationController extends HttpServlet {
             }catch (Exception e) {
             resp.getWriter().write(e.toString());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
+            }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
@@ -87,7 +92,7 @@ public class BillingInformationController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
 
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             try (BufferedReader reader = req.getReader()){
@@ -112,9 +117,10 @@ public class BillingInformationController extends HttpServlet {
                 resp.getWriter().write(e.toString());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
-        }else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Missing description");
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
@@ -124,7 +130,7 @@ public class BillingInformationController extends HttpServlet {
         String token = tokenService.getTokenFromHeader(req);
 
 
-        if (tokenService.isTokenValid(token)) {
+        if (tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
             Connection connection = DatabaseConnection.initializeDatabase();
 
@@ -161,9 +167,10 @@ public class BillingInformationController extends HttpServlet {
 
                 }
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("Please login again");
         }
     }
 }
