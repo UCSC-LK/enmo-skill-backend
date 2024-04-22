@@ -1,6 +1,7 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import org.ucsc.enmoskill.Services.PricePackageService;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.*;
 import org.ucsc.enmoskill.model.Package;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.ucsc.enmoskill.Services.PackageService.getPackage;
-import static org.ucsc.enmoskill.Services.PricePackageService.fetchData;
 
 public class PackageViewController extends HttpServlet {
 
@@ -145,7 +145,8 @@ public class PackageViewController extends HttpServlet {
 
                         // fetch package pricing data
                         List<PackagePricing> priceList = new ArrayList<>();
-                        priceList = fetchData(packageId);
+                        PricePackageService service = new PricePackageService();
+                        priceList = service.fetchData(packageId);
 
                         if (priceList != null){
                             viewModel.setPricings(priceList);

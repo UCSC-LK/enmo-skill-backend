@@ -65,6 +65,7 @@ public class PackageListController extends HttpServlet {
                 do {
                     // fetch all the required details to filter and display
                     packageList1 = service.getPackages();
+//                    System.out.println(gson.toJson(packageList1));
 
                     // fetch packages count
                     packageCount = service.countPackages();

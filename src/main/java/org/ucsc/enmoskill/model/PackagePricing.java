@@ -1,5 +1,7 @@
 package org.ucsc.enmoskill.model;
 
+import java.util.HashMap;
+
 public class PackagePricing {
 
     private int pricePackageId;
@@ -13,12 +15,28 @@ public class PackagePricing {
 
     private int noOfConcepts;
 
-    private PackageDeliverables deliverables;
+    private DeliverablesModel del;
+
+//    private HashMap<String, Integer> delMap;
+
+//    private DesignCategoryModel criteria;
 
     public PackagePricing(){
     }
 
-    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId, PackageDeliverables deliverables){
+//    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId, PackageDeliverables deliverables){
+//        this.pricePackageId = pricePackageId;
+//        this.type = type;
+//        this.deliveryDuration = deliveryDuration;
+//        this.noOfRevisions = noOfRevisions;
+//        this.price = price;
+//        this.noOfConcepts = noOfConcepts;
+//        this.packageId = packageId;
+//        this.deliverables = deliverables;
+//
+//    }
+
+    public PackagePricing(int pricePackageId, String type, String deliveryDuration, String noOfRevisions, float price, int noOfConcepts, int packageId, DeliverablesModel del){
         this.pricePackageId = pricePackageId;
         this.type = type;
         this.deliveryDuration = deliveryDuration;
@@ -26,9 +44,10 @@ public class PackagePricing {
         this.price = price;
         this.noOfConcepts = noOfConcepts;
         this.packageId = packageId;
-        this.deliverables = deliverables;
+        this.del = del;
 
     }
+
 
     public void setPricePackageId(int pricePackageId) {
         this.pricePackageId = pricePackageId;
@@ -50,13 +69,21 @@ public class PackagePricing {
         this.price = price;
     }
 
+    public void setDel(DeliverablesModel del) {
+        this.del = del;
+    }
+
     public void setNoOfConcepts(int noOfConcepts) {
         this.noOfConcepts = noOfConcepts;
     }
 
-    public void setDeliverables(PackageDeliverables deliverables) {
-        this.deliverables = deliverables;
-    }
+//    public void setDelMap(HashMap<String, Integer> delMap) {
+//        this.delMap = delMap;
+//    }
+
+//    public void setCriteria(DesignCategoryModel criteria) {
+//        this.criteria = criteria;
+//    }
 
     public void setPackageId(int packageId) {
         this.packageId = packageId;
@@ -90,7 +117,15 @@ public class PackagePricing {
         return packageId;
     }
 
-    public PackageDeliverables getDeliverables() {
-        return deliverables;
+//    public HashMap<String, Integer> getDelMap() {
+//        return delMap;
+//    }
+
+    public DeliverablesModel getDel() {
+        return del;
     }
+
+//    public DesignCategoryModel getCriteria() {
+//        return criteria;
+//    }
 }
