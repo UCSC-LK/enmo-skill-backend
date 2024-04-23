@@ -86,7 +86,7 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setDouble(7,order.getPlatformFeeId());
+            preparedStatement.setInt(7,order.getPlatformFeeId());
             preparedStatement.setInt(8,order.getPricePackageId());
 
 
@@ -102,13 +102,21 @@ public class OrderService {
 
                     } else {
 
-                        throw new SQLException("Creating order failed, no ID obtained.");
+                        return 0;
+//                        throw new SQLException("Creating order failed, no ID obtained.");
                     }
                 }
             }
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -50,24 +50,31 @@ public class OrderController extends HttpServlet {
 
                 newOrder = service.setFee(newOrder);
 
-                int result = service.createOrder(newOrder);
+                try{
+                    int result = service.createOrder(newOrder);
 
-                // Create a JSON object to represent the result
-                JsonObject resultJson = new JsonObject();
-                resultJson.addProperty("orderId", result);
+                    // Create a JSON object to represent the result
+                    JsonObject resultJson = new JsonObject();
+                    resultJson.addProperty("orderId", result);
 
-                if (result>0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    resultJson.addProperty("message", "Order created successfully");
-                    System.out.println("Order created successfully");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    resultJson.addProperty("message", "Order didn't created");
-                    System.out.println("Order didn't created");
+                    if (result>0){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        resultJson.addProperty("message", "Order created successfully");
+                        System.out.println("Order created successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        resultJson.addProperty("message", "Order didn't created");
+                        System.out.println("Order didn't created");
+                    }
+                    // Send the JSON object as the response
+                    out.write(resultJson.toString());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    throw new RuntimeException(e);
                 }
 
-                // Send the JSON object as the response
-                out.write(resultJson.toString());
+
+
             } else {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
