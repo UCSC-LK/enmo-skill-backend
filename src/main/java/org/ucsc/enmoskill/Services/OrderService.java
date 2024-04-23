@@ -102,8 +102,8 @@ public class OrderService {
 
                     } else {
 
-                        return 0;
-//                        throw new SQLException("Creating order failed, no ID obtained.");
+//                        return 0;
+                        throw new SQLException("Creating order failed, no ID obtained.");
                     }
                 }
             }

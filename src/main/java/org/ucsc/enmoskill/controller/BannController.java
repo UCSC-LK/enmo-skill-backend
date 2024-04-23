@@ -34,7 +34,7 @@ public class BannController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         Gson gson = new Gson();
         TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);//defulat req is a request of controller
+        String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
 
         tokenInfo = tokenService.getTokenInfo(token);
 
@@ -48,15 +48,20 @@ public class BannController extends HttpServlet {
 
                 // insert new warning
                 BannService service = new BannService();
-                int result = service.insertBann(bann);
 
-                if (result > 0){
+                try {
+                    int result = service.insertBann(bann);
 
-                    service.send(bann.getUserId(), resp);
-                } else {
+                    if (result > 0){
+                        service.send(bann.getUserId(), resp);
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Problem occurred while suspending the account");
+                        System.out.println("Problem occurred while suspending the account");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
                     resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.write("Problem occurred while suspending the account");
-                    System.out.println("Problem occurred while suspending the account");
                 }
 
 
