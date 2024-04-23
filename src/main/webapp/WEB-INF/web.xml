@@ -109,7 +109,10 @@
         <servlet-name>bann</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.BannController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>userupdate</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.UserUpdateController</servlet-class>
+    </servlet>
 
 
 
@@ -351,6 +354,10 @@
     <servlet-mapping>
         <servlet-name>bann</servlet-name>
         <url-pattern>/bann</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>userupdate</servlet-name>
+        <url-pattern>/userupdate</url-pattern>
     </servlet-mapping>
 
 </web-app>

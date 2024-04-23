@@ -116,7 +116,7 @@ public class UserSer {
 
         } catch (SQLException e) {
             System.out.println("SQL Error executing query: " + e.getMessage());
-            throw new RuntimeException("Failed to fetch dashboard data", e);
+            throw new RuntimeException("Failed to fetch user data", e);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
@@ -221,6 +221,13 @@ public class UserSer {
             return resultSet.getInt(1);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -302,6 +309,13 @@ public class UserSer {
             return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -367,6 +381,39 @@ public class UserSer {
             return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public int makeCSA(int userId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE user_level_mapping SET userlevelID = 4 WHERE userID = ?;";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+
+            int affectedRows = preparedStatement.executeUpdate();
+
+            return affectedRows;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
