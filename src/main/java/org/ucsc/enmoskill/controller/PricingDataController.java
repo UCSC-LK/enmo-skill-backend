@@ -27,34 +27,42 @@ public class PricingDataController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
             if (tokenInfo.isClient() || tokenInfo.isDesigner()){
 
-                PricePackageService service = new PricePackageService();
+                try {
+                    int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
 
-                PackagePricing newPricing = service.getapricePackage(pricePackageId);
+                    PricePackageService service = new PricePackageService();
 
-                if (newPricing != null){
-                   resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(newPricing));
-                    System.out.println("Data loaded successfully");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data not found");
-                    System.out.println("Data not found");
+                    PackagePricing newPricing = service.getapricePackage(pricePackageId);
+
+                    if (newPricing != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(newPricing));
+                        System.out.println("Data loaded successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Data not found");
+                        System.out.println("Data not found");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
+
 
             } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 out.write("Authorization failed");
                 System.out.println("Authorization failed");
             }
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
     }
 }

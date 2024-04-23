@@ -249,6 +249,7 @@ public class UserSer {
                     "    u.userID," +
                     "    d.display_name," +
                     "    u.email," +
+//                    "    u.name," +
                     "    u.contact_no," +
                     "    u.password," +
                     "    u.url," +
@@ -289,7 +290,7 @@ public class UserSer {
                     user.setUrl(resultSet.getString("url"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
                     user.setPassword(resultSet.getString("password"));
-                    user.setName(resultSet.getString("name"));
+//                    user.setName(resultSet.getString("name"));
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
                     userFull.setLname(resultSet.getString("lname"));

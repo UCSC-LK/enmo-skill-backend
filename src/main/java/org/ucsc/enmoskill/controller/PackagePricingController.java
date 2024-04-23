@@ -39,50 +39,37 @@ public class PackagePricingController extends HttpServlet {
 
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        if (tokenService.isTokenValid(token)){
-            // fetch the category of the price package
-//            Package pkgObj = getPackage(packageId);
-//            int category = pkgObj.getCategory();
-//            System.out.println("Category is :"+category);
-
         //check validity of token
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
 
 
-            PricePackageService newService = new PricePackageService();
-            List<PackagePricing> priceList;
-            priceList =   newService.getPricePackage(packageId);
+            try {
+                PricePackageService newService = new PricePackageService();
+                List<PackagePricing> priceList;
+                priceList =   newService.getPricePackage(packageId);
 
-            if (priceList != null){
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.write(gson.toJson(priceList));
-                System.out.println("Data loaded successfully");
-            } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Data not found");
-                System.out.println("Data not found");
+                if (priceList != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    out.write(gson.toJson(priceList));
+                    System.out.println("Data loaded successfully");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write("Data not found");
+                    System.out.println("Data not found");
+                }
+            } catch (Exception e) {
+                out.write(e.toString());
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
 
 
-
-//            resp.setStatus(HttpServletResponse.SC_OK);
-//            out.write(String.valueOf(jsonObj));
-//            System.out.println("Data loaded successfully");
-//        } else {
-//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            out.write("Data not found");
-//            System.out.println("Data not found");
-//        }
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
-        }
 
     }
 
@@ -101,7 +88,7 @@ public class PackagePricingController extends HttpServlet {
 //        int category = Integer.parseInt(req.getParameter("category"));
         int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
 
             if (tokenInfo.isDesigner()){
                 JsonObject responseJson = new JsonObject();
@@ -112,143 +99,71 @@ public class PackagePricingController extends HttpServlet {
 
                 // insert pricing data
                 PricePackageService pricePackageService = new PricePackageService();
-                int result1 = pricePackageService.insertPricePackageData(pricing);
-                pricing.setPricePackageId(result1);
 
-                DeliverablesModel deliverables = pricing.getDel();
-                deliverables.setPricePackageId(result1);
-                pricing.setDel(deliverables);
+                try{
+                    int result1 = pricePackageService.insertPricePackageData(pricing);
+                    pricing.setPricePackageId(result1);
 
-                if (result1 > 0){
+                    DeliverablesModel deliverables = pricing.getDel();
+                    deliverables.setPricePackageId(result1);
+                    pricing.setDel(deliverables);
 
-                    System.out.println(result1);
+                    if (result1 > 0){
 
-                    //insert deliverables data
-                    PackageDeliverablesService deliverablesService = new PackageDeliverablesService();
-                    int result2 = deliverablesService.insertPackageDeliverables(deliverables);
+                        System.out.println(result1);
 
-                    responseJson.addProperty("pricePackageId", result1);
+                        try {
+                            //insert deliverables data
+                            PackageDeliverablesService deliverablesService = new PackageDeliverablesService();
+                            int result2 = deliverablesService.insertPackageDeliverables(deliverables);
 
-                    if (result2 > 0){
-                        responseJson.addProperty("deliverablesId", result2);
+                            responseJson.addProperty("pricePackageId", result1);
 
-                        responseJson.addProperty("message", "Data inserted successfully");
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(responseJson));
-                        System.out.println("Data inserted successfully");
+                            if (result2 > 0){
+                                responseJson.addProperty("deliverablesId", result2);
+
+                                responseJson.addProperty("message", "Data inserted successfully");
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write(gson.toJson(responseJson));
+                                System.out.println("Data inserted successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("Data insertion unsuccessful");
+                                System.out.println("Data insertion unsuccessful");
+                            }
+                        } catch (Exception e) {
+                            out.write(e.toString());
+                            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        }
+
+
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         out.write("Data insertion unsuccessful");
                         System.out.println("Data insertion unsuccessful");
                     }
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data insertion unsuccessful");
-                    System.out.println("Data insertion unsuccessful");
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
+
+            } else {
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.write("access denied");
+                System.out.println("access denied");
             }
 
 
 
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
 
     }
 
-//    @Override
-//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//
-//        resp.setContentType("application/json");
-//        PrintWriter out = resp.getWriter();
-//
-//        TokenService tokenService = new TokenService();
-//        String token = tokenService.getTokenFromHeader(req);
-//
-//        tokenInfo = tokenService.getTokenInfo(token);
-//
-//        int pricePackageId = Integer.parseInt(req.getParameter("pricePackageId"));
-////        int category = Integer.parseInt(req.getParameter("category"));
-//        int packageId = Integer.parseInt(req.getParameter("packageId"));
-//
-//        if (tokenService.isTokenValid(token)){
-//            //        String type = req.getParameter("type");
-//
-//            StringBuilder requestBody = new StringBuilder();
-//            BufferedReader reader = req.getReader();
-//
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                requestBody.append(line);
-//            }
-//
-//            System.out.println(requestBody);
-//            JsonObject jsonObject = null;
-//            JsonObject deliverables = null;
-//
-//            // Parse the JSON string
-//            JsonElement jsonElement = JsonParser.parseString(requestBody.toString());
-//
-//            // Check if it's a JSON object
-//            if (jsonElement.isJsonObject()) {
-//                // Convert to a JsonObject
-//                jsonObject = jsonElement.getAsJsonObject();
-//
-//                // Create separate JsonObjects for "deliverables" and the rest
-//                deliverables = jsonObject.getAsJsonObject("del");
-//
-//                // Remove "deliverables" from the original JsonObject
-//                jsonObject.remove("deliverables");
-//
-//                // Now, you have two separate JsonObjects
-//                System.out.println("Original Object Without Deliverables: " + jsonObject);
-//                System.out.println("Deliverables Object: " + deliverables);
-//            }
-//
-//            Gson gson = new Gson();
-//
-//            PackagePricing newPackagePricing = gson.fromJson(jsonObject, PackagePricing.class);
-//            newPackagePricing.setPackageId(packageId);
-//            newPackagePricing.setPricePackageId(pricePackageId);
-//            newPackagePricing.setDel(gson.fromJson(deliverables,DeliverablesModel.class));
-//
-//            int result1 = updatePricePackageData(newPackagePricing);
-//
-//            if (result1 > 0) {
-////                PackageDeliverables newDeliverables = gson.fromJson(deliverables, PackageDeliverables.class);
-////                newDeliverables.setPricePackageId(pricePackageId);
-////
-////                System.out.println(newDeliverables.getMockup());
-////                System.out.println(newDeliverables.getDeliverablesId());
-//
-//                PackageDeliverablesService service = new PackageDeliverablesService();
-//                int result2 = service.updatePackageDeliverables(newPackagePricing);
-//
-//                if (result2>0){
-//                    resp.setStatus(HttpServletResponse.SC_OK);
-//                    out.write("price package details updated successfully");
-//                    System.out.println("price package details updated successfully");
-//                } else {
-//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                    out.write("price package details did not updated");
-//                    System.out.println("price package details did not updated");
-//                }
-//
-//            } else {
-//                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                out.write("price package details did not updated");
-//                System.out.println("price package details did not updated");
-//            }
-//
-//        } else {
-//            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            out.write("Authorization failed");
-//            System.out.println("Authorization failed");
-//        }
-//
-//    }
 
 
     @Override
@@ -268,60 +183,62 @@ public class PackagePricingController extends HttpServlet {
         int deliverablesId = Integer.parseInt(req.getParameter("deliverablesId"));
 
         System.out.println(deliverablesId);
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
 
-            // extract the request body
-            BufferedReader reader = req.getReader();
-            PackagePricing pricing = gson.fromJson(reader, PackagePricing.class);
-            pricing.setPricePackageId(pricePackageId);
+            if (tokenInfo.isDesigner()){
 
-            DeliverablesModel deliverables = pricing.getDel();
-            deliverables.setPricePackageId(pricePackageId);
-            deliverables.setDeliverablesId(deliverablesId);
-            pricing.setDel(deliverables);
+                try {
+                    // extract the request body
+                    BufferedReader reader = req.getReader();
+                    PackagePricing pricing = gson.fromJson(reader, PackagePricing.class);
+                    pricing.setPricePackageId(pricePackageId);
 
-            System.out.println(pricing.getDel().getPricePackageId());
-            System.out.println(pricing.getDel().getCategoryId());
-            System.out.println(pricing.getDel().getDeliverablesId());
-            System.out.println(pricing.getDel().getDel_1());
-            System.out.println(pricing.getDel().getDel_2());
-            System.out.println(pricing.getDel().getDel_3());
-            System.out.println(pricing.getDel().getDel_4());
-            System.out.println(pricing.getDel().getDel_5());
+                    DeliverablesModel deliverables = pricing.getDel();
+                    deliverables.setPricePackageId(pricePackageId);
+                    deliverables.setDeliverablesId(deliverablesId);
+                    pricing.setDel(deliverables);
 
 
+                    // update pricing data
+                    PricePackageService pricePackageService = new PricePackageService();
+                    int result1 = pricePackageService.updatePricePackageData(pricing);
 
+                    if (result1 > 0){
 
+                        // update deliverables data
+                        PackageDeliverablesService deliverablesService = new PackageDeliverablesService();
+                        int result2 = deliverablesService.updatePackageDeliverables(pricing.getDel());
 
-            // update pricing data
-            PricePackageService pricePackageService = new PricePackageService();
-            int result1 = pricePackageService.updatePricePackageData(pricing);
-
-            if (result1 > 0){
-
-                // update deliverables data
-                PackageDeliverablesService deliverablesService = new PackageDeliverablesService();
-                int result2 = deliverablesService.updatePackageDeliverables(pricing.getDel());
-
-                if (result2 > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data updated successfully");
-                    System.out.println("Data updated successfully");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data del update unsuccessful");
-                    System.out.println("Data del update unsuccessful");
+                        if (result2 > 0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write("Data updated successfully");
+                            System.out.println("Data updated successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Data del update unsuccessful");
+                            System.out.println("Data del update unsuccessful");
+                        }
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Data update unsuccessful");
+                        System.out.println("Data update unsuccessful");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
+
             } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Data update unsuccessful");
-                System.out.println("Data update unsuccessful");
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
 
+
+
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
     }
 

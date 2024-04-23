@@ -27,7 +27,7 @@ public class PackageController extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         TokenService tokenService = new TokenService();
-        String token = tokenService.getTokenFromHeader(req);//defulat req is a request of controller
+        String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
 
         tokenInfo = tokenService.getTokenInfo(token);
 
@@ -38,24 +38,64 @@ public class PackageController extends HttpServlet {
 
         System.out.println(designerUserId);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
             if (packageId == 0) {
-                // Fetch data based on designerUserId
-                List<Package> packageList = getPackageData(designerUserId);
-                handleGetResponse(packageList, out, resp);
+
+                try {
+                    // Fetch data based on designerUserId
+                    List<Package> packageList = getPackageData(designerUserId);
+//                    handleGetResponse(packageList, out, resp);
+
+                    if (packageList != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        Gson gson = new Gson();
+                        String jsonData = gson.toJson(packageList);
+                        out.write(jsonData);
+                        System.out.println("Data loaded successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        out.write("Data not found");
+                        System.out.println("Data not found");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+
             } else if (packageId > 0) {
-                // Fetch data based on packageId
-                Package newPackage = getPackage(packageId);
-                handleGetResponse(newPackage, out, resp);
+
+                try {
+
+                    // Fetch data based on packageId
+                    Package newPackage = getPackage(packageId);
+//                    handleGetResponse(newPackage, out, resp);
+
+                    if (newPackage != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        Gson gson = new Gson();
+                        String jsonData = gson.toJson(newPackage);
+                        out.write(jsonData);
+                        System.out.println("Data loaded successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        out.write("Data not found");
+                        System.out.println("Data not found");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.write("Invalid request parameters");
                 System.out.println("Invalid request parameters");
             }
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
 
 
@@ -64,20 +104,7 @@ public class PackageController extends HttpServlet {
 
     }
 
-    private void handleGetResponse(Object data, PrintWriter out, HttpServletResponse resp) {
-        if (data != null) {
-            Gson gson = new Gson();
-            String jsonData = gson.toJson(data);
 
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write(jsonData);
-            System.out.println("Data loaded successfully");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            out.write("Data not found");
-            System.out.println("Data not found");
-        }
-    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -89,7 +116,7 @@ public class PackageController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
             int packageID = 0;
 //        String title = null;
 //        String description = null;
@@ -131,7 +158,7 @@ public class PackageController extends HttpServlet {
                     resultJson.addProperty("message", "Data inserted successfully");
                     System.out.println("Data inserted successfully");
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     resultJson.addProperty("message", "Data didn't insert");
                     System.out.println("Data didn't insert");
                 }
@@ -139,13 +166,15 @@ public class PackageController extends HttpServlet {
                 // Send the JSON object as the response
                 out.write(resultJson.toString());
 
-            } catch (IOException | JsonSyntaxException | JsonIOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                out.write(e.toString());
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
 
 
@@ -164,7 +193,7 @@ public class PackageController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1){
             //        int designerUserId = 1;
 
 
@@ -188,38 +217,25 @@ public class PackageController extends HttpServlet {
 
                 if (result>0){
                     resp.setStatus(HttpServletResponse.SC_OK);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                     out.write("row updated successfully");
                     System.out.println("row updated successfully");
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.write("row update unsuccessful");
                     System.out.println("row update unsuccessful");
                 }
 
-            } catch (IOException | JsonSyntaxException | JsonIOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                out.write(e.toString());
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
 
-
-
-//        int result = updatePackageData(newPackage);
-
-//        if (result>0){
-//            resp.setStatus(HttpServletResponse.SC_OK);
-//            out.write("data deleted successfully");
-//            System.out.println("data deleted successfully");
-//        } else {
-//            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            out.write("data deletion unsuccessful");
-//            System.out.println("data deletion unsuccessful");
-//        }
 
     }
 
@@ -233,7 +249,7 @@ public class PackageController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
+        if (tokenService.isTokenValidState(token) == 1) {
 //            int designerUserId = 1;
 
             try {
@@ -248,53 +264,33 @@ public class PackageController extends HttpServlet {
                 int designerUserId = Integer.parseInt(tokenInfo.getUserId());
 
                 BufferedReader reader = req.getReader();
-                Package newPackage = gson.fromJson(reader,Package.class);
+                Package newPackage = gson.fromJson(reader, Package.class);
                 newPackage.setPackageId(packageId);
                 newPackage.setDesignerUserId(designerUserId);
 
                 int result = deletePackageData(newPackage);
 
-                if (result>0){
+                if (result > 0) {
                     resp.setStatus(HttpServletResponse.SC_OK);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
                     out.write("data deleted successfully");
                     System.out.println("data deleted successfully");
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//                resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.write("data deletion unsuccessful");
                     System.out.println("data deletion unsuccessful");
                 }
-            } catch (NumberFormatException | IOException | JsonSyntaxException | JsonIOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                out.write(e.toString());
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
         }
-
-//
-
-//        int packageId = Integer.parseInt(req.getParameter("packageId"));
-//
-//        Package newPackage = new Package(packageId);
-
-
-
 
 
     }
-
-//    @Override
-//    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-////        resp.addHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-////        resp.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-////        resp.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-////        resp.addHeader("Access-Control-Max-Age", "3600");
-//        resp.setStatus(HttpServletResponse.SC_OK);
-//    }
-
 
 
 }

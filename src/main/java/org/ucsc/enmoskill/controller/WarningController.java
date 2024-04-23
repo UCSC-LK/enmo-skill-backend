@@ -1,6 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import org.ucsc.enmoskill.Services.WarningService;
 import org.ucsc.enmoskill.model.WarningModel;
 import org.ucsc.enmoskill.utils.TokenService;
@@ -75,22 +77,27 @@ public class WarningController extends HttpServlet {
 
             if (tokenInfo.isAdmin()){
 
-                // extract request body
-                BufferedReader reader = req.getReader();
-                WarningModel newWarning = gson.fromJson(reader, WarningModel.class);
+                try {
+                    // extract request body
+                    BufferedReader reader = req.getReader();
+                    WarningModel newWarning = gson.fromJson(reader, WarningModel.class);
 
-                // insert new warning
-                WarningService service = new WarningService();
-                int result = service.insertWarning(newWarning);
+                    // insert new warning
+                    WarningService service = new WarningService();
+                    int result = service.insertWarning(newWarning);
 
-                if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data inserted successfully");
-                    System.out.println("Data inserted successfully");
-                } else {
+                    if (result > 0){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write("Data inserted successfully");
+                        System.out.println("Data inserted successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.write("Data didn't insert");
+                        System.out.println("Data didn't insert");
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
                     resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.write("Data didn't insert");
-                    System.out.println("Data didn't insert");
                 }
 
 
