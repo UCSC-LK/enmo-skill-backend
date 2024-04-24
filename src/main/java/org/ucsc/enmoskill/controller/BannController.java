@@ -1,6 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.BannService;
 import org.ucsc.enmoskill.Services.WarningService;
 import org.ucsc.enmoskill.model.BannModel;
@@ -36,45 +38,55 @@ public class BannController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            if (tokenInfo.isAdmin()){
+                if (tokenInfo.isAdmin()){
 
-                // extract request body
-                BufferedReader reader = req.getReader();
-                BannModel bann = gson.fromJson(reader, BannModel.class);
+                    // extract request body
+                    BufferedReader reader = req.getReader();
+                    BannModel bann = gson.fromJson(reader, BannModel.class);
 
-                // insert new warning
-                BannService service = new BannService();
+                    // insert new warning
+                    BannService service = new BannService();
 
-                try {
-                    int result = service.insertBann(bann);
+                    try {
+                        int result = service.insertBann(bann);
 
-                    if (result > 0){
-                        service.send(bann.getUserId(), resp);
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("Problem occurred while suspending the account");
-                        System.out.println("Problem occurred while suspending the account");
+                        if (result > 0){
+                            service.send(bann.getUserId(), resp);
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Problem occurred while suspending the account");
+                            System.out.println("Problem occurred while suspending the account");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
-                } catch (Exception e) {
-                    out.write(e.toString());
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 }
 
-
+            }else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
-
-        }else if (tokenService.isTokenValidState(token) == 2) {
+        } catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
     }
 
 

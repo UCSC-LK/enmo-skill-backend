@@ -2,6 +2,8 @@ package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.PricePackageService;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.*;
@@ -36,78 +38,88 @@ public class PackageViewController extends HttpServlet {
 
         tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1){
+        try {
+            if (tokenService.isTokenValidState(token) == 1){
 
-            try {
-                int packageId = Integer.parseInt(req.getParameter("packageId"));
+                try {
+                    int packageId = Integer.parseInt(req.getParameter("packageId"));
 
-                PackageViewModel viewModel = new PackageViewModel();
+                    PackageViewModel viewModel = new PackageViewModel();
 
-                // fetch package data
-                Package pkgObj = getPackage(packageId);
+                    // fetch package data
+                    Package pkgObj = getPackage(packageId);
 
-                if (pkgObj == null){
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Package not found");
-                    System.out.println("Package not found");
-                } else {
-                    viewModel.setPackageModel(pkgObj);
-
-                    // fetch profile data
-                    ProfileModel profile = new ProfileModel(pkgObj.getDesignerUserId(), "Designer", null, null, null, null, null, null);
-                    if (pkgObj.getDesignerUserId() != 0){
-                        if (profile.CheckReqiredFields()){
-                            ProfileGET servise = new ProfileGET(profile,resp);
-                            try{
-                                StringBuilder profilejson = new StringBuilder();
-                                ResponsModel responsModel= servise.Run();
-                                profilejson.append(responsModel.getResMassage());
-
-                                profile = gson.fromJson(String.valueOf(profilejson), ProfileModel.class);
-                                viewModel.setProfileModel(profile);
-
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-
-                            // fetch package pricing data
-                            List<PackagePricing> priceList = new ArrayList<>();
-                            PricePackageService service = new PricePackageService();
-                            priceList = service.fetchData(packageId);
-
-                            if (priceList != null){
-                                viewModel.setPricings(priceList);
-
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                out.write(gson.toJson(viewModel));
-                                System.out.println("Data loaded successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                out.write("Cannot get data");
-                                System.out.println("Cannot get data");
-                            }
-
-                        }
-                    } else {
+                    if (pkgObj == null){
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("Cannot get data");
-                        System.out.println("Cannot get data");
+                        out.write("Package not found");
+                        System.out.println("Package not found");
+                    } else {
+                        viewModel.setPackageModel(pkgObj);
+
+                        // fetch profile data
+                        ProfileModel profile = new ProfileModel(pkgObj.getDesignerUserId(), "Designer", null, null, null, null, null, null);
+                        if (pkgObj.getDesignerUserId() != 0){
+                            if (profile.CheckReqiredFields()){
+                                ProfileGET servise = new ProfileGET(profile,resp);
+                                try{
+                                    StringBuilder profilejson = new StringBuilder();
+                                    ResponsModel responsModel= servise.Run();
+                                    profilejson.append(responsModel.getResMassage());
+
+                                    profile = gson.fromJson(String.valueOf(profilejson), ProfileModel.class);
+                                    viewModel.setProfileModel(profile);
+
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // fetch package pricing data
+                                List<PackagePricing> priceList = new ArrayList<>();
+                                PricePackageService service = new PricePackageService();
+                                priceList = service.fetchData(packageId);
+
+                                if (priceList != null){
+                                    viewModel.setPricings(priceList);
+
+                                    resp.setStatus(HttpServletResponse.SC_OK);
+                                    out.write(gson.toJson(viewModel));
+                                    System.out.println("Data loaded successfully");
+                                } else {
+                                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                    out.write("Cannot get data");
+                                    System.out.println("Cannot get data");
+                                }
+
+                            }
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Cannot get data");
+                            System.out.println("Cannot get data");
+                        }
+
+
                     }
-
-
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
-            } catch (Exception e) {
-                out.write(e.toString());
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
-
-
-        } else if (tokenService.isTokenValidState(token) == 2) {
+        }catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
     }
 
 

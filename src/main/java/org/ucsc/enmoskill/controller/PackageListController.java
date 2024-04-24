@@ -3,6 +3,8 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.PackageListService;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.Package;
@@ -37,71 +39,81 @@ public class PackageListController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
 
-        int category = Integer.parseInt(req.getParameter("category"));
-        int priceCode = Integer.parseInt(req.getParameter("price"));
-        int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
-        int language = Integer.parseInt(req.getParameter("language"));
-        float reviews = Float.parseFloat(req.getParameter("reviewCode"));
+            int category = Integer.parseInt(req.getParameter("category"));
+            int priceCode = Integer.parseInt(req.getParameter("price"));
+            int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
+            int language = Integer.parseInt(req.getParameter("language"));
+            float reviews = Float.parseFloat(req.getParameter("reviewCode"));
 
-        if (tokenService.isTokenValidState(token) == 1){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            List<PackageBlockModel> packageList1 = null;
-            List<PackageBlockModel> packageList2 = null;
+                List<PackageBlockModel> packageList1 = null;
+                List<PackageBlockModel> packageList2 = null;
 
-            try {
-                if (category>4 || category<0){
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data not found");
-                    System.out.println("Data not found");
-                } else {
-                    Gson gson = new Gson();
+                try {
+                    if (category>4 || category<0){
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Data not found");
+                        System.out.println("Data not found");
+                    } else {
+                        Gson gson = new Gson();
 
-                    PackageListService service = new PackageListService();
-                    int packageCount;
+                        PackageListService service = new PackageListService();
+                        int packageCount;
 
-                    do {
-                        // fetch all the required details to filter and display
-                        packageList1 = service.getPackages();
+                        do {
+                            // fetch all the required details to filter and display
+                            packageList1 = service.getPackages();
 //                    System.out.println(gson.toJson(packageList1));
 
-                        // fetch packages count
-                        packageCount = service.countPackages();
-                        System.out.println(packageCount);
-                        System.out.println("list: " + packageList1.size());
+                            // fetch packages count
+                            packageCount = service.countPackages();
+                            System.out.println(packageCount);
+                            System.out.println("list: " + packageList1.size());
 
-                    } while (packageCount != packageList1.size());
+                        } while (packageCount != packageList1.size());
 
-                    packageList2 = service.filterPackages(category, priceCode, delTimeCode, language, reviews, packageList1);
+                        packageList2 = service.filterPackages(category, priceCode, delTimeCode, language, reviews, packageList1);
 
-                    if (!packageList2.isEmpty()){
+                        if (!packageList2.isEmpty()){
 
-                        String json = gson.toJson(packageList2);
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(json);
-                        System.out.println("Data loaded successfully");
+                            String json = gson.toJson(packageList2);
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write(json);
+                            System.out.println("Data loaded successfully");
 
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("Cannot get data");
-                        System.out.println("Cannot get data");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Cannot get data");
+                            System.out.println("Cannot get data");
+                        }
+
                     }
-
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
-            } catch (Exception e) {
-                out.write(e.toString());
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
-
-
-        } else if (tokenService.isTokenValidState(token) == 2) {
+        }catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
 
 
 

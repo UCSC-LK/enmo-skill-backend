@@ -1,8 +1,11 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.UserSer;
 import org.ucsc.enmoskill.model.User;
+import org.ucsc.enmoskill.utils.Hash;
 import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.ServletException;
@@ -26,51 +29,86 @@ public class UserUpdateController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
         Gson gson = new Gson();
-        tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1) {
-            if (tokenInfo.isAdmin()) {
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-                try {
+            if (tokenService.isTokenValidState(token) == 1) {
+                if (tokenInfo.isAdmin()) {
 
-                    BufferedReader reader = req.getReader();
+                    try {
 
-                    User user = gson.fromJson(reader, User.class);
-                    // extract query params
-                    int roleNo = Integer.parseInt(req.getParameter("role"));
-                    UserSer service = new UserSer();
+                        BufferedReader reader = req.getReader();
 
-                    // make csa
-                    if (roleNo == 4) {
+                        User user = gson.fromJson(reader, User.class);
+                        // extract query params
+                        String accDeactivation = req.getParameter("deactivation");
+                        int roleNo = Integer.parseInt(req.getParameter("role"));
+                        UserSer service = new UserSer();
 
-                        int result = service.makeCSA(user.getId());
+                        if (accDeactivation == null){
+                            // make csa
+                            if (roleNo == 4) {
 
-                        if (result > 0){
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            System.out.println("User level upgraded successfully");
-                            out.write("User level upgraded successfully");
+                                int result = service.makeCSA(user.getId());
 
+                                if (result > 0){
+                                    resp.setStatus(HttpServletResponse.SC_OK);
+                                    System.out.println("User level upgraded successfully");
+                                    out.write("User level upgraded successfully");
+
+                                } else {
+                                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                    System.out.println("User level did not upgraded");
+                                    out.write("User level did not upgraded");
+                                }
+
+
+                            } else if (roleNo == 1 || roleNo == 2) {
+
+                                String newPw = Hash.hashPassword(user.getPassword());
+                                int result = service.updatePassword(user, newPw);
+
+                                if(result > 0){
+                                    resp.setStatus(HttpServletResponse.SC_OK);
+                                    System.out.println("Password updated successfully");
+                                    out.write("Password updated successfully");
+                                }else {
+                                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                    System.out.println("Password did not updated");
+                                    out.write("Password did not updated");
+                                }
+
+
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            }
                         } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            System.out.println("User level did not upgraded");
-                            out.write("User level did not upgraded");
+
                         }
 
 
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
-                } catch (Exception e) {
-                    out.write(e.toString());
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 }
-
+            }else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            }
-        }else if (tokenService.isTokenValidState(token) == 2) {
-            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
+            }
+        } catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
     }
 }
