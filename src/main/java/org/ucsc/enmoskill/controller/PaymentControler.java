@@ -1,6 +1,7 @@
 package org.ucsc.enmoskill.controller;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.ucsc.enmoskill.Services.PaymentDetailsGET;
 import org.ucsc.enmoskill.utils.Payment_hashGen;
 import org.ucsc.enmoskill.utils.TokenService;
 
@@ -88,8 +89,9 @@ public class PaymentControler extends HttpServlet {
 
         System.out.println("Payment Confirmation Received");
         System.out.println(merchantId+" "+orderId+" "+paymentId+" "+amount+" "+currency+" "+statusCode+" "+custom1+" "+custom2+" "+method+" "+statusMessage);
+        Payment_hashGen payment_hashGen = new Payment_hashGen();
 
-        if(validatePaymentConfirmation(paymentConfirmation)){
+        if(payment_hashGen.validatePaymentConfirmation(paymentConfirmation)){
             System.out.println("Payment Confirmation is Valid");
         }
         else{
@@ -99,27 +101,23 @@ public class PaymentControler extends HttpServlet {
 
 
     }
-    private boolean validatePaymentConfirmation(Map<String, String[]> paymentConfirmation){
-        if(paymentConfirmation.get("md5sig")[0]==null){
-            return false;
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String orderid = req.getParameter("orderId");
+        if (orderid == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-        String merchantsSecret = dotenv.get("MERCHANT_SECRET");
-        if(paymentConfirmation.get("md5sig")[0].equals(generateMd5sig(paymentConfirmation, merchantsSecret))){
-            return true;
-        }
-        else{
-            return false;
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        if (tokenService.isTokenValidState(token) == 1) {
+            PaymentDetailsGET paymentDetailsGET = new PaymentDetailsGET(resp, tokenService.getTokenInfo(token), orderid);
+            paymentDetailsGET.Run();
+
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
-    public static String generateMd5sig(Map<String, String[]> paymentConfirmation, String merchantSecret){
-        String checksum = null;
-        String md5Hash = getMd5(merchantSecret);
-//        String concatString = merchantId + orderId + payhereAmount + payhereCurrency + statusCode + md5Hash;
-        String concatString = paymentConfirmation.get("merchant_id")[0] + paymentConfirmation.get("order_id")[0] + paymentConfirmation.get("payhere_amount")[0] + paymentConfirmation.get("payhere_currency")[0] + paymentConfirmation.get("status_code")[0] + md5Hash;
-        checksum = getMd5(concatString);
-        return checksum;
-    }
-
-
-
 }
