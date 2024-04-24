@@ -113,6 +113,10 @@
         <servlet-name>userupdate</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.UserUpdateController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>admindashboard</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.AdminDashboradController</servlet-class>
+    </servlet>
 
 
 
@@ -358,6 +362,10 @@
     <servlet-mapping>
         <servlet-name>userupdate</servlet-name>
         <url-pattern>/userupdate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>admindashboard</servlet-name>
+        <url-pattern>/admindashboard</url-pattern>
     </servlet-mapping>
 
 </web-app>
