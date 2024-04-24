@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.LanguageModel;
-import org.ucsc.enmoskill.model.Skills;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
