@@ -123,7 +123,7 @@ public class DesignerDashboardController extends HttpServlet {
 
                             } catch (Exception e) {
                                 out.write(e.toString());
-                                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);;
+//                                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);;
                             }
 
 
@@ -133,9 +133,9 @@ public class DesignerDashboardController extends HttpServlet {
                             out.write("Data fetch unsuccessful");
                             System.out.println("Data fetch unsuccessful");
                         }
-                    } catch (IOException | JsonSyntaxException e) {
+                    } catch (Exception e) {
                         out.write(e.toString());
-                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
 
 

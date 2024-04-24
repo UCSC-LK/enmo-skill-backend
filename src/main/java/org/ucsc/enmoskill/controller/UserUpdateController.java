@@ -85,6 +85,17 @@ public class UserUpdateController extends HttpServlet {
                             }
                         } else {
 
+                            int result = service.accountDeactivation(user.getId());
+
+                            if(result > 0){
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                System.out.println("Password updated successfully");
+                                out.write("Password updated successfully");
+                            }else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                System.out.println("Password did not updated");
+                                out.write("Password did not updated");
+                            }
                         }
 
 

@@ -417,4 +417,57 @@ public class UserSer {
         }
     }
 
+    public int updatePassword(User user, String newPassword){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE users SET password=? WHERE userID=?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, newPassword);
+            preparedStatement.setInt(2, user.getId());
+            result = preparedStatement.executeUpdate();
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public int accountDeactivation(int userId){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE users SET status=4 WHERE userID=?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            result = preparedStatement.executeUpdate();
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
