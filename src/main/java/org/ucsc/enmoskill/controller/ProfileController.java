@@ -38,6 +38,7 @@ public class ProfileController extends HttpServlet {
 //            String json = reader.lines().collect(Collectors.joining());
 //            System.out.println(json);
                 ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
+                System.out.println("01");
 
                 if(profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
                     ProfilePOST service = new ProfilePOST(profileModel,tokenInfo);
@@ -69,7 +70,7 @@ public class ProfileController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
 
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
@@ -92,6 +93,8 @@ public class ProfileController extends HttpServlet {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
@@ -105,7 +108,7 @@ public class ProfileController extends HttpServlet {
         String token = tokenService.getTokenFromHeader(req);
         System.out.println(token);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
             if(tokenInfo.getRole() != null && tokenInfo.getUserId() != null){
@@ -113,6 +116,7 @@ public class ProfileController extends HttpServlet {
 
                 try {
                     ResponsModel responsModel= servise.Run();
+                    System.out.println(responsModel);
                     resp.getWriter().write(responsModel.getResMassage());
                     resp.setStatus(responsModel.getResStatus());
 
@@ -123,19 +127,20 @@ public class ProfileController extends HttpServlet {
                 resp.getWriter().write("User Id is Required!");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         resp.setContentType("application/json");
-
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        if(tokenService.isTokenValid(token)){
+        if(tokenService.isTokenValidState(token)==1){
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
             Connection connection = DatabaseConnection.initializeDatabase();
@@ -170,6 +175,8 @@ public class ProfileController extends HttpServlet {
                 resp.getWriter().write("User Id is Required!");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
+        }else if(tokenService.isTokenValidState(token)==2){
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }else{
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

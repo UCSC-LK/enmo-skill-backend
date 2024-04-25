@@ -3,6 +3,7 @@ package org.ucsc.enmoskill.Services;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import netscape.javascript.JSObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.BillingInformationModel;
 import org.ucsc.enmoskill.model.ResponsModel;
@@ -36,16 +37,18 @@ public class BillingInformationGET {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             ResultSet result = preparedStatement.executeQuery();
-            JsonArray jsonArray = new JsonArray();
+            JsonObject jsonObject = new JsonObject();
             Gson gson = new Gson();
 
-            while (result.next()){
+            if (result.next()){
                 BillingInformationModel billingInformationModel = new BillingInformationModel(result);
-                JsonObject jsonObject = gson.toJsonTree(billingInformationModel).getAsJsonObject();
-                jsonArray.add(jsonObject);
+                jsonObject = gson.toJsonTree(billingInformationModel).getAsJsonObject();
+                return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
+            }else{
+                return new ResponsModel("No data available",429);
             }
 
-            return new ResponsModel(jsonArray.toString(),HttpServletResponse.SC_OK);
+
         }
 
     }

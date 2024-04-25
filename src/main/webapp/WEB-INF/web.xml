@@ -205,6 +205,10 @@
         <servlet-name>designerdashboard</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>languages</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.LanguageController</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>order_details</servlet-name>
@@ -351,6 +355,10 @@
     <servlet-mapping>
         <servlet-name>bann</servlet-name>
         <url-pattern>/bann</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>languages</servlet-name>
+        <url-pattern>/languages</url-pattern>
     </servlet-mapping>
 
 </web-app>
