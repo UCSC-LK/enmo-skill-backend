@@ -18,16 +18,48 @@ public class ProposalGETSer {
         this.resp = resp;
     }
 
-    public  void GetAllProposals(Connection connection , String userID ){
+    public  void GetAllDesignersProposals(Connection connection , String userID ){
         PreparedStatement preparedStatement = null;
         ResultSet result = null; // Add this line to initialize the result set
 
         System.out.println("User ID: " + userID);
         try{
-            String query = "SELECT * FROM proposals WHERE userID = ? ";
+            String query = "SELECT * FROM proposals WHERE designer_userID = ? ";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             result = preparedStatement.executeQuery();
+            System.out.println("Run: ");
+
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
+
+            while (result.next()) {
+                ProposalModel proposal = new ProposalModel(result);
+                JsonObject jsonObject = gson.toJsonTree(proposal).getAsJsonObject();
+                jsonArray.add(jsonObject);
+            }
+
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+            System.out.println("Proposals : " + jsonArray);
+
+        }catch (SQLException | IOException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public  void GetAllClientsProposals(Connection connection , String userID ){
+        PreparedStatement preparedStatement = null;
+        ResultSet result = null; // Add this line to initialize the result set
+
+        System.out.println("User ID: " + userID);
+        try{
+            String query = "SELECT * FROM proposals WHERE client_userID = ? ";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, userID); // Set the userID parameter
+            result = preparedStatement.executeQuery();
+            System.out.println("Run: ");
 
             JsonArray jsonArray = new JsonArray();
             Gson gson = new Gson();
