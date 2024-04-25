@@ -2,6 +2,7 @@ package org.ucsc.enmoskill.controller;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.ucsc.enmoskill.Services.PaymentDetailsGET;
+import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.utils.Payment_hashGen;
 import org.ucsc.enmoskill.utils.TokenService;
 
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Map;
 
 import static org.ucsc.enmoskill.utils.Payment_hashGen.getMd5;
@@ -82,7 +85,7 @@ public class PaymentControler extends HttpServlet {
         String method = req.getParameter("method");
         String statusMessage = req.getParameter("status_message");
 
-        // If payment made by VISA or MASTER card, retrieve additional parameters
+
         String cardHolderName = req.getParameter("card_holder_name");
         String maskedCardNo = req.getParameter("card_no");
         String cardExpiry = req.getParameter("card_expiry");
@@ -93,6 +96,30 @@ public class PaymentControler extends HttpServlet {
 
         if(payment_hashGen.validatePaymentConfirmation(paymentConfirmation)){
             System.out.println("Payment Confirmation is Valid");
+            Connection connection = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE orders SET status = 1 WHERE order_id = ?";
+            String query2 = "INSERT INTO payment (order_id, amount, status_code,  method, status_message) VALUES (?, ?, ?, ?, ?)";
+
+            try {
+                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+                preparedStatement1.setString(1, orderId);
+                preparedStatement2.setString(1, orderId);
+                preparedStatement2.setString(2, amount);
+                preparedStatement2.setString(3, statusCode);
+                preparedStatement2.setString(4, method);
+                preparedStatement2.setString(5, statusMessage);
+                connection.setAutoCommit(false);
+                if (statusCode.equals("2")) {
+                    preparedStatement1.executeUpdate();
+                }
+                preparedStatement2.executeUpdate();
+                connection.commit();
+                connection.setAutoCommit(true);
+                System.out.println("Payment Confirmation is Valid");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         else{
             System.out.println("Payment Confirmation is Invalid");
