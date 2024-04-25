@@ -41,7 +41,31 @@ public class ProfileModel {
         this.language = Arrays.asList(result.getString("language").split(","));
 
 
+
     }
+
+    public ProfileModel(ResultSet result,int one) throws SQLException {
+        this.userId = result.getInt("userid");
+        this.fname = result.getString("fname");
+        this.lname = result.getString("lname");
+        this.description = result.getString("description");
+        this.display_name = result.getString("display_name");
+
+        String skillsString = result.getString("skills");
+        if (skillsString != null) {
+            this.skills = Arrays.asList(skillsString.split(","));
+        } else {
+            this.skills = Collections.emptyList();
+        }
+
+        String languageString = result.getString("language");
+        if (languageString != null) {
+            this.language = Arrays.asList(languageString.split(","));
+        } else {
+            this.language = Collections.emptyList();
+        }
+    }
+
 
     public String getQueryLevelUp(){
         String queryRoleLevelUp = "UPDATE enmo_database.user_level_mapping t " +

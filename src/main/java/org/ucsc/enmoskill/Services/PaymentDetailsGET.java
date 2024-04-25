@@ -47,7 +47,7 @@ public class PaymentDetailsGET {
 
 
 
-                String query = "select orders.client_userID,orders.status, orders.order_id,p.title,p.cover_url,pp.type,orders.price as total_price , pp.price as package_price,(select percentage from client_charges where charge_category = 1 ) as usercharge from orders join package p on orders.package_id = p.package_id join package_pricing pp on orders.price_package_id = pp.price_package_id and orders.package_id = pp.package_id where orders.order_id = ?";
+                String query = "select orders.client_userID,orders.status, orders.order_id,p.title,p.cover_url,pp.type,orders.price as total_price , pp.price as package_price,(select  percentage from platform_charge_rates where charge_category = 1 ) as usercharge from orders join package p on orders.package_id = p.package_id join package_pricing pp on orders.price_package_id = pp.price_package_id and orders.package_id = pp.package_id where orders.order_id = ?";
                 Connection connection = DatabaseConnection.initializeDatabase();
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, orderId);
