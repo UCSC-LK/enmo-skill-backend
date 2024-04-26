@@ -35,42 +35,56 @@ public class OrderController extends HttpServlet {
 
         int clientId = Integer.parseInt(tokenInfo.getUserId());
 
-        if (tokenService.isTokenValid(token)){
-            Gson gson = new Gson();
+        if (tokenService.isTokenValidState(token) == 1){
 
-            // creating a Order object using the request body
-            BufferedReader reader = req.getReader();
-            Order newOrder = gson.fromJson(reader,Order.class);
+            if (tokenInfo.isClient() || tokenInfo.isDesigner()){
+                Gson gson = new Gson();
 
-            newOrder.setClientId(clientId);
+                // creating a Order object using the request body
+                BufferedReader reader = req.getReader();
+                Order newOrder = gson.fromJson(reader,Order.class);
 
-            OrderService service = new OrderService(resp);
+                newOrder.setClientId(clientId);
 
-            newOrder = service.setFee(newOrder);
+                OrderService service = new OrderService(resp);
 
-            int result = service.createOrder(newOrder);
+                newOrder = service.setFee(newOrder);
 
-            // Create a JSON object to represent the result
-            JsonObject resultJson = new JsonObject();
-            resultJson.addProperty("orderId", result);
+                try{
+                    int result = service.createOrder(newOrder);
 
-            if (result>0){
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resultJson.addProperty("message", "Order created successfully");
-                System.out.println("Order created successfully");
+                    // Create a JSON object to represent the result
+                    JsonObject resultJson = new JsonObject();
+                    resultJson.addProperty("orderId", result);
+
+                    if (result>0){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        resultJson.addProperty("message", "Order created successfully");
+                        System.out.println("Order created successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        resultJson.addProperty("message", "Order didn't created");
+                        System.out.println("Order didn't created");
+                    }
+                    // Send the JSON object as the response
+                    out.write(resultJson.toString());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+
+
+
             } else {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resultJson.addProperty("message", "Order didn't created");
-                System.out.println("Order didn't created");
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
 
-            // Send the JSON object as the response
-            out.write(resultJson.toString());
 
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+
         }
     }
 
@@ -112,20 +126,7 @@ public class OrderController extends HttpServlet {
                     service.getAllDesignerOrderDetails(userId);
                 } else {
                     OrderService service = new OrderService(resp);
-                    Order order = service.getOrderDetails(orderId);
-
-                    if (order != null){
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(order));
-                        out.println("Orders : " + order);
-                        System.out.println("Order details found");
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("Order details not found");
-                        out.println("NoOrders : " );
-                        System.out.println("Order details not found");
-                    }
-
+                    service.getOrderDetails(orderId);
                 }
 
             } else if (tokenInfo.isClient()) {
@@ -135,20 +136,7 @@ public class OrderController extends HttpServlet {
                     service.getAllClientOrderDetails(userId);
                 } else {
                     OrderService service = new OrderService(resp);
-                    Order order = service.getOrderDetails(orderId);
-
-                    if (order != null){
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(order));
-                        out.println("Orders : " + order);
-                        System.out.println("Order details found");
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("Order details not found");
-                        out.println("NoOrders : " );
-                        System.out.println("Order details not found");
-                    }
-
+                    service.getOrderDetails(orderId);
                 }
             }
         } else {

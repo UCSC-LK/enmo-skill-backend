@@ -249,6 +249,7 @@ public class UserSer {
                     "    u.userID," +
                     "    d.display_name," +
                     "    u.email," +
+//                    "    u.name," +
                     "    u.contact_no," +
                     "    u.password," +
                     "    u.url," +
@@ -271,7 +272,6 @@ public class UserSer {
 
             resultSet  = preparedStatement.executeQuery();
 
-
             if (resultSet != null){
 
                 UserFullModel userFull = new UserFullModel();
@@ -289,7 +289,7 @@ public class UserSer {
                     user.setUrl(resultSet.getString("url"));
                     user.setUser_role(String.valueOf(resultSet.getInt("userlevelID")));
                     user.setPassword(resultSet.getString("password"));
-                    user.setName(resultSet.getString("name"));
+//                    user.setName(resultSet.getString("name"));
                     userFull.setUser(user);
                     userFull.setFname(resultSet.getString("fname"));
                     userFull.setLname(resultSet.getString("lname"));
@@ -301,6 +301,13 @@ public class UserSer {
             return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

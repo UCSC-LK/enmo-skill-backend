@@ -18,9 +18,15 @@ public class Order {
     private int price;
     private int platformFeeId;
 
+    private int proposalID;
+
+    private int pricePackageID;
+
+    private int deliveryDuration;
+
     public Order(){}
 
-    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
+    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId ,int proposalID, int pricePackageID , int deliveryDuration){
         this.orderId = orderId;
         this.createdTime = createdTime;
         this.requirements = requirements;
@@ -30,7 +36,9 @@ public class Order {
         this.packageId = packageId;
         this.price = price;
         this.platformFeeId = platformFeeId;
-
+        this.proposalID = proposalID;
+        this.pricePackageID = pricePackageID;
+        this.deliveryDuration = deliveryDuration;
         // Parse and set createdTime
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a");
         try {
@@ -63,8 +71,35 @@ public class Order {
         this.packageId = resultSet.getInt("package_id");
         this.price = resultSet.getInt("price");
         this.platformFeeId = resultSet.getInt("platform_fee_id");
+        this.proposalID = resultSet.getInt("proposalID");
+        this.pricePackageID = resultSet.getInt("price_package_id");
+        this.deliveryDuration = resultSet.getInt("deliveryDuration");
     }
 
+
+    public void setDeliveryDuration(int deliveryDuration) {
+        this.deliveryDuration = deliveryDuration;
+    }
+
+    public int getDeliveryDuration() {
+        return deliveryDuration;
+    }
+
+    public int getPricePackageID() {
+        return pricePackageID;
+    }
+
+    public void setPricePackageID(int pricePackageID) {
+        this.pricePackageID = pricePackageID;
+    }
+
+    public int getProposalID() {
+        return proposalID;
+    }
+
+    public void setProposalID(int proposalID) {
+        this.proposalID = proposalID;
+    }
 
     public int getPackageId() {
         return packageId;

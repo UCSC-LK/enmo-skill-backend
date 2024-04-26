@@ -77,6 +77,45 @@ public class OrderService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
+            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id , proposalID , price_package_id , deliveryDuration)"
+                    + "VALUES (?,?,?,?,?,?,?,?,?,?);";
+            preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, order.getRequirements());
+            preparedStatement.setInt(2,0);
+            preparedStatement.setInt(3,order.getClientId());
+            preparedStatement.setInt(4,order.getDesignerId());
+            preparedStatement.setInt(5,order.getPackageId());
+            preparedStatement.setInt(6,order.getPrice());
+            preparedStatement.setDouble(7,order.getPlatformFeeId());
+            preparedStatement.setDouble(8,order.getProposalID());
+            preparedStatement.setInt(9,order.getPricePackageID());
+            preparedStatement.setInt(10, order.getDeliveryDuration());
+            result = preparedStatement.executeUpdate();
+
+            if (result > 0){
+                // Retrieve the auto-generated keys (including the primary key)
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+
+                    } else {
+                        throw new SQLException("Creating order failed, no ID obtained.");
+                    }
+                }
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int createCustomOrder(Order order){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        int result = 0;
+
+        try{
+            con = DatabaseConnection.initializeDatabase();
             String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id)"
                     + "VALUES (?,?,?,?,?,?,?);";
             preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -108,7 +147,7 @@ public class OrderService {
         }
     }
 
-    public Order getOrderDetails(int orderId){
+    public void getOrderDetails(int orderId){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -121,26 +160,19 @@ public class OrderService {
 
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet!=null){
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
 
-                Order order = new Order();
-
-                while (resultSet.next()){
-                    order.setOrderId(resultSet.getInt("order_id"));
-                    order.setCreatedTime(resultSet.getTimestamp("created_time"));
-                    order.setRequirements(resultSet.getString("requirements"));
-                    order.setStatus(resultSet.getInt("status"));
-                    order.setClientId(resultSet.getInt("client_userID"));
-                    order.setDesignerId(resultSet.getInt("designer_userID"));
-                    order.setPackageId(resultSet.getInt("package_id"));
-                    order.setPrice(resultSet.getInt("price"));
-                    order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
-                }
-                return order;
-
+            while (resultSet.next()) {
+                Order order = new Order(resultSet);
+                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                jsonArray.add(jsonObject);
             }
-            return  null;
-        } catch (SQLException e) {
+
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (SQLException | IOException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
 
