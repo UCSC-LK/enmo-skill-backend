@@ -196,6 +196,7 @@ public class PackageController extends HttpServlet {
         try {
             if (tokenService.isTokenValidState(token) == 1){
                 int designerUserId = Integer.parseInt(tokenInfo.getUserId());
+                int packageId = Integer.parseInt(req.getParameter("packageId"));
 
                 try{
                     Gson gson = new Gson();
@@ -203,6 +204,9 @@ public class PackageController extends HttpServlet {
                     BufferedReader reader = req.getReader();
                     Package newPackage = gson.fromJson(reader,Package.class);
                     newPackage.setDesignerUserId(designerUserId);
+                    newPackage.setPackageId(packageId);
+
+                    System.out.println(gson.toJson(newPackage));
 
                     int result = updatePackageData(newPackage);
 

@@ -40,7 +40,13 @@ public class AdminDashboradController extends HttpServlet {
 
                     // get data
                     AdminDashboardService service = new AdminDashboardService();
-                    AdminDashboardModel dashboardModel = service.getDashboardData();
+
+                    AdminDashboardModel dashboardModel = new AdminDashboardModel();
+                    dashboardModel = service.getDashboardData();
+                    dashboardModel.setUserCount(service.getUserCount()); // set user count
+                    dashboardModel.setPackageCount(service.getPackageCount()); // set package count
+                    dashboardModel.setTotalEarnings(service.getTotalEarnings()); // set total earnings
+                    dashboardModel.setDate_orders(service.getOrderData());
 
                     if (dashboardModel != null){
                         resp.setStatus(HttpServletResponse.SC_OK);
