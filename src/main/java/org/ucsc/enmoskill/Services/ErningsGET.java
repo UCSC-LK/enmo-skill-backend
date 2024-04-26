@@ -91,7 +91,23 @@ public class ErningsGET {
 
                 return new ResponsModel(jsonArray.toString(),HttpServletResponse.SC_OK);
 
-            }else{
+            } else if (tokenInfo.isClient()) {
+                String query = "SELECT t.* FROM enmo_database.orders t WHERE client_userID = ? ";
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, tokenInfo.getUserId());
+
+                ResultSet result = preparedStatement.executeQuery();
+                JsonArray jsonArray = new JsonArray();
+                Gson gson = new Gson();
+
+                while (result.next()){
+                    ErningsModel erningsModel = new ErningsModel(result);
+                    JsonObject jsonObject = gson.toJsonTree(erningsModel).getAsJsonObject();
+                    jsonArray.add(jsonObject);
+                }
+                return new ResponsModel(jsonArray.toString(),HttpServletResponse.SC_OK);
+
+            } else{
                 return new ResponsModel("Invalid user ID",HttpServletResponse.SC_BAD_REQUEST);
             }
 
