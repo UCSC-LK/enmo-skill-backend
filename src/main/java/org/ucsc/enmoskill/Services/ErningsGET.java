@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class ErningsGET {
     private TokenService.TokenInfo tokenInfo;
@@ -34,7 +35,7 @@ public class ErningsGET {
 
         } else {
             if(tokenInfo.isDesigner()){
-                String query = "SELECT t.*,o.created_time,o.package_id,p.percentage FROM enmo_database.earnings t JOIN enmo_database.orders o on o.order_id = t.orderID JOIN platform_charge_rates p on t.platform_charge_id = p.charge_category WHERE t.designerID = ? ";
+                String query = "SELECT t.*,o.created_time,o.package_id,p.percentage FROM enmo_database.earnings t JOIN enmo_database.orders o on o.order_id = t.orderID JOIN platform_charge_rates p on t.platform_charge_id = p.charge_category WHERE t.designerID = ? ORDER BY t.status";
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, tokenInfo.getUserId());
 
@@ -84,10 +85,17 @@ public class ErningsGET {
 
                     while (result.next()){
                         boolean isActive = false;
+                        long remainingDays = 0;
                         if(result.getInt("status")==3){
                             isActive =checkAvailable(String.valueOf(result.getDate("completedDate")));
+                            if(!isActive){
+                                LocalDate initialDate = LocalDate.parse(String.valueOf(result.getDate("completedDate")));
+                                LocalDate newDate = initialDate.plusWeeks(2);
+                                LocalDate currentDate = LocalDate.now();
+                                remainingDays = ChronoUnit.DAYS.between(currentDate, newDate);
+                            }
                         }
-                        ErningsModel erningsModel = new ErningsModel(result,isActive);
+                        ErningsModel erningsModel = new ErningsModel(result,isActive,remainingDays);
                         JsonObject jsonObject = gson.toJsonTree(erningsModel).getAsJsonObject();
                         jsonArray.add(jsonObject);
                     }
