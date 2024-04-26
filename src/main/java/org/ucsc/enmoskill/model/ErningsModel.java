@@ -9,6 +9,7 @@ public class ErningsModel {
     private  double available,begin,active,all,amount,lastAmount;
     private int status,orderId,packegeId;
     private String date,lastDate;
+    private boolean isAvailable;
 
 
     public ErningsModel(double available, double begin, double active, double all,double amount,double lastAmount,int status, int orderId, int packegeId, String date,String lastDate) {
@@ -34,6 +35,11 @@ public class ErningsModel {
         this.lastDate=lastDate;
         this.lastAmount=lastAmount;
 
+        System.out.println("begin "+begin);
+        System.out.println("active "+active);
+        System.out.println("available "+available);
+        System.out.println("lastDate "+this.lastDate);
+        System.out.println("lastAmount "+this.lastAmount);
 
     }
 
@@ -43,6 +49,15 @@ public class ErningsModel {
         this.packegeId=result.getInt("package_id");
         this.date=result.getString("created_time");
         this.amount=result.getDouble("price");
+    }
+
+    public ErningsModel(ResultSet result,boolean isAvailable) throws SQLException {
+        this.orderId=result.getInt("orderID");
+        this.status=result.getInt("status");
+        this.packegeId=result.getInt("package_id");
+        this.date=result.getString("created_time");
+        this.amount=result.getDouble("price");
+        this.isAvailable=isAvailable;
     }
 
     public double getAvailable() {
