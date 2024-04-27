@@ -110,6 +110,8 @@ public class ProposalController extends HttpServlet {
             // Get the JWT token from the request header
             String jwtToken = req.getHeader("Authorization");
 
+            out.println("jwtTokennew1: " + jwtToken);
+
             // Check if the JWT token is present
             if (jwtToken != null) {
 

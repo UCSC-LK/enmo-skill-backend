@@ -208,6 +208,16 @@
         <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>review</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ReviewController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>review</servlet-name>
+        <url-pattern>/review</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>order_details</servlet-name>
         <url-pattern>/orderDetails</url-pattern>
