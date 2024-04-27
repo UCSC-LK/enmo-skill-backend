@@ -37,47 +37,47 @@ public class ErningsPUT {
         Date Today= new Date();
         String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
 
-        String query = "SELECT t.all FROM enmo_database.withdrawal t WHERE userID = ? ";
+        String query = "SELECT t.allWithdrawal FROM enmo_database.withdrawal t WHERE userID = ? ";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, tokenInfo.getUserId());
         ResultSet result1 = preparedStatement.executeQuery();
         double all=0;
         String query1=null;
         PreparedStatement preparedStatement1=null;
+        double newamount = 0;
 
-            double newamount = 0;
-            if (!result1.next()) {
-                if(isValiedAmaont(amount,0,connection)) {
-                    newamount = amount;
-                    query1 = "INSERT INTO enmo_database.withdrawal (`all`,date,lastWthdrawaiAmount,userID) VALUES (?, ?, ?, ?)";
-                }else {
-                    return new ResponsModel("Invalid Amount!", HttpServletResponse.SC_BAD_REQUEST);
-                }
-
-            } else {
-                if(isValiedAmaont(amount,Double.parseDouble(result1.getString("all")),connection)) {
-                    all = Double.parseDouble(result1.getString("all"));
-                    newamount = all + amount;
-
-                    query1 = "UPDATE enmo_database.withdrawal t  SET t.all = ?, t.date= ?,t.lastWthdrawaiAmount = ? WHERE userID =  ? ";
-                }else {
-                    return new ResponsModel("Invalid Amount!", HttpServletResponse.SC_BAD_REQUEST);
-                }
+        if (!result1.next()) {
+            if(isValiedAmaont(amount,0,connection)) {
+                newamount = amount;
+                query1 = "INSERT INTO enmo_database.withdrawal (allWithdrawal,lastWithdrawaldate,lastWithdrawalAmount,userID) VALUES (?, ?, ?, ?)";
+            }else {
+                return new ResponsModel("Invalid Amount!", HttpServletResponse.SC_BAD_REQUEST);
             }
 
-            preparedStatement1 = connection.prepareStatement(query1);
-            preparedStatement1.setString(1, String.valueOf(newamount));
-            preparedStatement1.setString(2, Date);
-            preparedStatement1.setString(3, String.valueOf(amount));
-            preparedStatement1.setString(4, tokenInfo.getUserId());
+        } else {
+            if(isValiedAmaont(amount,Double.parseDouble(result1.getString("allWithdrawal")),connection)) {
+                all = Double.parseDouble(result1.getString("allWithdrawal"));
+                newamount = all + amount;
 
-            int rowsAffected = preparedStatement1.executeUpdate();
-
-            if (rowsAffected > 0) {
-                return new ResponsModel("Withdrawal successfully!", HttpServletResponse.SC_OK);
-            } else {
-                return new ResponsModel("Withdrawal unsuccessfully!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                query1 = "UPDATE enmo_database.withdrawal t  SET t.allWithdrawal = ?, t.lastWithdrawaldate= ?,t.lastWithdrawalAmount = ? WHERE userID =  ? ";
+            }else {
+                return new ResponsModel("Invalid Amount!", HttpServletResponse.SC_BAD_REQUEST);
             }
+        }
+
+        preparedStatement1 = connection.prepareStatement(query1);
+        preparedStatement1.setString(1, String.valueOf(newamount));
+        preparedStatement1.setString(2, Date);
+        preparedStatement1.setString(3, String.valueOf(amount));
+        preparedStatement1.setString(4, tokenInfo.getUserId());
+
+        int rowsAffected = preparedStatement1.executeUpdate();
+
+        if (rowsAffected > 0) {
+            return new ResponsModel("Withdrawal successfully!", HttpServletResponse.SC_OK);
+        } else {
+            return new ResponsModel("Withdrawal unsuccessfully!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+        }
 
 
     }
@@ -89,19 +89,20 @@ public class ErningsPUT {
 //        erningsGET.Run(pval);
 //        System.out.println(erningsModel.getAvailable());
 
-        String query = "SELECT t.* FROM enmo_database.orders t WHERE designer_userID = ? ";
+        String query = "SELECT t.*,percentage FROM enmo_database.earnings t Join platform_charge_rates p ON t.platform_charge_id=p.charge_category  WHERE designerID = ? ";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, tokenInfo.getUserId());
 
         ResultSet result = preparedStatement.executeQuery();
         double available=0;
         while (result.next()){
-            String date= String.valueOf(result.getDate("created_time"));
+//            String date= String.valueOf(result.getDate("completedDate"));
             double price = result.getInt("price");
             int status = result.getInt("status");
+            double percentage = result.getDouble("percentage");
 
-            if (status==4){
-                double actualPrice = completPrice(price);
+            if (status==5){
+                double actualPrice = completPrice(price,percentage);
                 available = available+actualPrice;
             }
         }
@@ -112,8 +113,8 @@ public class ErningsPUT {
         }
 
     }
-    public double completPrice(double price){
-        double actualPrice = price*0.9;
+    public double completPrice(double price,double percentage){
+        double actualPrice = price*(1-percentage);
         return actualPrice;
     }
 }

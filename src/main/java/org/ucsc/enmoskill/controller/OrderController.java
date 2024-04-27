@@ -63,15 +63,15 @@ public class OrderController extends HttpServlet {
                         resultJson.addProperty("message", "Order created successfully");
                         System.out.println("Order created successfully");
                     } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         resultJson.addProperty("message", "Order didn't created");
                         System.out.println("Order didn't created");
                     }
                     // Send the JSON object as the response
                     out.write(resultJson.toString());
                 } catch (Exception e) {
-                    out.write(e.toString());
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    System.out.println(e.getMessage());
+                    throw new RuntimeException(e);
                 }
 
 
