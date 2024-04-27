@@ -126,7 +126,20 @@ public class OrderController extends HttpServlet {
                     service.getAllDesignerOrderDetails(userId);
                 } else {
                     OrderService service = new OrderService(resp);
-                    service.getOrderDetails(orderId);
+                    Order order = service.getOrderDetails(orderId);
+
+                    if (order != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(order));
+                        out.println("Orders : " + order);
+                        System.out.println("Order details found");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Order details not found");
+                        out.println("NoOrders : " );
+                        System.out.println("Order details not found");
+                    }
+
                 }
 
             } else if (tokenInfo.isClient()) {
@@ -136,7 +149,20 @@ public class OrderController extends HttpServlet {
                     service.getAllClientOrderDetails(userId);
                 } else {
                     OrderService service = new OrderService(resp);
-                    service.getOrderDetails(orderId);
+                    Order order = service.getOrderDetails(orderId);
+
+                    if (order != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(order));
+                        out.println("Orders : " + order);
+                        System.out.println("Order details found");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Order details not found");
+                        out.println("NoOrders : " );
+                        System.out.println("Order details not found");
+                    }
+
                 }
             }
         } else {

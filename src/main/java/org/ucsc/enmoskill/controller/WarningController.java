@@ -1,6 +1,10 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.WarningService;
 import org.ucsc.enmoskill.model.WarningModel;
 import org.ucsc.enmoskill.utils.TokenService;
@@ -27,37 +31,47 @@ public class WarningController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        int userId = Integer.parseInt(req.getParameter("userId"));
+            int userId = Integer.parseInt(req.getParameter("userId"));
 
-        if (tokenService.isTokenValidState(token) == 1){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            if (tokenInfo.isAdmin()){
+                if (tokenInfo.isAdmin()){
 
-                WarningService service = new WarningService();
-               List<WarningModel> list = service.getWarnings(userId);
+                    WarningService service = new WarningService();
+                    List<WarningModel> list = service.getWarnings(userId);
 
-               if (list != null){
-                   resp.setStatus(HttpServletResponse.SC_OK);
-                   out.write(gson.toJson(list));
-                   System.out.println("Data fetched successfully");
-               } else {
-                   resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                   out.write("Data didn't fetch");
-                   System.out.println("Data didn't fetch");
-               }
+                    if (list != null){
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        out.write(gson.toJson(list));
+                        System.out.println("Data fetched successfully");
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.write("Data didn't fetch");
+                        System.out.println("Data didn't fetch");
+                    }
 
 
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
-
-        } else if (tokenService.isTokenValidState(token) == 2) {
+        }catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
+        }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
+
     }
 
     @Override
@@ -69,40 +83,54 @@ public class WarningController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);//defulat req is a request of controller
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            if (tokenInfo.isAdmin()){
+                if (tokenInfo.isAdmin()){
 
-                // extract request body
-                BufferedReader reader = req.getReader();
-                WarningModel newWarning = gson.fromJson(reader, WarningModel.class);
+                    try {
+                        // extract request body
+                        BufferedReader reader = req.getReader();
+                        WarningModel newWarning = gson.fromJson(reader, WarningModel.class);
 
-                // insert new warning
-                WarningService service = new WarningService();
-                int result = service.insertWarning(newWarning);
+                        // insert new warning
+                        WarningService service = new WarningService();
+                        int result = service.insertWarning(newWarning);
 
-                if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data inserted successfully");
-                    System.out.println("Data inserted successfully");
+                        if (result > 0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write("Data inserted successfully");
+                            System.out.println("Data inserted successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            out.write("Data didn't insert");
+                            System.out.println("Data didn't insert");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
+
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.write("Data didn't insert");
-                    System.out.println("Data didn't insert");
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 }
 
-
+            }else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
 
-        }else if (tokenService.isTokenValidState(token) == 2) {
-        resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-    } else {
-        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-    }
     }
 }

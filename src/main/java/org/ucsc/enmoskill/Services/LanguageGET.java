@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.ucsc.enmoskill.database.DatabaseConnection;
-import org.ucsc.enmoskill.model.Skills;
-import org.ucsc.enmoskill.model.SupprtModel;
+import org.ucsc.enmoskill.model.LanguageModel;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,10 +13,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SkillGET {
+public class LanguageGET {
     HttpServletResponse res;
 
-    public SkillGET(HttpServletResponse res) {
+    public LanguageGET(HttpServletResponse res) {
         this.res = res;
     }
 
@@ -28,7 +27,7 @@ public class SkillGET {
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        String query = "SELECT * FROM enmo_database.skills ORDER BY skill_id";
+        String query = "SELECT * FROM enmo_database.languages ORDER BY language_id";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         ResultSet result = preparedStatement.executeQuery();
@@ -36,16 +35,13 @@ public class SkillGET {
         JsonArray jsonArray = new JsonArray();
         Gson gson = new Gson();
 
-       while (result.next()) {
-           Skills skills = new Skills(result);
-            JsonObject jsonObject = gson.toJsonTree(skills).getAsJsonObject();
+        while (result.next()) {
+            LanguageModel languageModel = new LanguageModel(result);
+            JsonObject jsonObject = gson.toJsonTree(languageModel).getAsJsonObject();
             jsonArray.add(jsonObject);
-       }
+        }
 
         res.getWriter().write(jsonArray.toString());
         res.setStatus(HttpServletResponse.SC_OK);
     }
-
 }
-
-

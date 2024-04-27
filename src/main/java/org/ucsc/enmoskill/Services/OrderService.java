@@ -147,7 +147,7 @@ public class OrderService {
         }
     }
 
-    public void getOrderDetails(int orderId){
+    public Order getOrderDetails(int orderId){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -160,19 +160,26 @@ public class OrderService {
 
             resultSet = preparedStatement.executeQuery();
 
-            JsonArray jsonArray = new JsonArray();
-            Gson gson = new Gson();
+            if (resultSet!=null){
 
-            while (resultSet.next()) {
-                Order order = new Order(resultSet);
-                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
-                jsonArray.add(jsonObject);
+                Order order = new Order();
+
+                while (resultSet.next()){
+                    order.setOrderId(resultSet.getInt("order_id"));
+                    order.setCreatedTime(resultSet.getTimestamp("created_time"));
+                    order.setRequirements(resultSet.getString("requirements"));
+                    order.setStatus(resultSet.getInt("status"));
+                    order.setClientId(resultSet.getInt("client_userID"));
+                    order.setDesignerId(resultSet.getInt("designer_userID"));
+                    order.setPackageId(resultSet.getInt("package_id"));
+                    order.setPrice(resultSet.getInt("price"));
+                    order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
+                }
+                return order;
+
             }
-
-            resp.getWriter().write(jsonArray.toString());
-            resp.setStatus(HttpServletResponse.SC_OK);
-        } catch (SQLException | IOException e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return  null;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 

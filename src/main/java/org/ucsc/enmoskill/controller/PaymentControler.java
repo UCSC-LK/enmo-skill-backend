@@ -1,6 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.ucsc.enmoskill.Services.PaymentDetailsGET;
+import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.utils.Payment_hashGen;
 import org.ucsc.enmoskill.utils.TokenService;
 
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Map;
 
 import static org.ucsc.enmoskill.utils.Payment_hashGen.getMd5;
@@ -81,16 +85,41 @@ public class PaymentControler extends HttpServlet {
         String method = req.getParameter("method");
         String statusMessage = req.getParameter("status_message");
 
-        // If payment made by VISA or MASTER card, retrieve additional parameters
+
         String cardHolderName = req.getParameter("card_holder_name");
         String maskedCardNo = req.getParameter("card_no");
         String cardExpiry = req.getParameter("card_expiry");
 
         System.out.println("Payment Confirmation Received");
         System.out.println(merchantId+" "+orderId+" "+paymentId+" "+amount+" "+currency+" "+statusCode+" "+custom1+" "+custom2+" "+method+" "+statusMessage);
+        Payment_hashGen payment_hashGen = new Payment_hashGen();
 
-        if(validatePaymentConfirmation(paymentConfirmation)){
+        if(payment_hashGen.validatePaymentConfirmation(paymentConfirmation)){
             System.out.println("Payment Confirmation is Valid");
+            Connection connection = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE orders SET status = 1 WHERE order_id = ?";
+            String query2 = "INSERT INTO payment (order_id, amount, status_code,  method, status_message) VALUES (?, ?, ?, ?, ?)";
+
+            try {
+                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+                preparedStatement1.setString(1, orderId);
+                preparedStatement2.setString(1, orderId);
+                preparedStatement2.setString(2, amount);
+                preparedStatement2.setString(3, statusCode);
+                preparedStatement2.setString(4, method);
+                preparedStatement2.setString(5, statusMessage);
+                connection.setAutoCommit(false);
+                if (statusCode.equals("2")) {
+                    preparedStatement1.executeUpdate();
+                }
+                preparedStatement2.executeUpdate();
+                connection.commit();
+                connection.setAutoCommit(true);
+                System.out.println("Payment Confirmation is Valid");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         else{
             System.out.println("Payment Confirmation is Invalid");
@@ -99,27 +128,23 @@ public class PaymentControler extends HttpServlet {
 
 
     }
-    private boolean validatePaymentConfirmation(Map<String, String[]> paymentConfirmation){
-        if(paymentConfirmation.get("md5sig")[0]==null){
-            return false;
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String orderid = req.getParameter("orderId");
+        if (orderid == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-        String merchantsSecret = dotenv.get("MERCHANT_SECRET");
-        if(paymentConfirmation.get("md5sig")[0].equals(generateMd5sig(paymentConfirmation, merchantsSecret))){
-            return true;
-        }
-        else{
-            return false;
+        TokenService tokenService = new TokenService();
+        String token = tokenService.getTokenFromHeader(req);
+        if (tokenService.isTokenValidState(token) == 1) {
+            PaymentDetailsGET paymentDetailsGET = new PaymentDetailsGET(resp, tokenService.getTokenInfo(token), orderid);
+            paymentDetailsGET.Run();
+
+        } else if (tokenService.isTokenValidState(token) == 2) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
-    public static String generateMd5sig(Map<String, String[]> paymentConfirmation, String merchantSecret){
-        String checksum = null;
-        String md5Hash = getMd5(merchantSecret);
-//        String concatString = merchantId + orderId + payhereAmount + payhereCurrency + statusCode + md5Hash;
-        String concatString = paymentConfirmation.get("merchant_id")[0] + paymentConfirmation.get("order_id")[0] + paymentConfirmation.get("payhere_amount")[0] + paymentConfirmation.get("payhere_currency")[0] + paymentConfirmation.get("status_code")[0] + md5Hash;
-        checksum = getMd5(concatString);
-        return checksum;
-    }
-
-
-
 }

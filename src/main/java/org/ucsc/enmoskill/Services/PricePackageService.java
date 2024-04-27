@@ -287,39 +287,6 @@ public class PricePackageService {
             return packagePricings;
 
 
-//        try {
-//            con = DatabaseConnection.initializeDatabase();
-//            query = "SELECT price_package_id, type, delivery_duration, no_of_revisions, price, no_of_concepts, package_id FROM package_pricing WHERE package_id = ?;";
-//            preparedStatement = con.prepareStatement(query);
-//            preparedStatement.setInt(1, packageId);
-//
-//            resultSet = preparedStatement.executeQuery();
-//
-//            List<PackagePricing> packagePricings = new ArrayList<>();
-//
-//            while (resultSet.next()) {
-////                PackagePricing newPackagePricing = new PackagePricing(resultSet.getInt("price_package_id"),
-////                resultSet.getString("type"), resultSet.getString("delivery_duration"),
-////                resultSet.getString("no_of_revisions"), resultSet.getFloat("price"),
-////                resultSet.getInt("no_of_concepts"), resultSet.getInt("package_id"));
-//
-//                PackagePricing newPackagePricing = new PackagePricing();
-//                newPackagePricing.setPricePackageId(resultSet.getInt("price_package_id"));
-//                newPackagePricing.setType(resultSet.getString("type"));
-//                newPackagePricing.setDeliveryDuration(resultSet.getString("delivery_duration"));
-//                newPackagePricing.setNoOfRevisions(resultSet.getString("no_of_revisions"));
-//                newPackagePricing.setPrice(resultSet.getFloat("price"));
-//                newPackagePricing.setNoOfConcepts(resultSet.getInt("no_of_concepts"));
-//                newPackagePricing.setPackageId(resultSet.getInt("package_id"));
-//
-//
-//                packagePricings.add(newPackagePricing);
-//
-//
-//            }
-//
-//            return packagePricings;
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

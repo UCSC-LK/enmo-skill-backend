@@ -110,7 +110,14 @@
         <servlet-name>bann</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.BannController</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>userupdate</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.UserUpdateController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>admindashboard</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.AdminDashboradController</servlet-class>
+    </servlet>
 
 
 
@@ -197,6 +204,18 @@
         <servlet-class>org.ucsc.enmoskill.controller.WarningController</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>resetpass</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.ForgetPasswordController</servlet-class>
+    </servlet>
+
+
+
+
+
+
+
+
 
 
 
@@ -206,6 +225,10 @@
     <servlet>
         <servlet-name>designerdashboard</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.DesignerDashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>languages</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.LanguageController</servlet-class>
     </servlet>
 
     <servlet>
@@ -276,7 +299,6 @@
         <servlet-name>notification</servlet-name>
         <url-pattern>/notification</url-pattern>
     </servlet-mapping>
-
 
 
 
@@ -364,5 +386,33 @@
         <servlet-name>bann</servlet-name>
         <url-pattern>/bann</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>userupdate</servlet-name>
+        <url-pattern>/userupdate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>admindashboard</servlet-name>
+        <url-pattern>/admindashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>languages</servlet-name>
+        <url-pattern>/languages</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>resetpass</servlet-name>
+        <url-pattern>/passwordreset</url-pattern>
+    </servlet-mapping>
+
+
+
+
+
+
+
+
+
+
+
+
 
 </web-app>

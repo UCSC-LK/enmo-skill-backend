@@ -41,91 +41,95 @@ public class ProfileGET {
 //            resp.getWriter().write("SQL Connection Error");
 //            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new ResponsModel("SQL Connection Error",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+        }else{
+            if (tokenInfo != null){
+                if (tokenInfo.isDesigner()) {
+                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
+                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
+                            "GROUP_CONCAT(DISTINCT languages.language) AS language " +
+                            "FROM  designer " +
+                            "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
+                            "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
+                            "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
+                            "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
+                            "WHERE designer.userId ="+ tokenInfo.getUserId()+  " GROUP BY designer.userId";
 
-        if (tokenInfo != null){
-            if (tokenInfo.isDesigner()) {
-
-                String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
-                        "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
-                        "GROUP_CONCAT(DISTINCT languages.language) AS language " +
-                        "FROM  designer " +
-                        "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
-                        "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
-                        "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
-                        "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
-                        "WHERE designer.userId ="+ tokenInfo.getUserId()+  " GROUP BY designer.userId";
-
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    try{
 //                preparedStatement.setInt(1, profileModel.getUserId());
-                    ResultSet resultSet = preparedStatement.executeQuery();
+                        PreparedStatement preparedStatement = connection.prepareStatement(query);
+                        ResultSet resultSet = preparedStatement.executeQuery();
 
-                    JsonObject jsonObject = new JsonObject();
+                        JsonObject jsonObject = new JsonObject();
 
 
-                    while (resultSet.next()) {
+                        while (resultSet.next()) {
 
-                        ProfileModel profileModel = new ProfileModel(resultSet);
-                        jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
-                    }
+                            ProfileModel profileModel = new ProfileModel(resultSet,1);
+                            jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
+                            System.out.println(jsonObject.get("userid"));
+                        }
 
 //                resp.getWriter().write(jsonObject.toString());
 //                System.out.println(resp);
-                    if (!jsonObject.toString().isEmpty()){
-                        return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
-                    }else{
-                        return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
+                        if (!jsonObject.toString().isEmpty()){
+                            return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
+                        }else{
+                            return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
+
                 }
+            } else if (profileModel != null){
+                if (profileModel.isDesigner()) {
 
-            }
-        } else if (profileModel != null){
-            if (profileModel.isDesigner()) {
+                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
+                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
+                            "GROUP_CONCAT(DISTINCT languages.language) AS language " +
+                            "FROM  designer " +
+                            "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
+                            "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
+                            "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
+                            "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
+                            "WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
 
-                String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
-                        "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
-                        "GROUP_CONCAT(DISTINCT languages.language) AS language " +
-                        "FROM  designer " +
-                        "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
-                        "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
-                        "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
-                        "LEFT JOIN languages ON language_mapping.language_id = languages.language_id " +
-                        "WHERE designer.userId ="+ profileModel.getUserId()+  " GROUP BY designer.userId";
-
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 //                preparedStatement.setInt(1, profileModel.getUserId());
-                    ResultSet resultSet = preparedStatement.executeQuery();
+                        ResultSet resultSet = preparedStatement.executeQuery();
 
-                    JsonObject jsonObject = new JsonObject();
-
-
-                    while (resultSet.next()) {
-
-                        ProfileModel profileModel = new ProfileModel(resultSet);
-                        jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
+                        JsonObject jsonObject = new JsonObject();
 
 
+                        while (resultSet.next()) {
 
-                    }
+                            ProfileModel profileModel = new ProfileModel(resultSet);
+                            jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
+
+
+
+                        }
 
 //                resp.getWriter().write(jsonObject.toString());
 //                System.out.println(resp);
-                    if (!jsonObject.toString().isEmpty()){
-                        return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
-                    }else{
-                        return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
+                        if (!jsonObject.toString().isEmpty()){
+                            return new ResponsModel(jsonObject.toString(),HttpServletResponse.SC_OK);
+                        }else{
+                            return new ResponsModel("Designer Profile not found",HttpServletResponse.SC_NOT_FOUND);
+                        }
+
                     }
 
+
+
                 }
-
-
-
             }
+
+
+
+            return new ResponsModel("This is not Valid Request",HttpServletResponse.SC_BAD_REQUEST);
         }
 
-
-
-        return new ResponsModel("This is not Valid Request",HttpServletResponse.SC_BAD_REQUEST);
     }
 
 
