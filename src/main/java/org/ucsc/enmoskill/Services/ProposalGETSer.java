@@ -24,7 +24,7 @@ public class ProposalGETSer {
 
         System.out.println("User ID: " + userID);
         try{
-            String query = "SELECT * FROM proposals WHERE designer_userID = ? ";
+            String query = "SELECT proposals.*, jobs.discription, package_pricing.price_package_id FROM proposals JOIN  jobs ON proposals.requestID = jobs.requestID JOIN package_pricing ON proposals.pricingPackage = package_pricing.type AND proposals.packageId = package_pricing.package_id WHERE designer_userID = ? ";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             result = preparedStatement.executeQuery();
@@ -55,7 +55,7 @@ public class ProposalGETSer {
 
         System.out.println("User ID: " + userID);
         try{
-            String query = "SELECT * FROM proposals WHERE client_userID = ? ";
+            String query = "SELECT proposals.*, jobs.discription, package_pricing.price_package_id FROM proposals JOIN  jobs ON proposals.requestID = jobs.requestID JOIN package_pricing ON proposals.pricingPackage = package_pricing.type AND proposals.packageId = package_pricing.package_id WHERE client_userID = ? ";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             result = preparedStatement.executeQuery();

@@ -279,7 +279,6 @@ public class UserSer {
 
             resultSet  = preparedStatement.executeQuery();
 
-
             if (resultSet != null){
 
                 UserFullModel userFull = new UserFullModel();
