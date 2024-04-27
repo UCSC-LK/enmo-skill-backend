@@ -63,8 +63,9 @@ public class DesignerDashboardController extends HttpServlet {
 
                     try {
                         DesignerDashboardModel dashboardModel = service.getData(designerUserId);
+                        System.out.println(gson.toJson(dashboardModel));
 
-                        if (dashboardModel != null){
+//                        if (dashboardModel != null){
 
                             // get profile data
                             ProfileModel profile = new ProfileModel(dashboardModel.getDesignerId(), "Designer", null, null, null, null, null, null);
@@ -128,11 +129,11 @@ public class DesignerDashboardController extends HttpServlet {
 
 
 
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.write("Data fetch unsuccessful");
-                            System.out.println("Data fetch unsuccessful");
-                        }
+//                        } else {
+//                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                            out.write("Data fetch unsuccessful");
+//                            System.out.println("Data fetch unsuccessful");
+//                        }
                     } catch (Exception e) {
                         out.write(e.toString());
 //                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
