@@ -1,6 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.JsonObject;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.BuyerRequestPUT;
 import org.ucsc.enmoskill.Services.ClientDetailsPUT;
 import org.ucsc.enmoskill.Services.UserGet;
@@ -34,104 +36,121 @@ public class UserController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);//default req is a request of controller
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1) {
-            if (tokenInfo.isAdmin()){
-                // extract query params
-                String roleNoParam = req.getParameter("role");
-                String statusParam = req.getParameter("status");
-                String userIdParam = req.getParameter("userId");
+            if (tokenService.isTokenValidState(token) == 1) {
+                if (tokenInfo.isAdmin()){
 
-                int roleNo = Integer.parseInt(roleNoParam);
+                    try {
+                        // extract query params
+                        String roleNoParam = req.getParameter("role");
+                        String statusParam = req.getParameter("status");
+                        String userIdParam = req.getParameter("userId");
+
+                        int roleNo = Integer.parseInt(roleNoParam);
 
 
-                // CHECK WHETHER THIS PARM EXISTS
-                if (userIdParam == null){
+                        // CHECK WHETHER THIS PARM EXISTS
+                        if (userIdParam == null){
 
-                    // convert into integer
-                    int status = Integer.parseInt(statusParam);
+                            // convert into integer
+                            int status = Integer.parseInt(statusParam);
 
-                    UserSer service = new UserSer();
-                    List<UserFullModel> userList1 = new ArrayList<>();
-                    List<UserFullModel> userList2 = new ArrayList<>();
+                            UserSer service = new UserSer();
+                            List<UserFullModel> userList1 = new ArrayList<>();
+                            List<UserFullModel> userList2 = new ArrayList<>();
 
-                    int recordCount;
+                            int recordCount;
 
-                    do{
-                        if (roleNo == 2) {
-                            // get user data
-                            userList1 = service.getAllDesigners();
+                            do{
+                                if (roleNo == 2) {
+                                    // get user data
+                                    userList1 = service.getAllDesigners();
 
-                        } else if (roleNo == 1) {
-                            userList1 = service.getAllClients();
+                                } else if (roleNo == 1) {
+                                    userList1 = service.getAllClients();
+                                }
+
+                                // fetch user record count
+                                recordCount = service.countUserRecords();
+                                System.out.println("record count: "+recordCount);
+                                System.out.println("list length: "+ userList1.size());
+                            } while (recordCount != userList1.size());
+
+                            userList2 = service.filterUsers(userList1, roleNo, status);
+
+                            if (userList2 != null){
+                                log(userList2.toString());
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write(gson.toJson(userList2));
+                                System.out.println("User data retrieved successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("User data retrieval unsuccessful");
+                                System.out.println("User data retrieval unsuccessful");
+
+                            }
+                        } else {
+
+                            int userId = Integer.parseInt(userIdParam);
+                            UserSer service = new UserSer();
+                            UserFullModel user = new UserFullModel();
+
+                            if (roleNo == 2){
+                                user = service.getAdesigner(userId);
+
+                            } else if (roleNo == 1) {
+                                user = service.getAclient(userId);
+                            }
+
+
+                            if (user != null){
+                                System.out.println(user.getUser().getName());
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write(gson.toJson(user));
+                                System.out.println("User data retrieved successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("User data retrieval unsuccessful");
+                                System.out.println("User data retrieval unsuccessful");
+                            }
+
                         }
-
-                        // fetch user record count
-                        recordCount = service.countUserRecords();
-                        System.out.println("record count: "+recordCount);
-                        System.out.println("list length: "+ userList1.size());
-                    } while (recordCount != userList1.size());
-
-                    userList2 = service.filterUsers(userList1, roleNo, status);
-
-                    if (userList2 != null){
-                        log(userList2.toString());
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(userList2));
-                        System.out.println("User data retrieved successfully");
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("User data retrieval unsuccessful");
-                        System.out.println("User data retrieval unsuccessful");
-
-                    }
-                } else {
-
-                    int userId = Integer.parseInt(userIdParam);
-                    UserSer service = new UserSer();
-                    UserFullModel user = new UserFullModel();
-
-                    if (roleNo == 2){
-                        user = service.getAdesigner(userId);
-
-                    } else if (roleNo == 1) {
-                        user = service.getAclient(userId);
+                    } catch (Exception e) {
+                        System.out.println("in user controller exception");
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
 
 
-                    if (user != null){
-                        System.out.println(user.getUser().getName());
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        out.write(gson.toJson(user));
-                        System.out.println("User data retrieved successfully");
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.write("User data retrieval unsuccessful");
-                        System.out.println("User data retrieval unsuccessful");
-                    }
-
-                }
-
-
-            }else {
-                resp.setContentType("application/json");
-                if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
-                    UserGet userGet = new UserGet(tokenInfo);
-                    ResponsModel res = userGet.Run();
-                    resp.setStatus(res.getResStatus());
-                    resp.getWriter().write(res.getResMassage());
                 }else {
-                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.setContentType("application/json");
+                    if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
+                        UserGet userGet = new UserGet(tokenInfo);
+                        ResponsModel res = userGet.Run();
+                        resp.setStatus(res.getResStatus());
+                        resp.getWriter().write(res.getResMassage());
+                    }else {
+                        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    }
+
                 }
+            }else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             }
-            }else if (tokenService.isTokenValidState(token) == 2) {
+        }catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
 
 
     }

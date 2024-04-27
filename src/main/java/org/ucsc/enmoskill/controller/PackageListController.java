@@ -3,6 +3,8 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.PackageListService;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.Package;
@@ -37,202 +39,84 @@ public class PackageListController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
 
-        int category = Integer.parseInt(req.getParameter("category"));
-        int priceCode = Integer.parseInt(req.getParameter("price"));
-        int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
-        int language = Integer.parseInt(req.getParameter("language"));
-        float reviews = Float.parseFloat(req.getParameter("reviewCode"));
+            int category = Integer.parseInt(req.getParameter("category"));
+            int priceCode = Integer.parseInt(req.getParameter("price"));
+            int delTimeCode = Integer.parseInt(req.getParameter("delTimeCode"));
+            int language = Integer.parseInt(req.getParameter("language"));
+            float reviews = Float.parseFloat(req.getParameter("reviewCode"));
 
-        if (tokenService.isTokenValid(token)){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            List<PackageBlockModel> packageList1 = null;
-            List<PackageBlockModel> packageList2 = null;
+                List<PackageBlockModel> packageList1 = null;
+                List<PackageBlockModel> packageList2 = null;
 
+                try {
+                    if (category>4 || category<0){
+                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("Data not found");
+                        System.out.println("Data not found");
+                    } else {
+                        Gson gson = new Gson();
 
-            if (category>4 || category<0){
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("Data not found");
-                System.out.println("Data not found");
-            } else {
-                Gson gson = new Gson();
+                        PackageListService service = new PackageListService();
+                        int packageCount;
 
-                PackageListService service = new PackageListService();
-                int packageCount;
-
-                do {
-                    // fetch all the required details to filter and display
-                    packageList1 = service.getPackages();
+                        do {
+                            // fetch all the required details to filter and display
+                            packageList1 = service.getPackages();
 //                    System.out.println(gson.toJson(packageList1));
 
-                    // fetch packages count
-                    packageCount = service.countPackages();
-                    System.out.println(packageCount);
-                    System.out.println("list: " + packageList1.size());
+                            // fetch packages count
+                            packageCount = service.countPackages();
+                            System.out.println(packageCount);
+                            System.out.println("list: " + packageList1.size());
 
-                } while (packageCount != packageList1.size());
+                        } while (packageCount != packageList1.size());
 
-                packageList2 = service.filterPackages(category, priceCode, delTimeCode, language, reviews, packageList1);
+                        packageList2 = service.filterPackages(category, priceCode, delTimeCode, language, reviews, packageList1);
 
-                if (!packageList2.isEmpty()){
+                        if (!packageList2.isEmpty()){
 
-                    String json = gson.toJson(packageList2);
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(json);
-                    System.out.println("Data loaded successfully");
+                            String json = gson.toJson(packageList2);
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write(json);
+                            System.out.println("Data loaded successfully");
 
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Cannot get data");
-                    System.out.println("Cannot get data");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Cannot get data");
+                            System.out.println("Cannot get data");
+                        }
+
+                    }
+                } catch (Exception e) {
+                    out.write(e.toString());
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
 
+
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
-
-            ////////////////////////////////////////////////////////////////////////////
-//            List<Package> packageList = null;
-//
-//            if (category>4 || category<0){
-//                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                out.write("Data not found");
-//                System.out.println("Data not found");
-//            } else {
-//                StringBuilder jsonObj = new StringBuilder("[");
-//
-//                Gson gson = new Gson();
-//
-//                if (priceCode == 0 && delTimeCode == 0 && language == 0){
-//                    packageList = getAllPackages(category);
-//                } else if (priceCode == 1 && delTimeCode == 0 && language == 0) {
-//                    packageList = geLowPackages(category);
-//                } else if (priceCode == 2 && delTimeCode == 0 && language == 0){
-//                    packageList = getMidPackages(category);
-//                } else if (priceCode == 3 && delTimeCode == 0 && language == 0){
-//                    packageList = getHighPackages(category);
-//                } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && delTimeCode == 0 && language == 0){
-//                    packageList = getCustomPricePackages(category, priceCode);
-//                } else if (priceCode == 0 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
-//                    packageList = getPkgesByDuration(category, delTimeCode);
-//                } else if (priceCode == 0 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesByLang(category, language);
-//                } else if (priceCode == 1 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
-//                    packageList = getPkgesLowDel(category, delTimeCode);
-//                } else if (priceCode == 1 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesLowLang(category, language);
-//                } else if (priceCode == 1 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesLowDelLang(category, delTimeCode, language);
-//                } else if (priceCode == 2 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
-//                    packageList = getPkgesMidDel(category, delTimeCode);
-//                } else if (priceCode == 2 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesMidLang(category, language);
-//                } else if (priceCode == 2 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesMidDelLang(category, delTimeCode, language);
-//                } else if (priceCode == 3 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0) {
-//                    packageList = getPkgesHighDel(category, delTimeCode);
-//                } else if (priceCode == 3 && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesHighLang(category, language);
-//                } else if (priceCode == 3 && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)) {
-//                    packageList = getPkgesHighDelLang(category, delTimeCode, language);
-//                } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && language == 0){
-//                    packageList = getCustPriceDel(category, priceCode, delTimeCode);
-//                } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && delTimeCode == 0 && (language == 1 || language == 2 || language == 3)){
-//                    packageList = getCustPriceLang(category, priceCode, delTimeCode);
-//                } else if ((priceCode!=0 && priceCode!=1 && priceCode!=2 && priceCode!=3) && (delTimeCode == 1 || delTimeCode == 3 || delTimeCode == 7) && (language == 1 || language == 2 || language == 3)){
-//                    packageList = getCustPriceDelLang(category, priceCode, delTimeCode, language);
-//                }
-//
-//
-////            List<Package> packageList = getAllPackages(category);
-//                if (!packageList.isEmpty()){
-//                    for (Package newpackage:packageList) {
-//                        int packageId = newpackage.getPackageId();
-//
-//                        float lowestPrice = getBronzePrice(packageId);
-//                        float highestPrice = getPlatinumPrice(packageId);
-//                        String designerName = "";
-//
-//                        ProfileModel profile = new ProfileModel(newpackage.getDesignerUserId(), "Designer", null, null, null, null, null, null);
-////                        if ("Designer" != null && newpackage.getDesignerUserId() != 0){
-//                            if (profile.CheckReqiredFields()){
-//                            ProfileGET servise = new ProfileGET(profile,resp);
-//                            try{
-//                                StringBuilder profilejson = new StringBuilder();
-//                                ResponsModel responsModel= servise.Run();
-//                                profilejson.append(responsModel.getResMassage());
-//
-////                                System.out.println(profilejson);
-//
-//                                // Parse the JSON string
-//                                JsonParser parser = new JsonParser();
-//                                JsonObject jsonObject = parser.parse(String.valueOf(profilejson)).getAsJsonObject();
-//
-//                                // Get the value of the display_name property
-//                                designerName = jsonObject.get("display_name").getAsString();
-//
-//
-//
-//                            } catch (SQLException e) {
-//                                throw new RuntimeException(e);
-//                            }
-//                        }
-//
-//                        String pkg = gson.toJson(newpackage);
-//                        StringBuilder aPackage = new StringBuilder(pkg);
-//
-//                        aPackage.insert(aPackage.length()-1, ", \"starterPrice\":"+lowestPrice);
-//                        aPackage.insert(aPackage.length()-1, ", \"highestPrice\":"+highestPrice);
-//                        aPackage.insert(aPackage.length()-1, ", \"designerName\":\""+designerName+"\"");
-//
-//
-//                        jsonObj.append(aPackage);
-//                        jsonObj.append(",");
-//                        System.out.println(aPackage);
-//
-////                        System.out.println(packageId+" "+lowestPrice);
-//
-//
-//                    }
-//                    int lastIndex = jsonObj.length()-1;
-//                    jsonObj.deleteCharAt(lastIndex);
-//                    jsonObj.append("]");
-//
-//                    System.out.println(jsonObj);
-//
-//                    resp.setStatus(HttpServletResponse.SC_OK);
-//                    out.write(String.valueOf(jsonObj));
-//                    System.out.println("Data loaded successfully");
-//
-//                } else {
-//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                    out.write("Data not found");
-//                    System.out.println("Data not found");
-//                }
-//            }
-        } else {
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
         }
+
 
 
 
 
     }
 
-    private void handleGetResponse(Object data, PrintWriter out, HttpServletResponse resp) {
-        if (data != null) {
-            Gson gson = new Gson();
-            String jsonData = gson.toJson(data);
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            out.write(jsonData);
-            System.out.println("Data loaded successfully");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            out.write("Data not found");
-            System.out.println("Data not found");
-        }
-    }
 }

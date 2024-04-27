@@ -50,6 +50,7 @@ public class BannService {
                 if (con != null) con.close();
             } catch (SQLException e) {
                 System.out.println("Error closing resources: " + e.getMessage());
+                throw new RuntimeException(e);
             }
         }
 
