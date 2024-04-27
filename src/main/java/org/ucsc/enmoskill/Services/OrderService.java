@@ -77,16 +77,19 @@ public class OrderService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id)"
-                    + "VALUES (?,?,?,?,?,?,?);";
+            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id, price_package_id)"
+                    + "VALUES (?,?,?,?,?,?,?,?);";
             preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1,"");
+            preparedStatement.setString(1, order.getRequirements());
             preparedStatement.setInt(2,0);
             preparedStatement.setInt(3,order.getClientId());
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setDouble(7,order.getPlatformFeeId());
+            preparedStatement.setInt(7,order.getPlatformFeeId());
+            preparedStatement.setInt(8,order.getPricePackageId());
+
+
 
 
             result = preparedStatement.executeUpdate();
@@ -98,6 +101,8 @@ public class OrderService {
                         return generatedKeys.getInt(1);
 
                     } else {
+
+//                        return 0;
                         throw new SQLException("Creating order failed, no ID obtained.");
                     }
                 }
@@ -105,6 +110,13 @@ public class OrderService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
