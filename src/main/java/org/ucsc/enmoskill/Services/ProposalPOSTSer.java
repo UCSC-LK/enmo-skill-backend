@@ -62,38 +62,4 @@ public class ProposalPOSTSer {
             }
         }
     }
-
-    public boolean isUpdateSuccessful( Pro_CR proBRlist ){
-
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-
-            con = DatabaseConnection.initializeDatabase();
-            String query = "UPDATE jobs SET status=? WHERE requestID = ?";
-            assert con != null;
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, 0);
-            preparedStatement.setString(2, proBRlist.getRequestid());
-
-            preparedStatement.executeUpdate(); // Execute the INSERT operation
-
-            return true;
-        }catch (SQLException e) {
-            // Handle any exceptions that might occur during the insertion
-            e.printStackTrace();
-            return false;
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }

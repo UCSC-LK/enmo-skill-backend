@@ -110,8 +110,6 @@ public class ProposalController extends HttpServlet {
             // Get the JWT token from the request header
             String jwtToken = req.getHeader("Authorization");
 
-            out.println("jwtTokennew1: " + jwtToken);
-
             // Check if the JWT token is present
             if (jwtToken != null) {
 
@@ -133,14 +131,8 @@ public class ProposalController extends HttpServlet {
                         boolean isSuccess = proposalPOSTSer.isInsertionSuccessful(proposal, proBRlist);
 
                         if (isSuccess) {
-//                            boolean isSucces2 = proposalPOSTSer.isUpdateSuccessful( proBRlist);
-//                            if(isSucces2){
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                resp.getWriter().write("Proposal submitted successfully");
-//                            }else {
-//                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//                                resp.getWriter().write("Proposal submitted unsuccessfully");
-//                            }
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            resp.getWriter().write("Proposal submitted successfully");
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             resp.getWriter().write("Proposal submitted unsuccessfully");
