@@ -62,7 +62,6 @@
         <servlet-class>org.ucsc.enmoskill.controller.Support_Controller</servlet-class>
     </servlet>
 
-
     <servlet>
         <servlet-name>package</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.PackageController</servlet-class>
@@ -118,7 +117,6 @@
         <servlet-name>admindashboard</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.AdminDashboradController</servlet-class>
     </servlet>
-
 
 
 
@@ -230,16 +228,6 @@
         <servlet-name>languages</servlet-name>
         <servlet-class>org.ucsc.enmoskill.controller.LanguageController</servlet-class>
     </servlet>
-
-    <servlet>
-        <servlet-name>review</servlet-name>
-        <servlet-class>org.ucsc.enmoskill.controller.ReviewController</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>review</servlet-name>
-        <url-pattern>/review</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>order_details</servlet-name>
