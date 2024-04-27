@@ -16,22 +16,26 @@ public class PackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "UPDATE package SET title=?, description=?, category=?, designer_userID=?, cover_url=?, clicks=?, orders=?, cancellations=?, status=? WHERE package_id=?;";
+            String query = "UPDATE package SET title=?, description=?, category=?, designer_userID=?, cover_url=?, status=? WHERE package_id=?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, newPackage.getTitle());
             preparedStatement.setString(2, newPackage.getDescription());
             preparedStatement.setInt(3, newPackage.getCategory());
             preparedStatement.setInt(4,newPackage.getDesignerUserId());
             preparedStatement.setString(5, newPackage.getCoverUrl());
-            preparedStatement.setInt(6, newPackage.getClicks());
-            preparedStatement.setInt(7,newPackage.getOrders());
-            preparedStatement.setString(8, newPackage.getCancellations());
-            preparedStatement.setString(9, newPackage.getStatus());
-            preparedStatement.setInt(10, newPackage.getPackageId());
+            preparedStatement.setString(6, newPackage.getStatus());
+            preparedStatement.setInt(7, newPackage.getPackageId());
             result = preparedStatement.executeUpdate();
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -50,6 +54,13 @@ public class PackageService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -90,6 +101,13 @@ public class PackageService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

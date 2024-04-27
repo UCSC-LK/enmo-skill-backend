@@ -1,6 +1,8 @@
 package org.ucsc.enmoskill.controller;
 
 import com.google.gson.Gson;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.DesignCategoryService;
 import org.ucsc.enmoskill.model.DesignCategoryModel;
 import org.ucsc.enmoskill.utils.TokenService;
@@ -27,49 +29,76 @@ public class DesignCategoryController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try{
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+            int categoryId = Integer.parseInt(req.getParameter("categoryId"));
 
-        if (tokenService.isTokenValid(token)){
+            if (tokenService.isTokenValidState(token) == 1){
 
-            DesignCategoryService service = new DesignCategoryService();
+                DesignCategoryService service = new DesignCategoryService();
 
-            // get all data
-            if (categoryId == 0){
-                List<DesignCategoryModel> list = service.getAllData();
+                // get all data
+                if (categoryId == 0){
 
-                if (list != null){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(list));
-                    System.out.println("Category data found");
+                    try {
+                        List<DesignCategoryModel> list = service.getAllData();
+
+                        if (list != null){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write(gson.toJson(list));
+                            System.out.println("Category data found");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Category data not found");
+                            System.out.println("Category data not found");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
+
+                    // get a specific category data
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Category data not found");
-                    System.out.println("Category data not found");
+
+                    try {
+                        DesignCategoryModel categoryData = service.getCategory(categoryId);
+
+                        if (categoryData != null){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write(gson.toJson(categoryData));
+                            System.out.println("Category data found");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Category data not found");
+                            System.out.println("Category data not found");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
                 }
-                // get a specific category data
+
+
+
+            }  else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
-                DesignCategoryModel categoryData = service.getCategory(categoryId);
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-                if (categoryData != null){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(gson.toJson(categoryData));
-                    System.out.println("Category data found");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Category data not found");
-                    System.out.println("Category data not found");
-                }
             }
-
-
-
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
     }
 
     @Override
@@ -81,44 +110,64 @@ public class DesignCategoryController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
-            if (tokenInfo.isAdmin()){
+            if (tokenService.isTokenValidState(token) == 1){
+                if (tokenInfo.isAdmin()){
 
-                // read the request body
-                BufferedReader reader = req.getReader();
+                    // read the request body
+                    BufferedReader reader = req.getReader();
 
-                // create a class
-                DesignCategoryModel newCategory = gson.fromJson(reader, DesignCategoryModel.class);
+                    // create a class
+                    DesignCategoryModel newCategory = gson.fromJson(reader, DesignCategoryModel.class);
 
-                System.out.println(newCategory.getCategory());
-                System.out.println(newCategory.getDel_1());
-                System.out.println(newCategory.getDel_2());
+                    System.out.println(newCategory.getCategory());
+                    System.out.println(newCategory.getDel_1());
+                    System.out.println(newCategory.getDel_2());
 
 
-                DesignCategoryService service = new DesignCategoryService();
-                int result  = service.createCategory(newCategory);
+                    DesignCategoryService service = new DesignCategoryService();
 
-                if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write(" inserted successfully");
-                    System.out.println("Data inserted successfully");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data insertion unsuccessful");
-                    System.out.println("Data insertion unsuccessful");
+                    try{
+                        // create the new category
+                        int result  = service.createCategory(newCategory);
+
+                        if (result > 0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write(" inserted successfully");
+                            System.out.println("Data inserted successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Data insertion unsuccessful");
+                            System.out.println("Data insertion unsuccessful");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
+
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write("Authorization failed");
+                    System.out.println("Authorization failed");
                 }
-            }else {
+            }else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write("Authorization failed");
-                System.out.println("Authorization failed");
+
             }
-        }else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
     }
 
     @Override
@@ -130,48 +179,65 @@ public class DesignCategoryController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        // get query parameter
-        int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+            // get query parameter
+            int categoryId = Integer.parseInt(req.getParameter("categoryId"));
 
-        if (tokenService.isTokenValid(token)){
-            if (tokenInfo.isAdmin()){
+            if (tokenService.isTokenValidState(token) == 1){
+                if (tokenInfo.isAdmin()){
 
-                // read the request body
-                BufferedReader reader = req.getReader();
-                // handle payload
-                DesignCategoryModel categoryModel = gson.fromJson(reader, DesignCategoryModel.class);
+                    // read the request body
+                    BufferedReader reader = req.getReader();
+                    // handle payload
+                    DesignCategoryModel categoryModel = gson.fromJson(reader, DesignCategoryModel.class);
 
-                // set category id
-                categoryModel.setCategoryId(categoryId);
+                    // set category id
+                    categoryModel.setCategoryId(categoryId);
 
-                // update the data
-                DesignCategoryService service = new DesignCategoryService();
-                int result = service.updateCategoryData(categoryModel);
+                    try{
+                        // update the data
+                        DesignCategoryService service = new DesignCategoryService();
+                        int result = service.updateCategoryData(categoryModel);
 
-                if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data updated successfully");
-                    System.out.println("Data upated successfully");
+                        if (result > 0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write("Data updated successfully");
+                            System.out.println("Data updated successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Data update unsuccessful");
+                            System.out.println("Data update unsuccessful");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
+
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data update unsuccessful");
-                    System.out.println("Data update unsuccessful");
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write("Authorization failed");
+                    System.out.println("Authorization failed");
                 }
 
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write("Authorization failed");
-                System.out.println("Authorization failed");
-            }
 
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+            }
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
-    }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
+        }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -182,36 +248,54 @@ public class DesignCategoryController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValid(token)){
-            if (tokenInfo.isAdmin()){
-                // get query parameter
-                int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+            if (tokenService.isTokenValidState(token) == 1){
+                if (tokenInfo.isAdmin()){
+                    // get query parameter
+                    int categoryId = Integer.parseInt(req.getParameter("categoryId"));
 
-                // call delete function
-                DesignCategoryService service = new DesignCategoryService();
-                int result = service.deleteCategory(categoryId);
+                    // call delete function
+                    DesignCategoryService service = new DesignCategoryService();
 
-                if (result > 0){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    out.write("Data deleted successfully");
-                    System.out.println("Data deleted successfully");
+                    try {
+                        int result = service.deleteCategory(categoryId);
+
+                        if (result > 0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            out.write("Data deleted successfully");
+                            System.out.println("Data deleted successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Data delete unsuccessful");
+                            System.out.println("Data delete unsuccessful");
+                        }
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+
                 } else {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("Data delete unsuccessful");
-                    System.out.println("Data delete unsuccessful");
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write("Authorization failed");
+                    System.out.println("Authorization failed");
                 }
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write("Authorization failed");
-                System.out.println("Authorization failed");
+
             }
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("Authorization failed");
-            System.out.println("Authorization failed");
+        }catch (ExpiredJwtException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+
 
 
 
