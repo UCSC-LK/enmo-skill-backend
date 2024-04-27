@@ -57,8 +57,8 @@ public class DesignerDashboardService {
             throw new RuntimeException("Failed to connect to database");
         }
 
-//        query = "SELECT o.designerId, o.pending_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url  FROM designer_overview o, users u WHERE o.designerID = u.userID AND designerID = ?;";
-        query = "SELECT o.designerId, o.active_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url FROM users u LEFT JOIN designer_overview o ON o.designerID = u.userID AND o.designerID = ?";
+        query = "SELECT o.designerId, o.active_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url  FROM designer_overview o, users u WHERE o.designerID = u.userID AND designerID = ?;";
+//        query = "SELECT o.designerId, o.active_orders, o.cancelled_orders, o.completed_orders, o.total_earnings, o.user_ratings, u.url FROM users u LEFT JOIN designer_overview o ON o.designerID = u.userID AND o.designerID = ?";
 
 
         try {

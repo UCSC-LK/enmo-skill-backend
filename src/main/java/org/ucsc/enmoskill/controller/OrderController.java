@@ -48,10 +48,11 @@ public class OrderController extends HttpServlet {
 
                 OrderService service = new OrderService(resp);
 
-                newOrder = service.setFee(newOrder);
+//                newOrder = service.setFee(newOrder);
 
                 try{
                     int result = service.createOrder(newOrder);
+
 
                     // Create a JSON object to represent the result
                     JsonObject resultJson = new JsonObject();
