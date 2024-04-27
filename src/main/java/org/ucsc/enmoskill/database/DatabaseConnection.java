@@ -37,13 +37,19 @@ public class DatabaseConnection {
     }
 
     public static Connection initializeDatabase() {
-        Boolean conection_status;
+        Boolean conection_status = true,conection_status2,conection_status3,conection_status4;
         try {
             conection_status = connection.isClosed();
+//            conection_status2= connection.isValid(0);
+
+            System.out.println("connection status :"+conection_status);
+//            System.out.println("connection status2 :"+conection_status2);
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+           e.printStackTrace();
         }
         if(connection==null||conection_status) {
+            System.out.println("request new connection");
             try {
 
                 connection = DriverManager.getConnection(JDBC_URL+dbName, DB_USER, DB_PASSWORD);
