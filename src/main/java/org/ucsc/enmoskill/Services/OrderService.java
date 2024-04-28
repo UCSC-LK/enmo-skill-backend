@@ -147,7 +147,7 @@ public class OrderService {
         }
     }
 
-    public Order getOrderDetails(int orderId){
+    public void getOrderDetails(int orderId){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -160,32 +160,26 @@ public class OrderService {
 
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet!=null){
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
 
-                Order order = new Order();
-
-                while (resultSet.next()){
-                    order.setOrderId(resultSet.getInt("order_id"));
-                    order.setCreatedTime(resultSet.getTimestamp("created_time"));
-                    order.setRequirements(resultSet.getString("requirements"));
-                    order.setStatus(resultSet.getInt("status"));
-                    order.setClientId(resultSet.getInt("client_userID"));
-                    order.setDesignerId(resultSet.getInt("designer_userID"));
-                    order.setPackageId(resultSet.getInt("package_id"));
-                    order.setPrice(resultSet.getInt("price"));
-                    order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
-                }
-                return order;
-
+            while (resultSet.next()) {
+                Order order = new Order(resultSet);
+                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                jsonArray.add(jsonObject);
             }
-            return  null;
-        } catch (SQLException e) {
+
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (SQLException | IOException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
             throw new RuntimeException(e);
         }
 
     }
 
-    public void getAllDesignerOrderDetails(int designer_userID) {
+    public void getAllDesignerOrderDetails(int designer_userID) throws IOException {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -193,7 +187,10 @@ public class OrderService {
         Order order;
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT * FROM orders WHERE designer_userID = ?;";
+            String query = "SELECT o.*, p.title AS package_title " +
+                    "FROM orders o " +
+                    "INNER JOIN package p ON o.package_id = p.package_id " +
+                    "WHERE o.designer_userID = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, designer_userID);
 
@@ -205,6 +202,8 @@ public class OrderService {
             while (resultSet.next()) {
                 order = new Order(resultSet);
                 JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                // Add package title to JSON object
+                jsonObject.addProperty("package_title", resultSet.getString("package_title"));
                 jsonArray.add(jsonObject);
             }
 
@@ -213,11 +212,28 @@ public class OrderService {
             System.out.println("Orders : " + jsonArray);
 
         } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+            // Handle exceptions
+            e.printStackTrace(); // You might want to log the exception instead of printing stack trace
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("An error occurred while processing your request.");
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle closing resource exception
+            }
         }
     }
 
-    public void getAllClientOrderDetails(int client_userID) {
+    public void getAllClientOrderDetails(int client_userID) throws IOException {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -225,7 +241,10 @@ public class OrderService {
         Order order;
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT * FROM orders WHERE client_userID = ?;";
+            String query = "SELECT o.*, p.title AS package_title " +
+                    "FROM orders o " +
+                    "INNER JOIN package p ON o.package_id = p.package_id " +
+                    "WHERE o.client_userID = ?;";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, client_userID);
 
@@ -237,6 +256,8 @@ public class OrderService {
             while (resultSet.next()) {
                 order = new Order(resultSet);
                 JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                // Add package title to JSON object
+                jsonObject.addProperty("package_title", resultSet.getString("package_title"));
                 jsonArray.add(jsonObject);
             }
 
@@ -245,7 +266,24 @@ public class OrderService {
             System.out.println("Orders : " + jsonArray);
 
         } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+            // Handle exceptions
+            e.printStackTrace(); // You might want to log the exception instead of printing stack trace
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("An error occurred while processing your request.");
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle closing resource exception
+            }
         }
     }
 
