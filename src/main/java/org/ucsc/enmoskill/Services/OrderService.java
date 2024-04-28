@@ -77,8 +77,8 @@ public class OrderService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id , proposalID , price_package_id , deliveryDuration)"
-                    + "VALUES (?,?,?,?,?,?,?,?,?,?);";
+            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id, price_package_id)"
+                    + "VALUES (?,?,?,?,?,?,?,?);";
             preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, order.getRequirements());
             preparedStatement.setInt(2,0);
@@ -86,46 +86,10 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setDouble(7,order.getPlatformFeeId());
-            preparedStatement.setDouble(8,order.getProposalID());
-            preparedStatement.setInt(9,order.getPricePackageID());
-            preparedStatement.setInt(10, order.getDeliveryDuration());
-            result = preparedStatement.executeUpdate();
+            preparedStatement.setInt(7,order.getPlatformFeeId());
+            preparedStatement.setInt(8,order.getPricePackageId());
 
-            if (result > 0){
-                // Retrieve the auto-generated keys (including the primary key)
-                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1);
 
-                    } else {
-                        throw new SQLException("Creating order failed, no ID obtained.");
-                    }
-                }
-            }
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int createCustomOrder(Order order){
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        int result = 0;
-
-        try{
-            con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id)"
-                    + "VALUES (?,?,?,?,?,?,?);";
-            preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1,"");
-            preparedStatement.setInt(2,0);
-            preparedStatement.setInt(3,order.getClientId());
-            preparedStatement.setInt(4,order.getDesignerId());
-            preparedStatement.setInt(5,order.getPackageId());
-            preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setDouble(7,order.getPlatformFeeId());
 
 
             result = preparedStatement.executeUpdate();
@@ -137,6 +101,8 @@ public class OrderService {
                         return generatedKeys.getInt(1);
 
                     } else {
+
+//                        return 0;
                         throw new SQLException("Creating order failed, no ID obtained.");
                     }
                 }
@@ -144,6 +110,13 @@ public class OrderService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
