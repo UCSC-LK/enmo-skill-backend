@@ -118,7 +118,7 @@ public class PackageService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID, insertion_time FROM package WHERE package_id = ?;";
+            String query = "SELECT package_id, title, description, category, cover_url, clicks, orders, cancellations, status, designer_userID, insertion_time, avg_ratings FROM package WHERE package_id = ?;";
 
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, packageId);
@@ -140,7 +140,7 @@ public class PackageService {
                     newPackage.setOrders(resultSet.getInt("orders"));
                     newPackage.setTitle(resultSet.getString("title"));
                     newPackage.setInsertionTime(resultSet.getTimestamp("insertion_time"));
-
+                    newPackage.setAvgRatings(resultSet.getDouble("avg_ratings"));
                 }
 
                 return newPackage;
@@ -182,29 +182,8 @@ public class PackageService {
 
             List<Package> packages = new ArrayList<>();
 
-//            System.out.println(resultSet.getString("title"));
-
-            // next() - go to the text line in the result set
-//            if (resultSet.next()) {
-//                System.out.println();
-//                return new Package(resultSet.getString("title"), resultSet.getString("description"), resultSet.getString("category"), resultSet.getInt("designer_userID"));
-//            } else {
-//                // If no records are found, return an empty Package object
-//                return new Package("", "", "", 0);
-//            }
-
-//            if (resultSet.next()){
-////                Package newPackage = new Package("", "", "", 0);
-//                // If no records are found, return an empty Package object
-////                return new Package("", "", "", 0);
-////                packages.add(newPackage);
-////                return packages;
-//
-//
-//            }
-
             while (resultSet.next()){
-                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"), resultSet.getTimestamp("insertion_time"));
+                Package newPackage = new Package(resultSet.getInt("package_id"),resultSet.getString("title"), resultSet.getString("description"), resultSet.getInt("category"), resultSet.getString("cover_url"), resultSet.getInt("clicks"), resultSet.getInt("orders"), resultSet.getString("cancellations"), resultSet.getString("status"), resultSet.getInt("designer_userID"), resultSet.getTimestamp("insertion_time"), resultSet.getDouble("avg_ratings"));
                 packages.add(newPackage);
 //
             }

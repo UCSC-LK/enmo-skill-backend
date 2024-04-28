@@ -48,7 +48,9 @@ public class PackageViewController extends HttpServlet {
                     int packageId = Integer.parseInt(req.getParameter("packageId"));
 
                     PackageViewModel viewModel = new PackageViewModel();
+                    PackageViewModelService service1 = new PackageViewModelService();
 
+                    service1.updateClickCount(packageId);
                     // fetch package data
                     Package pkgObj = getPackage(packageId);
 
@@ -86,12 +88,10 @@ public class PackageViewController extends HttpServlet {
                                 if (priceList != null){
                                     viewModel.setPricings(priceList);
 
-                                    PackageViewModelService service1 = new PackageViewModelService();
                                     PackageViewModel viewModel1 = service1.getData(packageId, pkgObj.getDesignerUserId());
 
                                     if (viewModel1 != null){
 
-                                        viewModel.setPackageRatings(viewModel1.getPackageRatings());
                                         viewModel.setPendingOrders(viewModel1.getPendingOrders());
                                         viewModel.setUserRatings(viewModel1.getUserRatings());
 
@@ -102,7 +102,7 @@ public class PackageViewController extends HttpServlet {
 
                                     } else {
                                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                        out.write("Cannot get data");
+                                        out.write("Cannot review data");
                                         System.out.println("Cannot get data");
                                     }
 
