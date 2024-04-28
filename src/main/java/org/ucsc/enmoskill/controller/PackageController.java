@@ -135,6 +135,7 @@ public class PackageController extends HttpServlet {
 
                     BufferedReader reader =  req.getReader();
                     Package newPackage = gson.fromJson(reader,Package.class);
+                    System.out.println(gson.toJson(newPackage));
 
 //            newPackage.setPackageId(packageID);
                     newPackage.setDesignerUserId(designerUserId);
