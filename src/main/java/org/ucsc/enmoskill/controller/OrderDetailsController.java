@@ -5,7 +5,6 @@ import org.ucsc.enmoskill.Services.OrderDetailsService;
 import org.ucsc.enmoskill.Services.ProposalGETSer;
 import org.ucsc.enmoskill.Services.ProposalPOSTSer;
 import org.ucsc.enmoskill.database.DatabaseConnection;
-import org.ucsc.enmoskill.model.OrderDetailsModel;
 import org.ucsc.enmoskill.model.Pro_CR;
 import org.ucsc.enmoskill.model.ProposalModel;
 import org.ucsc.enmoskill.utils.AuthorizationResults;
@@ -95,7 +94,6 @@ public class OrderDetailsController extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
 
         try {
             // Create a Gson instance
@@ -103,65 +101,47 @@ public class OrderDetailsController extends HttpServlet {
 
             // Read JSON data from the request body
             BufferedReader reader = req.getReader();
-            OrderDetailsModel orderDetails = gson.fromJson(reader, OrderDetailsModel.class);
+            ProposalModel proposal = gson.fromJson(reader, ProposalModel.class);
 
-            out.println("orderIDD - " + orderDetails.getOrderID());
+            Pro_CR proBRlist = new Pro_CR(req);
+
+            out.println("Duration" + proposal.getDeliveryDuration());
+            out.println("getDescription: " + proposal.getDescription());
+            out.println("getPrice: " + proposal.getPrice());
+            out.println("getTitle: " + proposal.getTitle());
+            out.println("getPricingPackage: " + proposal.getPricingPackage());
+            out.println("getPackageId: " + proposal.getPackageId());
 
             // Get the JWT token from the request header
             String jwtToken = req.getHeader("Authorization");
 
-            out.println("jwtTokennew2: " + jwtToken);
             // Check if the JWT token is present
             if (jwtToken != null) {
 
                 // Use the AuthorizationService to authorize the request
                 AuthorizationService authService = new AuthorizationService();
-                String[] expectedUserLevelID = {"1", "2"}; // Set your expected userLevelID here
+                String[] expectedUserLevelID = {"2"}; // Set your expected userLevelID here
 
                 AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
 
                 if (authResult != null) {
-                    String UserID = authResult.getUserID();
+                    String designerID = authResult.getUserID();
                     String userLevelID = authResult.getJwtUserLevelID();
 
-                    out.println("11" + UserID);
-                    out.println("22" + userLevelID);
+                    if (designerID != null && userLevelID != null && proposal.getBudget() != null
+                            && proposal.getDescription() != null && proposal.getDuration() != null) {
 
-                    if (UserID != null && userLevelID != null ) {
-                        if ("2".equals(userLevelID)) {
-                            int User_ID = Integer.parseInt(UserID);
-                            orderDetails.setDesignerId(User_ID);
-                            OrderDetailsService orderDetailsService = new OrderDetailsService(resp);
+                        proposal.setDesignerId(designerID);
+                        ProposalPOSTSer proposalPOSTSer = new ProposalPOSTSer();
+                        boolean isSuccess = proposalPOSTSer.isInsertionSuccessful(proposal, proBRlist);
 
-                            boolean isSuccess = orderDetailsService.isDesignerOrderDetailsInsertionSuccessful(orderDetails);
-                            if (isSuccess) {
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                resp.getWriter().write("Message submitted successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                resp.getWriter().write("Message submitted unsuccessfully");
-                            }
-                        } else if ("1".equals(userLevelID)) {
-                            int User_IDC = Integer.parseInt(UserID);
-                            orderDetails.setClientId(User_IDC);
-
-                            out.println("ClientID" + orderDetails.getClientId());
-                            OrderDetailsService orderDetailsService = new OrderDetailsService(resp);
-
-                            boolean isSuccess = orderDetailsService.isClientOrderDetailsInsertionSuccessful(orderDetails);
-                            if (isSuccess) {
-                                resp.setStatus(HttpServletResponse.SC_OK);
-                                resp.getWriter().write("Message submitted successfully");
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                                resp.getWriter().write("Message submitted unsuccessfully");
-                            }
-
-                        }else {
+                        if (isSuccess) {
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            resp.getWriter().write("Proposal submitted successfully");
+                        } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            resp.getWriter().write("Error");
+                            resp.getWriter().write("Proposal submitted unsuccessfully");
                         }
-
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         resp.getWriter().write("Required Field Missing");
