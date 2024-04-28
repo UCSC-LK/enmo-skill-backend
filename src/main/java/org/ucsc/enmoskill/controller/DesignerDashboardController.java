@@ -68,7 +68,7 @@ public class DesignerDashboardController extends HttpServlet {
 //                        if (dashboardModel != null){
 
                             // get profile data
-                            ProfileModel profile = new ProfileModel(dashboardModel.getDesignerId(), "Designer", null, null, null, null, null, null);
+                            ProfileModel profile = new ProfileModel(dashboardModel.getDesignerId(), "Designer", null, null, null, null, null, null, null);
 
                             ProfileGET servise = new ProfileGET(profile,resp);
                             try{

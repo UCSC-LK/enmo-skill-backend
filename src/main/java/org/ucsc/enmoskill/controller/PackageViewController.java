@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import org.ucsc.enmoskill.Services.PackageViewModelService;
 import org.ucsc.enmoskill.Services.PricePackageService;
 import org.ucsc.enmoskill.Services.ProfileGET;
 import org.ucsc.enmoskill.model.*;
@@ -36,9 +37,11 @@ public class PackageViewController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
 
         try {
+
+            tokenInfo = tokenService.getTokenInfo(token);
+
             if (tokenService.isTokenValidState(token) == 1){
 
                 try {
@@ -54,10 +57,12 @@ public class PackageViewController extends HttpServlet {
                         out.write("Package not found");
                         System.out.println("Package not found");
                     } else {
+
                         viewModel.setPackageModel(pkgObj);
 
                         // fetch profile data
-                        ProfileModel profile = new ProfileModel(pkgObj.getDesignerUserId(), "Designer", null, null, null, null, null, null);
+                        ProfileModel profile = new ProfileModel(pkgObj.getDesignerUserId(), "Designer", null, null, null, null, null, null, null);
+                        System.out.println(gson.toJson(profile));
                         if (pkgObj.getDesignerUserId() != 0){
                             if (profile.CheckReqiredFields()){
                                 ProfileGET servise = new ProfileGET(profile,resp);
@@ -81,9 +86,26 @@ public class PackageViewController extends HttpServlet {
                                 if (priceList != null){
                                     viewModel.setPricings(priceList);
 
-                                    resp.setStatus(HttpServletResponse.SC_OK);
-                                    out.write(gson.toJson(viewModel));
-                                    System.out.println("Data loaded successfully");
+                                    PackageViewModelService service1 = new PackageViewModelService();
+                                    PackageViewModel viewModel1 = service1.getData(packageId, pkgObj.getDesignerUserId());
+
+                                    if (viewModel1 != null){
+
+                                        viewModel.setPackageRatings(viewModel1.getPackageRatings());
+                                        viewModel.setPendingOrders(viewModel1.getPendingOrders());
+                                        viewModel.setUserRatings(viewModel1.getUserRatings());
+
+                                        System.out.println(gson.toJson(viewModel));
+
+                                        resp.setStatus(HttpServletResponse.SC_OK);
+                                        out.write(gson.toJson(viewModel));
+
+                                    } else {
+                                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                        out.write("Cannot get data");
+                                        System.out.println("Cannot get data");
+                                    }
+
                                 } else {
                                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                     out.write("Cannot get data");
