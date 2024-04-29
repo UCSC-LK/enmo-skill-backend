@@ -30,7 +30,7 @@ public class Designer_verifyController extends HttpServlet {
             TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
             if(tokenInfo.isAdmin()){
                 Connection connection = DatabaseConnection.initializeDatabase();
-                String query = "select fname,lname,email,phone_no,address,url,NIC,nic_front,nic_back,d.userid as userid from designer_additional_info join designer d on d.userid = designer_additional_info.userid join users u on u.userID = d.userid where designer_additional_info.status =0;";
+                String query = "select fname,lname,email,phone_no,address,d.url,NIC,nic_front,nic_back,d.userid as userid from designer_additional_info join designer d on d.userid = designer_additional_info.userid join users u on u.userID = d.userid where designer_additional_info.status =0;";
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(query);
                     ResultSet resultSet = preparedStatement.executeQuery();
@@ -70,13 +70,14 @@ public class Designer_verifyController extends HttpServlet {
                     System.out.println(designerVerifyModel.getNicback());
                     if (designerVerifyModel.getAddress() != null && designerVerifyModel.getNicfront() != null && designerVerifyModel.getNicback() != null ) {
                         Connection connection = DatabaseConnection.initializeDatabase();
-                        String query = "INSERT INTO enmo_database.designer_additional_info (userid, nic_front, nic_back,address) VALUES (?, ?, ?,?)";
+                        String query = "INSERT INTO enmo_database.designer_additional_info (userid, nic_front, nic_back,address,phone_no) VALUES (?, ?, ?,?,?)";
                         try {
                             PreparedStatement preparedStatement = connection.prepareStatement(query);
                             preparedStatement.setInt(1, Integer.parseInt( tokenInfo.getUserId()));
                             preparedStatement.setString(2, designerVerifyModel.getNicfront());
                             preparedStatement.setString(3, designerVerifyModel.getNicback());
                             preparedStatement.setString(4, designerVerifyModel.getAddress());
+                            preparedStatement.setString(5, designerVerifyModel.getDesinerPhone());
                             int Rowsaffected = preparedStatement.executeUpdate();
                             if (Rowsaffected > 0) {
                                 resp.setStatus(HttpServletResponse.SC_OK);
@@ -176,12 +177,17 @@ public class Designer_verifyController extends HttpServlet {
                         String query = "SELECT count(*) as count FROM enmo_database.designer_additional_info WHERE userid = ?";
                         try {
                             PreparedStatement preparedStatement = connection.prepareStatement(query);
+                            System.out.println(tokenInfo.getUserId());
                             preparedStatement.setInt(1, Integer.parseInt(tokenInfo.getUserId()));
                             ResultSet resultSet = preparedStatement.executeQuery();
                             if (resultSet.next()) {
-                                resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                            } else {
-                                resp.setStatus(HttpServletResponse.SC_OK);
+                                if (resultSet.getInt("count") == 0) {
+                                    System.out.println("true");
+                                    resp.setStatus(HttpServletResponse.SC_OK);
+                                } else {
+                                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                                }
+
                             }
                         } catch (SQLException e) {
                             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
