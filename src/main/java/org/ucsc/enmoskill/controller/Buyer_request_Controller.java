@@ -53,12 +53,12 @@ public class Buyer_request_Controller extends HttpServlet {
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
             try (BufferedReader reader = req.getReader()){
                 BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
-                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getBudget()!=0){
+                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()>0&&buyerRequestModel.getBudget()>0){
                     BuyerRequestPOST service = new BuyerRequestPOST(resp,buyerRequestModel,tokenInfo);
                     service.Run();
                 }else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write("Required Field Missing");
+                    resp.getWriter().write("Required Field Missing or Invalid Data");
                 }
             } catch (Exception e) {
                 resp.getWriter().write(e.toString());
@@ -105,12 +105,12 @@ public class Buyer_request_Controller extends HttpServlet {
             try (BufferedReader reader = req.getReader()){
                 BuyerRequestModel buyerRequestModel = new Gson().fromJson(reader, BuyerRequestModel.class);
                 buyerRequestModel.setUserID(Integer.parseInt(tokenInfo.getUserId()));
-                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()!=0&&buyerRequestModel.getRequestID()!=0&&buyerRequestModel.getBudget()!=0){
+                if (buyerRequestModel.getTitle()!=null&&buyerRequestModel.getDiscription()!=null&&buyerRequestModel.getDuration()>0&&buyerRequestModel.getRequestID()!=0&&buyerRequestModel.getBudget()>0){
                     BuyerRequestPUT service = new BuyerRequestPUT(resp,buyerRequestModel);
                     service.Run();
                 }else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write("Required Field Missing");
+                    resp.getWriter().write("Required Field Missing or Invalid Data");
                 }
             } catch (Exception e) {
                 resp.getWriter().write(e.toString());

@@ -42,11 +42,11 @@ public class BuyerRequestModel {
         Date Today= new Date();
         String Date = new SimpleDateFormat("yyyy-MM-dd").format(Today);
         if(Type.equals("insert")){
-            String quary ="INSERT INTO jobs (userID,title, date, discription, duration, budget, status,sample_work_url) VALUES ("+this.userID+",\'"+this.title+"\', \'"+Date+"\', \'"+this.discription+"\', "+this.duration+", "+this.budget+", 1,\'"+this.sample_work_url+"\')" ;
+            String quary ="INSERT INTO jobs (userID,title, date, discription, duration, budget, status,sample_work_url) VALUES ("+this.userID+",?, \'"+Date+"\', ?, "+this.duration+", "+this.budget+", 1,\'"+this.sample_work_url+"\')" ;
             return quary;
         }
         if(Type.equals("update")){
-            String quary =" UPDATE enmo_database.jobs t SET t.title = '"+this.title+"',  t.discription = '"+this.discription+"', t.duration = "+this.duration+",t.budget ="+this.budget+", t.sample_work_url=\'"+this.sample_work_url+"\' WHERE t.requestID ="+this.requestID +" AND t.userID ="+this.userID;
+            String quary =" UPDATE enmo_database.jobs t SET t.title = ',  t.discription = ?, t.duration = "+this.duration+",t.budget ="+this.budget+", t.sample_work_url=\'"+this.sample_work_url+"\' WHERE t.requestID ="+this.requestID +" AND t.userID ="+this.userID;
             return quary;
         }
         return null;

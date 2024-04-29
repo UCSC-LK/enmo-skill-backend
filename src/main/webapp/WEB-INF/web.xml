@@ -216,7 +216,10 @@
 
 
 
-
+    <servlet>
+        <servlet-name>verify-designer</servlet-name>
+        <servlet-class>org.ucsc.enmoskill.controller.Designer_verifyController</servlet-class>
+    </servlet>
 
 
 
@@ -389,6 +392,10 @@
     <servlet-mapping>
         <servlet-name>resetpass</servlet-name>
         <url-pattern>/passwordreset</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>verify-designer</servlet-name>
+        <url-pattern>/verifydesigner</url-pattern>
     </servlet-mapping>
 
 

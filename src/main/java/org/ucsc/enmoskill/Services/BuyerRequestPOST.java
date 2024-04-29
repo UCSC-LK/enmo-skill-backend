@@ -33,15 +33,21 @@ public class BuyerRequestPOST {
         }
 
         if(!tokenInfo.isClient()){
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write("Token Invalid!");
             return;
         }
         this.data.setUserID(Integer.parseInt(tokenInfo.getUserId()));
+
+
+
+
         String query = this.data.getQuery("insert");
 
         try {
             PreparedStatement preparedStatement  = connection.prepareStatement(query);
+            preparedStatement.setString(1, this.data.getTitle());
+            preparedStatement.setString(2, this.data.getDiscription());
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {

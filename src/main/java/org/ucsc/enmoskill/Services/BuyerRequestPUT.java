@@ -25,10 +25,13 @@ public class BuyerRequestPUT {
             return;
         }
 
+
         String query = this.data.getQuery("update");
 
         try {
             PreparedStatement preparedStatement  = connection.prepareStatement(query);
+            preparedStatement.setString(1, this.data.getTitle());
+            preparedStatement.setString(2, this.data.getDiscription());
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
