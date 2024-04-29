@@ -105,6 +105,7 @@ public class ProfileModel {
 
     public String deleteLanguages(){
         String queryDeleteLanguage = "DELETE FROM enmo_database.language_mapping WHERE userId ="+ getUserId();
+
         return queryDeleteLanguage;
     }
 

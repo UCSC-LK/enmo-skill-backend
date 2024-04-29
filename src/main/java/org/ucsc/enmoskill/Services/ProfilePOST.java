@@ -36,10 +36,10 @@ public class ProfilePOST {
         profileModel.setUserId(Integer.parseInt(tokenInfo.getUserId()));
 
         //update user role---------------------------------------------------------------------------
-        String queryRoleLevelUp = profileModel.getQueryLevelUp();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryRoleLevelUp);
-        int rows = preparedStatement.executeUpdate();
-        preparedStatement.close();
+//        String queryRoleLevelUp = profileModel.getQueryLevelUp();
+//        PreparedStatement preparedStatement = connection.prepareStatement(queryRoleLevelUp);
+//        int rows = preparedStatement.executeUpdate();
+//        preparedStatement.close();
 
         //set designer table details-----------------------------------------------------------------------------
         String query1 = profileModel.getQuery1();
