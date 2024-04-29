@@ -82,6 +82,8 @@ public class UserSer {
                     "    designer d ON u.userID = d.userid " +
                     "LEFT JOIN" +
                     "    user_level_mapping m ON d.userId = m.userID " +
+                    "WHERE" +
+                    "    u.status > 0 " +
                     "GROUP BY u.userID;";
             preparedStatement = con.prepareStatement(query);
 
@@ -155,6 +157,8 @@ public class UserSer {
                     "    client c ON u.userID = c.userid " +
                     "LEFT JOIN" +
                     "    user_level_mapping m ON c.userid = m.userID " +
+                    "WHERE" +
+                    "    u.status > 0 " +
                     "GROUP BY u.userID;";
             preparedStatement = con.prepareStatement(query);
 
@@ -210,7 +214,7 @@ public class UserSer {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT COUNT(userID) FROM users;";
+            String query = "SELECT COUNT(userID) FROM users WHERE status > 0;";
             preparedStatement = con.prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
 
@@ -238,9 +242,17 @@ public class UserSer {
         for (UserFullModel userModel : list) {
             User user = userModel.getUser();
 
-            if (userModel.getStatus() == status && String.valueOf(role).equals(user.getUser_role())){
-                newList.add(userModel);
+            if (status == 1){
+                if (String.valueOf(role).equals(user.getUser_role())){
+                    newList.add(userModel);
+                }
+            } else {
+                if (user.getUser_role().equals("5")){
+                    newList.add(userModel);
+                }
             }
+
+
         }
         return newList;
     }

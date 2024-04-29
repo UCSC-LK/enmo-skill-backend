@@ -137,4 +137,28 @@ public class BannService {
             throw new RuntimeException(e);
         }
     }
+
+    public int updateUserLevel(int userId){
+        try {
+            con = DatabaseConnection.initializeDatabase();
+            String query = "UPDATE user_level_mapping SET userlevelID = 5 WHERE userid = ?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            result = preparedStatement.executeUpdate();
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("SQL Error executing query: " + e.getMessage());
+            throw new RuntimeException("Failed to update data", e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
