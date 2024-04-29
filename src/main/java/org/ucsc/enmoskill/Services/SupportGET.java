@@ -28,7 +28,7 @@ public class SupportGET {
         //this.response = response;
     }
 
-    public ResponsModel Run(String popup, String TicketId,String assign) throws IOException, SQLException {
+    public ResponsModel Run(String popup, String TicketId,String assign,String comment) throws IOException, SQLException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -59,7 +59,7 @@ public class SupportGET {
 ////                    response.getWriter().write("User ID is Required!");
 //                    return new ResponsModel("Please log in again!",HttpServletResponse.SC_BAD_REQUEST);
 //                }
-                ResponsModel responsModel = GetRequestAgent(connection, popup,TicketId,assign);
+                ResponsModel responsModel = GetRequestAgent(connection, popup,TicketId,assign,comment);
                 return responsModel;
             }else{
                 return new ResponsModel("Invalid user ID",HttpServletResponse.SC_BAD_REQUEST);
@@ -127,7 +127,7 @@ public class SupportGET {
 
     @NotNull
 
-    private ResponsModel GetRequestAgent(Connection connection , String popup, String TicketId,String assign) throws SQLException {
+    private ResponsModel GetRequestAgent(Connection connection , String popup, String TicketId,String assign,String comment) throws SQLException {
     //**********user Id for filter specific user's ticket************
 
         String query;
@@ -140,12 +140,12 @@ public class SupportGET {
             preparedStatement.setString(1, popup);
 
         }else if(TicketId != null){
-            query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID WHERE t.ref_no = "+TicketId+" ORDER BY status";
+            query = "SELECT t.*, ul.userlevelID, u.username, u.email,u.url FROM enmo_database.ticket t JOIN user_level_mapping ul ON t.requesterID = ul.userID JOIN users u ON t.requesterID = u.userID  WHERE t.ref_no = "+TicketId+" ORDER BY status";
             preparedStatement = connection.prepareStatement(query);
-//        }else if(comment != null) {
-//            query = "SELECT t.date, t.agent_id, t.comment FROM enmo_database.ticket_comment t where t.ticket_id = ? ORDER BY t.comment_id";
-//            preparedStatement = connection.prepareStatement(query);
-//            preparedStatement.setString(1, comment);
+        }else if(comment != null) {
+            query = "SELECT t.userID,t.agentID,t.comment FROM enmo_database.toAdmin t where t.ticketId = ? ";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, comment);
 //
 //        }else if(adminComment != null){
 //            query = "SELECT t.* FROM enmo_database.ticket_admin t where t.ticket_id = ? ORDER BY t.ticket_id";
@@ -179,12 +179,12 @@ public class SupportGET {
                 jsonArray.add(jsonObject);
             }
 
-//        }else if(comment != null){
-//            while (result.next()) {
-//                SupprtModel supprtModel = new SupprtModel(result,comment,true);
-//                JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
-//                jsonArray.add(jsonObject);
-//            }
+        }else if(comment != null){
+            while (result.next()) {
+                SupprtModel supprtModel = new SupprtModel(result,comment,true);
+                JsonObject jsonObject = gson.toJsonTree(supprtModel).getAsJsonObject();
+                jsonArray.add(jsonObject);
+            }
 //        }else if(adminComment != null){
 //            while (result.next()) {
 //                SupprtModel supprtModel = new SupprtModel(result,true,true);
