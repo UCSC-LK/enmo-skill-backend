@@ -31,7 +31,7 @@ public class Package {
         this.category = category;
     }
 
-    public Package(int packageId , String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId, Timestamp insertionTime, double avgRatings){
+    public Package(int packageId , String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserId, Timestamp insertionTime){
         this.packageId = packageId;
         this.title = title;
         this.description = description;
@@ -42,6 +42,20 @@ public class Package {
         this.cancellations = cancellations;
         this.status = status;
         this.designerUserId = designerUserId;
+        this.insertionTime = insertionTime;
+    }
+
+    public Package(int packageId, String title, String description, int category, String coverUrl, int clicks, int orders, String cancellations, String status, int designerUserID, Timestamp insertionTime, double avgRatings) {
+        this.packageId = packageId;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.coverUrl = coverUrl;
+        this.clicks = clicks;
+        this.orders = orders;
+        this.cancellations = cancellations;
+        this.status = status;
+        this.designerUserId = designerUserID;
         this.insertionTime = insertionTime;
         this.avgRatings = avgRatings;
     }

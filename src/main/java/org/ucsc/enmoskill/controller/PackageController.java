@@ -48,6 +48,7 @@ public class PackageController extends HttpServlet {
                         // Fetch data based on designerUserId
                         List<Package> packageList = getPackageData(designerUserId);
 //                    handleGetResponse(packageList, out, resp);
+                        System.out.println(new Gson().toJson(packageList));
 
                         if (packageList != null){
                             resp.setStatus(HttpServletResponse.SC_OK);
