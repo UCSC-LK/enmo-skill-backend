@@ -19,9 +19,14 @@ public class Order {
     private int platformFeeId;
     private int pricePackageId;
 
+    private int deliveryDuration;
+
+    private int proposalID;
+
+
     public Order(){}
 
-    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId){
+    public Order(int orderId, Timestamp createdTime, String requirements, int status, int designerId, int clientId, int packageId, int price, int platformFeeId, int proposalID, int deliveryDuration , int pricePackageId){
         this.orderId = orderId;
         this.createdTime = createdTime;
         this.requirements = requirements;
@@ -31,6 +36,10 @@ public class Order {
         this.packageId = packageId;
         this.price = price;
         this.platformFeeId = platformFeeId;
+        this.deliveryDuration = deliveryDuration;
+        this.proposalID = proposalID;
+        this.pricePackageId = pricePackageId;
+
 
         // Parse and set createdTime
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a");
@@ -64,8 +73,26 @@ public class Order {
         this.packageId = resultSet.getInt("package_id");
         this.price = resultSet.getInt("price");
         this.platformFeeId = resultSet.getInt("platform_fee_id");
+        this.proposalID = resultSet.getInt("proposalID");
+        this.deliveryDuration = resultSet.getInt("deliveryDuration");
+        this.pricePackageId = resultSet.getInt("price_package_id");
     }
 
+    public int getDeliveryDuration() {
+        return deliveryDuration;
+    }
+
+    public int getProposalID() {
+        return proposalID;
+    }
+
+    public void setProposalID(int proposalID) {
+        this.proposalID = proposalID;
+    }
+
+    public void setDeliveryDuration(int deliveryDuration) {
+        this.deliveryDuration = deliveryDuration;
+    }
 
     public int getPackageId() {
         return packageId;
