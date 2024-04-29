@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 public class ProfileModel {
-    private String  role, fname, lname, display_name, description;
+    private String  role, fname, lname, display_name, description,NIC,url;
     private int userId;
     private List<String> skills;
     private List<String> language;
@@ -24,6 +24,19 @@ public class ProfileModel {
         this.description = description;
         this.skills = skills;
         this.language = language;
+
+    }
+    public ProfileModel(int userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language,String NIC,String url) {
+        this.userId = userId;
+        this.role = role;
+        this.fname = fname;
+        this.lname = lname;
+        this.display_name = display_name;
+        this.description = description;
+        this.skills = skills;
+        this.language = language;
+        this.NIC=NIC;
+        this.url=NIC;
     }
 
     public ProfileModel(HttpServletRequest req) {
@@ -75,11 +88,11 @@ public class ProfileModel {
         return queryRoleLevelUp;
 
     }
-    public String getQuery1(){
-
-        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30','200012321569')";
-        return query1;
-    }
+//    public String getQuery1(){
+//
+//        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30',)";
+//        return query1;
+//    }
 
     public String getQuery2(){
         String query2="INSERT INTO enmo_database.skill_mapping(userId, skill_id) VALUES ";
@@ -191,4 +204,19 @@ public class ProfileModel {
         this.language = language;
     }
 
+    public String getNIC() {
+        return NIC;
+    }
+
+    public void setNIC(String NIC) {
+        this.NIC = NIC;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

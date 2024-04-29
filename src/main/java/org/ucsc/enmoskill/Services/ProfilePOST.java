@@ -42,79 +42,126 @@ public class ProfilePOST {
 //        preparedStatement.close();
 
         //set designer table details-----------------------------------------------------------------------------
-        String query1 = profileModel.getQuery1();
+//        String query1 = profileModel.getQuery1();
+        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,NIC,url) VALUES (?,?,?,?,?,?,?)";
+
 
         PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+        preparedStatement1.setString(1, tokenInfo.getUserId());
+        preparedStatement1.setString(2, profileModel.getDescription());
+        preparedStatement1.setString(3, profileModel.getFname());
+        preparedStatement1.setString(4, profileModel.getLname());
+        preparedStatement1.setString(5, profileModel.getDisplay_name());
+        preparedStatement1.setString(6, profileModel.getNIC());
+        preparedStatement1.setString(7, profileModel.getUrl());
         int rows1 = preparedStatement1.executeUpdate();
         preparedStatement1.close();
 
         //set skills--------------------------------------------------------------------------------------------
+//        String query2 = profileModel.getQuery2();
+//        boolean skillFlag = false;
+//
+//        System.out.println(profileModel.getUserId());
+//        for(int i = 0; i< profileModel.getSkills().size(); i++){
+//            if(skillFlag){
+//                query2 = query2+",";
+//            }
+//            query2 = query2+"("+ profileModel.getUserId()+","+ profileModel.getSkills().get(i)+")";
+//            skillFlag = true;
+//        }
+//
+//        PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+//        int rows2 = preparedStatement2.executeUpdate();
+//        preparedStatement2.close();
         String query2 = profileModel.getQuery2();
+        System.out.println(query2);
         boolean skillFlag = false;
-
-        System.out.println(profileModel.getUserId());
         for(int i = 0; i< profileModel.getSkills().size(); i++){
+
+
             if(skillFlag){
                 query2 = query2+",";
             }
             query2 = query2+"("+ profileModel.getUserId()+","+ profileModel.getSkills().get(i)+")";
             skillFlag = true;
+
         }
 
         PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
         int rows2 = preparedStatement2.executeUpdate();
-//        preparedStatement2.close();
 
 
-        //get language details-----------------------------------------------------------------------------------
-        PreparedStatement preparedStatementLanguage = connection.prepareStatement("SELECT t.* FROM enmo_database.languages t");
-        ResultSet resultSet = preparedStatementLanguage.executeQuery();
-
-        Map<String, Integer> languageIdMap = new HashMap<>();
-
-        while (resultSet.next()) {
-            // Retrieve values for each column
-            int column1Value = resultSet.getInt("language_id");
-            String column2Value = resultSet.getString("language");
-            languageIdMap.put(column2Value, column1Value);
-            // Add more lines for additional columns as needed
-
-            // Print values
-            System.out.println("Column1: " + column1Value + ", Column2: " + column2Value);
-            // Add more lines for additional columns as needed
-        }
-        resultSet.close();
-//        preparedStatementLanguage.close();
-
-        //set language details------------------------------------------------------------------------------------------
+//        //get language details-----------------------------------------------------------------------------------
+//        PreparedStatement preparedStatementLanguage = connection.prepareStatement("SELECT t.* FROM enmo_database.languages t");
+//        ResultSet resultSet = preparedStatementLanguage.executeQuery();
+//
+//        Map<String, Integer> languageIdMap = new HashMap<>();
+//
+//        while (resultSet.next()) {
+//            // Retrieve values for each column
+//            int column1Value = resultSet.getInt("language_id");
+//            String column2Value = resultSet.getString("language");
+//            languageIdMap.put(column2Value, column1Value);
+//            // Add more lines for additional columns as needed
+//
+//            // Print values
+//            System.out.println("Column1: " + column1Value + ", Column2: " + column2Value);
+//            // Add more lines for additional columns as needed
+//        }
+////        resultSet.close();
+////        preparedStatementLanguage.close();
+//
+//        //set language details------------------------------------------------------------------------------------------
+//        String query3 = profileModel.getQuery3();
+//
+//        boolean languageFlag = false;
+//        for (String language : profileModel.getLanguage()) {
+//            // Get the ID from the map
+//            Integer id = languageIdMap.get(language);
+//
+//            // Check if the language is present in the map
+//            if (id != null) {
+//                System.out.println("Language: " + language + ", ID: " + id);
+//                if(languageFlag){
+//                    query3 = query3+",";
+//                }
+//                query3 = query3+"("+ profileModel.getUserId()+","+id+")";
+//                languageFlag = true;
+//
+//            } else {
+//                System.out.println("Language not found: " + language);
+//            }
+//        }
+//
+//        int rows3 = 0;
+//        if(languageFlag){
+//            PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+//            System.out.println(query3);
+//            rows3 = preparedStatement3.executeUpdate();
+////            preparedStatement3.close();
+//        }
+//        String query3 = profileModel.getQuery3();
+//            System.out.println(query2);
         String query3 = profileModel.getQuery3();
-
+//            System.out.println(query2);
         boolean languageFlag = false;
-        for (String language : profileModel.getLanguage()) {
-            // Get the ID from the map
-            Integer id = languageIdMap.get(language);
+        for(int i = 0; i< profileModel.getLanguage().size(); i++){
 
-            // Check if the language is present in the map
-            if (id != null) {
-                System.out.println("Language: " + language + ", ID: " + id);
-                if(languageFlag){
-                    query3 = query3+",";
-                }
-                query3 = query3+"("+ profileModel.getUserId()+","+id+")";
-                languageFlag = true;
 
-            } else {
-                System.out.println("Language not found: " + language);
+            if(languageFlag){
+                query3 = query3+",";
             }
+            query3 = query3+"("+ profileModel.getUserId()+","+ profileModel.getLanguage().get(i)+")";
+            languageFlag = true;
+
         }
 
-        int rows3 = 0;
-        if(languageFlag){
-            PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
-            System.out.println(query3);
-            rows3 = preparedStatement3.executeUpdate();
-//            preparedStatement3.close();
-        }
+        PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+        int rows3 = preparedStatement3.executeUpdate();
+
+        System.out.println(rows1);
+        System.out.println(rows2);
+        System.out.println(rows3);
 
         if (rows1 > 0 && rows2 > 0 && rows3 > 0) {
 //            res.getWriter().write("Data inserted successfully!");

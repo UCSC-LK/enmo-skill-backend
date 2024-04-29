@@ -109,7 +109,7 @@ public class ProfilePUT {
 //                }
 //            }
             String query3 = profileModel.getQuery3();
-            System.out.println(query2);
+//            System.out.println(query2);
             boolean languageFlag = false;
             for(int i = 0; i< profileModel.getLanguage().size(); i++){
 
@@ -132,11 +132,7 @@ public class ProfilePUT {
 //                rows3 = preparedStatement3.executeUpdate();
 //                preparedStatement3.close();
 //            }
-            System.out.println(rows1);
-            System.out.println(rows2);
-            System.out.println(rows3);
-            System.out.println(rowDeleteLanguages);
-            System.out.println(rowDeleteSkills);
+
             if (rows1 > 0 && rows2 > 0 && rows3 >0 ) {
 //            res.getWriter().write("Data Updated successfully!");
 //            res.setStatus(HttpServletResponse.SC_CREATED);
