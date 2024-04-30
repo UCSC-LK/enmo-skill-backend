@@ -194,7 +194,7 @@ public class OrderController extends HttpServlet {
 
         int clientId = Integer.parseInt(tokenInfo.getUserId());
         int orderId = Integer.parseInt(req.getParameter("orderId"));
-
+        System.out.println(orderId);
         if (tokenService.isTokenValid(token)){
 
             if (tokenInfo.isClient()){
@@ -208,7 +208,7 @@ public class OrderController extends HttpServlet {
                 OrderService service = new OrderService(resp);
 
                 int result1 = service.updateOrder(order);
-//                System.out.println(result1);
+                System.out.println(result1);
 
                 if (result1 > 0){
 
