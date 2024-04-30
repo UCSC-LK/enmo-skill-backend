@@ -65,7 +65,7 @@ public class ProfileGET {
 
                         while (resultSet.next()) {
 
-                            ProfileModel profileModel = new ProfileModel(resultSet,1);
+                            ProfileModel profileModel = new ProfileModel(resultSet,1,2);
                             jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
                             System.out.println(jsonObject.get("userid"));
                         }
