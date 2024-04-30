@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 public class ProfileModel {
-    private String  role, fname, lname, display_name, description, joinedDate, url;
+    private String  role, fname, lname, display_name, description , joinedDate,NIC, url;
     private int userId;
     private List<String> skills;
     private List<String> language;
@@ -25,6 +25,19 @@ public class ProfileModel {
         this.skills = skills;
         this.language = language;
         this.joinedDate = joinedDate;
+
+    }
+    public ProfileModel(int userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language,String NIC,String url) {
+        this.userId = userId;
+        this.role = role;
+        this.fname = fname;
+        this.lname = lname;
+        this.display_name = display_name;
+        this.description = description;
+        this.skills = skills;
+        this.language = language;
+        this.NIC=NIC;
+        this.url=NIC;
     }
 
     public ProfileModel(HttpServletRequest req) {
@@ -46,30 +59,30 @@ public class ProfileModel {
 
     }
 
-    public ProfileModel(ResultSet result,int one) throws SQLException {
-        this.userId = result.getInt("userid");
-        this.fname = result.getString("fname");
-        this.lname = result.getString("lname");
-        this.description = result.getString("description");
-        this.display_name = result.getString("display_name");
-
-        String skillsString = result.getString("skills");
-        if (skillsString != null) {
-            this.skills = Arrays.asList(skillsString.split(","));
-        } else {
-            this.skills = Collections.emptyList();
-        }
-
-        String languageString = result.getString("language");
-        if (languageString != null) {
-            this.language = Arrays.asList(languageString.split(","));
-        } else {
-            this.language = Collections.emptyList();
-        }
-        this.joinedDate = result.getString("joinedDate");
-        this.url = result.getString("url");
-
-    }
+//    public ProfileModel(ResultSet result,int one) throws SQLException {
+//        this.userId = result.getInt("userid");
+//        this.fname = result.getString("fname");
+//        this.lname = result.getString("lname");
+//        this.description = result.getString("description");
+//        this.display_name = result.getString("display_name");
+//
+//        String skillsString = result.getString("skills");
+//        if (skillsString != null) {
+//            this.skills = Arrays.asList(skillsString.split(","));
+//        } else {
+//            this.skills = Collections.emptyList();
+//        }
+//
+//        String languageString = result.getString("language");
+//        if (languageString != null) {
+//            this.language = Arrays.asList(languageString.split(","));
+//        } else {
+//            this.language = Collections.emptyList();
+//        }
+//        this.joinedDate = result.getString("joinedDate");
+//        this.url = result.getString("url");
+//
+//    }
 
 
     public String getQueryLevelUp(){
@@ -80,11 +93,11 @@ public class ProfileModel {
         return queryRoleLevelUp;
 
     }
-    public String getQuery1(){
-
-        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30','200012321569')";
-        return query1;
-    }
+//    public String getQuery1(){
+//
+//        String query1="INSERT INTO enmo_database.designer (userid,description, fname, lname,display_name,joinedDate,NIC) VALUES (\'"+userId+"\',\""+description+"\",\'"+ fname+"\', \'"+lname+"\',\'"+display_name+"\','2021.10.30',)";
+//        return query1;
+//    }
 
     public String getQuery2(){
         String query2="INSERT INTO enmo_database.skill_mapping(userId, skill_id) VALUES ";
@@ -110,6 +123,7 @@ public class ProfileModel {
 
     public String deleteLanguages(){
         String queryDeleteLanguage = "DELETE FROM enmo_database.language_mapping WHERE userId ="+ getUserId();
+
         return queryDeleteLanguage;
     }
 
@@ -195,4 +209,19 @@ public class ProfileModel {
         this.language = language;
     }
 
+    public String getNIC() {
+        return NIC;
+    }
+
+    public void setNIC(String NIC) {
+        this.NIC = NIC;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

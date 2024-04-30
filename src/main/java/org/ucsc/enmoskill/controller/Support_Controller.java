@@ -133,7 +133,7 @@ public class Support_Controller extends HttpServlet {
             String popup=null;
             String TicketId=null;
             String assign = null;
-//            String adminComment = null;
+            String comment = null;
 
             if(req.getParameter("popup")!=null){
                 popup= req.getParameter("popup");
@@ -144,9 +144,9 @@ public class Support_Controller extends HttpServlet {
             if(req.getParameter("assign") != null){
                 assign= req.getParameter("assign");
             }
-//            if(req.getParameter("adminComment") != null){
-//                adminComment= req.getParameter("adminComment");
-//            }
+            if(req.getParameter("comment") != null){
+                comment= req.getParameter("comment");
+            }
 
 
             if (tokenInfo.getUserId() != null && tokenInfo.getRole() != null ){
@@ -155,7 +155,7 @@ public class Support_Controller extends HttpServlet {
 //            service.Run();
                 ResponsModel responsModel = null;
                 try {
-                    responsModel = service.Run(popup,TicketId,assign);
+                    responsModel = service.Run(popup,TicketId,assign,comment);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -201,7 +201,7 @@ public class Support_Controller extends HttpServlet {
 
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent,0,null);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -214,7 +214,7 @@ public class Support_Controller extends HttpServlet {
                     ticketId= req.getParameter("TicketId");
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent,0,null);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -227,7 +227,7 @@ public class Support_Controller extends HttpServlet {
                     ticketId= req.getParameter("TicketId");
 
                     try {
-                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent,0,null);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -244,7 +244,8 @@ public class Support_Controller extends HttpServlet {
 
                         SupprtModel supportmodel = new Gson().fromJson(reader, SupprtModel.class);
 
-                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent);
+
+                        responsModel = service.Run(agentID,ticketId,decision,toAdmin,ugent,supportmodel.getUserId(),supportmodel.getComment());
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

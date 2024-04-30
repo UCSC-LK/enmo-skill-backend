@@ -73,51 +73,67 @@ public class ProfilePUT {
             preparedStatementDeleteLanguages.close();
 
             //get language details-----------------------------------------------------------------------------------
-            PreparedStatement preparedStatementLanguage = connection.prepareStatement("SELECT t.* FROM enmo_database.languages t");
-            ResultSet resultSet = preparedStatementLanguage.executeQuery();
-
-            Map<String, Integer> languageIdMap = new HashMap<>();
-
-            while (resultSet.next()) {
-                // Retrieve values for each column
-                int column1Value = resultSet.getInt("language_id");
-                String column2Value = resultSet.getString("language");
-                languageIdMap.put(column2Value, column1Value);
-            }
-            resultSet.close();
-            preparedStatement2.close();
-
-            //update language details------------------------------------------------------------------------------------------
+//            PreparedStatement preparedStatementLanguage = connection.prepareStatement("SELECT t.* FROM enmo_database.languages t");
+//            ResultSet resultSet = preparedStatementLanguage.executeQuery();
+//
+//            Map<String, Integer> languageIdMap = new HashMap<>();
+//
+//            while (resultSet.next()) {
+//                // Retrieve values for each column
+//                int column1Value = resultSet.getInt("language_id");
+//                String column2Value = resultSet.getString("language");
+//                languageIdMap.put(column2Value, column1Value);
+//            }
+//            resultSet.close();
+//            preparedStatement2.close();
+//
+//            //update language details------------------------------------------------------------------------------------------
+//            String query3 = profileModel.getQuery3();
+//
+//            boolean languageFlag = false;
+//            for (String language : profileModel.getLanguage()) {
+//                // Get the ID from the map
+//                Integer id = languageIdMap.get(language);
+//
+//                // Check if the language is present in the map
+//                if (id != null) {
+//                    System.out.println("Language: " + language + ", ID: " + id);
+//                    if(languageFlag){
+//                        query3 = query3+",";
+//                    }
+//                    query3 = query3+"("+ profileModel.getUserId()+","+id+")";
+//                    languageFlag = true;
+//
+//                } else {
+//                    System.out.println("Language not found: " + language);
+//                }
+//            }
             String query3 = profileModel.getQuery3();
-
+//            System.out.println(query2);
             boolean languageFlag = false;
-            for (String language : profileModel.getLanguage()) {
-                // Get the ID from the map
-                Integer id = languageIdMap.get(language);
+            for(int i = 0; i< profileModel.getLanguage().size(); i++){
 
-                // Check if the language is present in the map
-                if (id != null) {
-                    System.out.println("Language: " + language + ", ID: " + id);
-                    if(languageFlag){
-                        query3 = query3+",";
-                    }
-                    query3 = query3+"("+ profileModel.getUserId()+","+id+")";
-                    languageFlag = true;
 
-                } else {
-                    System.out.println("Language not found: " + language);
+                if(languageFlag){
+                    query3 = query3+",";
                 }
+                query3 = query3+"("+ profileModel.getUserId()+","+ profileModel.getLanguage().get(i)+")";
+                languageFlag = true;
+
             }
 
-            int rows3 = 0;
-            if(languageFlag){
-                PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
-                System.out.println(query3);
-                rows3 = preparedStatement3.executeUpdate();
-                preparedStatement3.close();
-            }
+            PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+            int rows3 = preparedStatement3.executeUpdate();
 
-            if (rows1 > 0 && rows2 > 0 && rows3 >0 && rowDeleteLanguages>0 && rowDeleteSkills > 0) {
+//            int rows3 = 0;
+//            if(languageFlag){
+//                PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+//                System.out.println(query3);
+//                rows3 = preparedStatement3.executeUpdate();
+//                preparedStatement3.close();
+//            }
+
+            if (rows1 > 0 && rows2 > 0 && rows3 >0 ) {
 //            res.getWriter().write("Data Updated successfully!");
 //            res.setStatus(HttpServletResponse.SC_CREATED);
                 return new ResponsModel("Data Updated successfully!",HttpServletResponse.SC_CREATED);

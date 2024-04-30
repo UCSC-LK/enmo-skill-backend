@@ -6,10 +6,7 @@ import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,7 +17,7 @@ public class SupportOptions {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run(String agentID, String ticketId, String decision, String toAdmin,String ugent) throws SQLException, IOException {
+    public ResponsModel Run(String agentID, String ticketId, String decision, String toAdmin,String ugent,int userId ,String comment) throws SQLException, IOException {
         Connection connection = DatabaseConnection.initializeDatabase();
 
 
@@ -75,7 +72,7 @@ public class SupportOptions {
 //                return new ResponsModel("Comment was not added", HttpServletResponse.SC_NOT_IMPLEMENTED);
 //            }
             }else if(toAdmin != null){
-                ResponsModel responsModel = assignToAgrnt(connection,toAdmin,ticketId);
+                ResponsModel responsModel = assignToAgrnt(connection,toAdmin,ticketId,userId ,comment);
                 return responsModel;
             }else if (ugent !=null){
                 ResponsModel responsModel = markUgent(connection,ugent,ticketId);
@@ -210,18 +207,124 @@ public class SupportOptions {
             }
     }
 
-    private ResponsModel assignToAgrnt(Connection connection ,String toadmin, String ticketId) throws SQLException {
-        String query = "UPDATE enmo_database.ticket t " +
-                    "SET t.assign_ad = 1 " +
-                    "WHERE (t.assign_ad = 0 AND !(t.status=3 OR t.status=4) AND t.ref_no ="+ ticketId +")";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        int row= preparedStatement.executeUpdate();
+    private ResponsModel assignToAgrnt(Connection connection ,String toadmin, String ticketId,int userId ,String comment) throws SQLException {
+//        Statement statement = null;
+//        try {
+//            connection.setAutoCommit(false);
+//            statement = connection.createStatement();
+//
+//            String query = "UPDATE enmo_database.ticket t " +
+//                    "SET t.assign_ad = 1 " +
+//                    "WHERE (t.assign_ad = 0 AND !(t.status=3 OR t.status=4) AND t.ref_no ="+ ticketId +")";
+//            PreparedStatement preparedStatement = connection.prepareStatement(query);
+//            int row= preparedStatement.executeUpdate();
+//
+//            String query2 = "INSERT INTO enmo_database.toAdmin (ticketId, userID, agentID, comment) VALUES (?, ?, ?,?)";
+//            PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+//            preparedStatement2.setString(1, ticketId);
+//            preparedStatement2.setString(2, userID);
+//            preparedStatement2.setString(3, tokenInfo.getUserId());
+//            preparedStatement2.setString(4, comment);
+//
+//            int row2= preparedStatement.executeUpdate();
+//        connection = null;
+        PreparedStatement stmt1 = null;
+        PreparedStatement stmt2 = null;
+        int rowsAffected1=0;
+        int rowsAffected2=0;
 
-        if(row>0){
-            return new ResponsModel("Assign successful!", HttpServletResponse.SC_OK);
-        }else{
-            return new ResponsModel("Assign unsuccessful!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+        try {
+            // Set auto-commit to false to start a transaction
+            connection.setAutoCommit(false);
+
+            // First query
+            String query = "UPDATE enmo_database.ticket t " +
+                    "SET t.assign_ad = 1 " +
+                    "WHERE (t.assign_ad = 0 AND !(t.status=3 OR t.status=4) AND t.ref_no = ?)";
+            stmt1 = connection.prepareStatement(query);
+            stmt1.setInt(1, Integer.parseInt(ticketId)); // Assuming ticketId is declared and assigned
+
+            rowsAffected1 = stmt1.executeUpdate();
+
+            // Second query
+            String query2 = "INSERT INTO enmo_database.toAdmin (ticketId, userID, agentID, comment) VALUES (?, ?, ?, ?)";
+            stmt2 = connection.prepareStatement(query2);
+            stmt2.setInt(1, Integer.parseInt(ticketId)); // Assuming ticketId is declared and assigned
+            stmt2.setInt(2, userId); // Assuming userId is declared and assigned
+            stmt2.setInt(3, Integer.parseInt(tokenInfo.getUserId())); // Assuming agentId is declared and assigned
+            stmt2.setString(4, comment); // Assuming comment is declared and assigned
+
+            rowsAffected2 = stmt2.executeUpdate();
+            System.out.println(rowsAffected1);
+            System.out.println(rowsAffected2);
+            // If both queries executed successfully, commit the transaction
+            if(rowsAffected1>0 && rowsAffected2>0){
+                connection.commit();
+                return new ResponsModel("Assign successful!", HttpServletResponse.SC_OK);
+            }else{
+                connection.rollback();
+                return new ResponsModel("Assign unsuccessful!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                // If an exception occurred, rollback the transaction
+                if (connection != null)
+                    connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                // Close prepared statements
+                if (stmt1 != null)
+                    stmt1.close();
+                if (stmt2 != null)
+                    stmt2.close();
+                // Set auto-commit back to true
+                if (connection != null)
+                    connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
+            
+
+//        }catch (SQLException e) {
+//            e.printStackTrace();
+//            if (connection != null) {
+//                try {
+//                    // 5. Rollback transaction if any query fails
+//                    System.err.println("Transaction is being rolled back");
+//                    connection.rollback();
+//                } catch (SQLException ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//        } finally {
+//            try {
+//                if (statement != null) {
+//                    statement.close();
+//                }
+//                if (connection != null) {
+//                    connection.close();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+
+
+
+//        if(row>0){
+//            return new ResponsModel("Assign successful!", HttpServletResponse.SC_OK);
+//        }else{
+//            return new ResponsModel("Assign unsuccessful!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+//        }
+        return new ResponsModel("Assign unsuccessful!", HttpServletResponse.SC_NOT_IMPLEMENTED);
+
     }
 
     private ResponsModel markUgent(Connection connection,String urgent,String ticketId) throws SQLException {

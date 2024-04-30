@@ -14,7 +14,7 @@ public class OtpGET {
         this.tokenInfo = tokenInfo;
     }
 
-    public ResponsModel Run() throws IOException {
+    public ResponsModel Run(String phoneNumber) throws IOException {
 
         OTPhash otphash = new OTPhash();
         String ranNum=otphash.randomNumGen();
@@ -27,7 +27,7 @@ public class OtpGET {
         otpModel otpmodel = new otpModel(ranNum,hashString);
 
 
-        boolean result = otphash.sendOTP("0716676968",otpmodel.getOtp());
+        boolean result = otphash.sendOTP(phoneNumber,otpmodel.getOtp());
 
         if(result){
             return new ResponsModel(hashString, HttpServletResponse.SC_CREATED);
