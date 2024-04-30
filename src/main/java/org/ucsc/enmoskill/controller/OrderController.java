@@ -3,6 +3,8 @@ package org.ucsc.enmoskill.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 //import com.sun.org.apache.xpath.internal.operations.Or;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.ucsc.enmoskill.Services.OrderService;
 import org.ucsc.enmoskill.Services.PaymentService;
 import org.ucsc.enmoskill.model.Order;
@@ -31,61 +33,72 @@ public class OrderController extends HttpServlet {
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
-        tokenInfo = tokenService.getTokenInfo(token);
 
-        int clientId = Integer.parseInt(tokenInfo.getUserId());
+        try {
+            tokenInfo = tokenService.getTokenInfo(token);
 
-        if (tokenService.isTokenValidState(token) == 1){
+            int clientId = Integer.parseInt(tokenInfo.getUserId());
 
-            if (tokenInfo.isClient() || tokenInfo.isDesigner()){
-                Gson gson = new Gson();
+            if (tokenService.isTokenValidState(token) == 1){
 
-                // creating a Order object using the request body
-                BufferedReader reader = req.getReader();
-                Order newOrder = gson.fromJson(reader,Order.class);
+                if (tokenInfo.isClient() || tokenInfo.isDesigner()){
+                    Gson gson = new Gson();
 
-                newOrder.setClientId(clientId);
+                    // creating a Order object using the request body
+                    BufferedReader reader = req.getReader();
+                    Order newOrder = gson.fromJson(reader,Order.class);
 
-                OrderService service = new OrderService(resp);
+                    newOrder.setClientId(clientId);
 
-                newOrder = service.setFee(newOrder);
+                    OrderService service = new OrderService(resp);
 
-                try{
-                    int result = service.createOrder(newOrder);
+//                newOrder = service.setFee(newOrder);
 
-                    // Create a JSON object to represent the result
-                    JsonObject resultJson = new JsonObject();
-                    resultJson.addProperty("orderId", result);
+                    try{
+                        int result = service.createOrder(newOrder);
 
-                    if (result>0){
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        resultJson.addProperty("message", "Order created successfully");
-                        System.out.println("Order created successfully");
-                    } else {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        resultJson.addProperty("message", "Order didn't created");
-                        System.out.println("Order didn't created");
+
+                        // Create a JSON object to represent the result
+                        JsonObject resultJson = new JsonObject();
+                        resultJson.addProperty("orderId", result);
+
+                        if (result>0){
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            resultJson.addProperty("message", "Order created successfully");
+                            System.out.println("Order created successfully");
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            resultJson.addProperty("message", "Order didn't created");
+                            System.out.println("Order didn't created");
+                        }
+                        // Send the JSON object as the response
+                        out.write(resultJson.toString());
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
-                    // Send the JSON object as the response
-                    out.write(resultJson.toString());
-                } catch (Exception e) {
-                    out.write(e.toString());
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+
+
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 }
 
 
-
+            } else if (tokenService.isTokenValidState(token) == 2) {
+                resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             } else {
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             }
-
-
-        } else if (tokenService.isTokenValidState(token) == 2) {
+        } catch (ExpiredJwtException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        } else {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         }
+        catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
     }
 
     @Override
@@ -97,6 +110,7 @@ public class OrderController extends HttpServlet {
 
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
+
 
         tokenInfo = tokenService.getTokenInfo(token);
 

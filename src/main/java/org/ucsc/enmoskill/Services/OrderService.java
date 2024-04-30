@@ -86,7 +86,7 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setInt(7,order.getPlatformFeeId());
+            preparedStatement.setInt(7,1);
             preparedStatement.setInt(8,order.getPricePackageId());
 
 

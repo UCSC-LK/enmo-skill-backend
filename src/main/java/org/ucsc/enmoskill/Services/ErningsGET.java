@@ -11,11 +11,9 @@ import org.ucsc.enmoskill.utils.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class ErningsGET {
     private TokenService.TokenInfo tokenInfo;
@@ -37,7 +35,7 @@ public class ErningsGET {
 
         } else {
             if(tokenInfo.isDesigner()){
-                String query = "SELECT t.* FROM enmo_database.orders t WHERE designer_userID = ? ";
+                String query = "SELECT t.*,o.created_time,o.package_id,p.percentage FROM enmo_database.earnings t JOIN enmo_database.orders o on o.order_id = t.orderID JOIN platform_charge_rates p on t.platform_charge_id = p.charge_category WHERE t.designerID = ? ORDER BY t.status";
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, tokenInfo.getUserId());
 
@@ -56,25 +54,27 @@ public class ErningsGET {
                     if (!result1.next()) {
                         all = 0;
                     } else {
-                        all= Double.parseDouble(result1.getString("all"));
-                        lastDate= result1.getString("date");
-                        lastAmount=result1.getDouble("lastWthdrawaiAmount");
+                        all= Double.parseDouble(result1.getString("allWithdrawal"));
+                        lastDate= result1.getString("lastWithdrawaldate");
+                        lastAmount=result1.getDouble("lastWithdrawalAmount");
 
                     }
 
                     while (result.next()){
                         String date= String.valueOf(result.getDate("created_time"));
+                        String comletedDate=result.getString("completedDate");
+                        double presentage = result.getDouble("percentage");
                         double price = result.getInt("price");
                         int status = result.getInt("status");
 
                         if(status==1 || status==2){
-                            double activePrice = activePrice(price);
+                            double activePrice = activePrice(price,presentage);
                             active = active+activePrice;
                         } else if (status==3) {
-                            double actualPrice = completPrice(price,date);
+                            double actualPrice = completPrice(price,presentage);
                             begin = begin+actualPrice;
-                        }else if (status==4){
-                            double actualPrice = completPrice(price,date);
+                        }else if (status==5){
+                            double actualPrice = completPrice(price,presentage);
                             available = available+actualPrice;
                         }
                     }
@@ -82,8 +82,20 @@ public class ErningsGET {
                     JsonObject jsonObject = gson.toJsonTree(erningsModel).getAsJsonObject();
                     jsonArray.add(jsonObject);
                 }else {
+
                     while (result.next()){
-                        ErningsModel erningsModel = new ErningsModel(result);
+                        boolean isActive = false;
+                        long remainingDays = 0;
+                        if(result.getInt("status")==3){
+                            isActive =checkAvailable(String.valueOf(result.getDate("completedDate")));
+                            if(!isActive){
+                                LocalDate initialDate = LocalDate.parse(String.valueOf(result.getDate("completedDate")));
+                                LocalDate newDate = initialDate.plusWeeks(2);
+                                LocalDate currentDate = LocalDate.now();
+                                remainingDays = ChronoUnit.DAYS.between(currentDate, newDate);
+                            }
+                        }
+                        ErningsModel erningsModel = new ErningsModel(result,isActive,remainingDays);
                         JsonObject jsonObject = gson.toJsonTree(erningsModel).getAsJsonObject();
                         jsonArray.add(jsonObject);
                     }
@@ -114,21 +126,33 @@ public class ErningsGET {
         }
     }
 
-    public double completPrice(double price,String date){
-        LocalDate initialDate = LocalDate.parse(date);
-        LocalDate newDate = initialDate.plusWeeks(2);
-
-        LocalDate currentDate = LocalDate.now();
+    public double completPrice(double price,double presentage){
+//        LocalDate initialDate = LocalDate.parse(date);
+//        LocalDate newDate = initialDate.plusWeeks(2);
+//
+//        LocalDate currentDate = LocalDate.now();
         double actualPrice = 0;
-        if (newDate.isBefore(currentDate)) {
-            actualPrice = price*0.9;
-        }
+//        if (currentDate.isBefore(newDate)) {
+            actualPrice = price*(1-presentage);
+//        }
         return actualPrice;
     }
 
-    public double activePrice(double price){
-        double active = price*0.9;
+    public double activePrice(double price, double presentage){
+        double active = price*(1-presentage);
         return active;
+    }
+
+    public boolean checkAvailable(String compleatedDate){
+        if(compleatedDate==null){return false;}
+        else {
+            LocalDate initialDate = LocalDate.parse(compleatedDate);
+            LocalDate newDate = initialDate.plusWeeks(2);
+            LocalDate currentDate = LocalDate.now();
+            if (newDate.isBefore(currentDate)) {
+                return  true;
+            }else return false;
+        }
     }
 
 //    public double available(double price,int status,String date){

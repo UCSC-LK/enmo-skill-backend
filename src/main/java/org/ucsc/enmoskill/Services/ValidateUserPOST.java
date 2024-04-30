@@ -151,7 +151,7 @@ public class ValidateUserPOST {
                 String to =email;
                 String fromName = "Enmo Skill Platform";
                 String template = "email validate";
-                String mergeCode = "http://127.0.0.1:5501/HTML/validateEmail.html?key="+code;
+                String mergeCode = "https://enmoskill.codingblinders.com/HTML/validateEmail.html?key="+code;
                 String mergeUsername = Username;
 
 

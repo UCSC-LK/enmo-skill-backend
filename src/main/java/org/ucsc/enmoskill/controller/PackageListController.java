@@ -55,7 +55,7 @@ public class PackageListController extends HttpServlet {
                 List<PackageBlockModel> packageList2 = null;
 
                 try {
-                    if (category>4 || category<0){
+                    if (category<0){
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         out.write("Data not found");
                         System.out.println("Data not found");

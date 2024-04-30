@@ -3,9 +3,14 @@ package org.ucsc.enmoskill.model;
 import java.util.List;
 
 public class PackageViewModel {
-    Package packageModel;
-    List<PackagePricing> pricings;
-    ProfileModel profileModel;
+    private Package packageModel;
+    private List<PackagePricing> pricings;
+    private ProfileModel profileModel;
+    private UserFullModel userFullModel;
+
+    private int pendingOrders;
+    private double userRatings;
+    private double packageRatings;
 
     /// REVIEW DATA GOES HERE
 
@@ -40,5 +45,39 @@ public class PackageViewModel {
     public ProfileModel getProfileModel() {
         return profileModel;
     }
+
+    public UserFullModel getUserFullModel() {
+        return userFullModel;
+    }
+
+    public void setUserFullModel(UserFullModel userFullModel) {
+        this.userFullModel = userFullModel;
+    }
+
+    public int getPendingOrders() {
+        return pendingOrders;
+    }
+
+    public void setPendingOrders(int pendingOrders) {
+        this.pendingOrders = pendingOrders;
+    }
+
+    public double getUserRatings() {
+        return userRatings;
+    }
+
+    public void setUserRatings(double userRatings) {
+        this.userRatings = userRatings;
+    }
+
+    public double getPackageRatings() {
+        return packageRatings;
+    }
+
+    public void setPackageRatings(double packageRatings) {
+        this.packageRatings = packageRatings;
+    }
+
+
 }
 

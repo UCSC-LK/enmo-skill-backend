@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 public class ProfileModel {
-    private String  role, fname, lname, display_name, description;
+    private String  role, fname, lname, display_name, description, joinedDate, url;
     private int userId;
     private List<String> skills;
     private List<String> language;
@@ -15,7 +15,7 @@ public class ProfileModel {
     // Constructors, getters, setters, and other methods remain unchanged
 
     // Modify the constructor to use List instead of Array
-    public ProfileModel(int userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language) {
+    public ProfileModel(int userId, String role, String fname, String lname, String display_name, String description, List<String> skills, List<String> language, String joinedDate) {
         this.userId = userId;
         this.role = role;
         this.fname = fname;
@@ -24,6 +24,7 @@ public class ProfileModel {
         this.description = description;
         this.skills = skills;
         this.language = language;
+        this.joinedDate = joinedDate;
     }
 
     public ProfileModel(HttpServletRequest req) {
@@ -39,7 +40,8 @@ public class ProfileModel {
         this.display_name = result.getString("display_name");
         this.skills = Arrays.asList(result.getString("skills").split(","));
         this.language = Arrays.asList(result.getString("language").split(","));
-
+        this.joinedDate = result.getString("joinedDate");
+        this.url = result.getString("url");
 
 
     }
@@ -64,6 +66,9 @@ public class ProfileModel {
         } else {
             this.language = Collections.emptyList();
         }
+        this.joinedDate = result.getString("joinedDate");
+        this.url = result.getString("url");
+
     }
 
 

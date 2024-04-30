@@ -23,12 +23,12 @@ public class ErningsOPTIONS {
             return new ResponsModel("SQL Connection Error", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         }else{
-            String query1 = "SELECT t.created_time,t.status FROM orders t WHERE t.order_id="+orderID;
+            String query1 = "SELECT t.completedDate,t.status FROM earnings t WHERE t.orderID="+orderID;
             PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
             ResultSet resultSet = preparedStatement1.executeQuery();
 
             if(resultSet.next()){
-                String date = resultSet.getString("created_time");
+                String date = resultSet.getString("completedDate");
                 int status = resultSet.getInt("status");
 
                 LocalDate initialDate = LocalDate.parse(date);
@@ -37,15 +37,24 @@ public class ErningsOPTIONS {
                 LocalDate currentDate = LocalDate.now();
                 if (newDate.isBefore(currentDate) && status==3) {
 
-                    String query ="UPDATE enmo_database.orders t SET t.status=4 WHERE t.order_id=? AND t.designer_userID=?";
-                    preparedStatement1.setString(1, orderID);
-                    preparedStatement1.setString(2, tokenInfo.getUserId());
+                    System.out.println(orderID);
+                    System.out.println(tokenInfo.getUserId());
+                    String query ="UPDATE enmo_database.earnings t SET t.status=5 WHERE t.orderID="+orderID+" AND t.designerID=" +tokenInfo.getUserId();
                     PreparedStatement preparedStatement = connection.prepareStatement(query);
+                    System.out.println(preparedStatement);
+//                    preparedStatement.setInt(1, Integer.parseInt(orderID));
+//                    preparedStatement.setInt(2, Integer.parseInt(tokenInfo.getUserId()));
+//                    String query = "UPDATE enmo_database.earnings t SET t.status=5 WHERE t.orderID=:orderID AND t.designerID=:designerID";
+//                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+//                    preparedStatement.setString("orderID", orderID);
+//                    preparedStatement.setString("designerID", designerID);
+
+
 
                     int row = preparedStatement.executeUpdate(query);
 
                     if(row>0){
-                        return new ResponsModel("Money added to acount!", HttpServletResponse.SC_OK);
+                        return new ResponsModel("Money added to account!", HttpServletResponse.SC_OK);
                     }else{
                         return new ResponsModel("Money added failed!", HttpServletResponse.SC_NOT_IMPLEMENTED);
                     }

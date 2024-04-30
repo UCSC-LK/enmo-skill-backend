@@ -44,10 +44,11 @@ public class ProfileGET {
         }else{
             if (tokenInfo != null){
                 if (tokenInfo.isDesigner()) {
-                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
-                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
+                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, designer.joinedDate, users.url, " +
+                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills, " +
                             "GROUP_CONCAT(DISTINCT languages.language) AS language " +
                             "FROM  designer " +
+                            "LEFT JOIN users on designer.userId = users.userID " +
                             "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
                             "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
                             "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
@@ -84,10 +85,11 @@ public class ProfileGET {
             } else if (profileModel != null){
                 if (profileModel.isDesigner()) {
 
-                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname, " +
-                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills," +
+                    String query = "SELECT  designer.userid,designer.display_name,designer.description,designer.fname,designer.lname,designer.joinedDate, users.url, " +
+                            "GROUP_CONCAT(DISTINCT skills.skill) AS skills, " +
                             "GROUP_CONCAT(DISTINCT languages.language) AS language " +
                             "FROM  designer " +
+                            "LEFT JOIN users on designer.userId = users.userID " +
                             "LEFT JOIN skill_mapping ON designer.userId = skill_mapping.UserID " +
                             "LEFT JOIN skills ON skill_mapping.skill_id = skills.skill_id " +
                             "LEFT JOIN language_mapping ON designer.userId = language_mapping.userId " +
@@ -105,6 +107,7 @@ public class ProfileGET {
 
                             ProfileModel profileModel = new ProfileModel(resultSet);
                             jsonObject = new Gson().toJsonTree(profileModel).getAsJsonObject();
+                            System.out.println(jsonObject);
 
 
 
