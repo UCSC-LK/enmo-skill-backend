@@ -24,7 +24,22 @@ public class ProposalGETSer {
 
         System.out.println("User ID: " + userID);
         try{
-            String query = "SELECT * FROM proposals WHERE designer_userID = ? ";
+            String query = "SELECT \n" +
+                    "    proposals.*, \n" +
+                    "    jobs.discription, \n" +
+                    "    package_pricing.price_package_id, \n" +
+                    "    users.name AS client_name\n" +
+                    "FROM \n" +
+                    "    proposals \n" +
+                    "JOIN \n" +
+                    "    jobs ON proposals.requestID = jobs.requestID \n" +
+                    "JOIN \n" +
+                    "    package_pricing ON proposals.packageId = package_pricing.package_id \n" +
+                    "                     AND proposals.pricingPackage = package_pricing.type\n" +
+                    "JOIN \n" +
+                    "    users ON proposals.client_userID = users.userID\n" +
+                    "WHERE \n" +
+                    "    proposals.designer_userID = ?;";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             result = preparedStatement.executeQuery();
@@ -36,6 +51,7 @@ public class ProposalGETSer {
             while (result.next()) {
                 ProposalModel proposal = new ProposalModel(result);
                 JsonObject jsonObject = gson.toJsonTree(proposal).getAsJsonObject();
+                jsonObject.addProperty("client_name", result.getString("client_name"));
                 jsonArray.add(jsonObject);
             }
 
@@ -55,7 +71,22 @@ public class ProposalGETSer {
 
         System.out.println("User ID: " + userID);
         try{
-            String query = "SELECT * FROM proposals WHERE client_userID = ? ";
+            String query = "SELECT \n" +
+                    "    proposals.*, \n" +
+                    "    jobs.discription, \n" +
+                    "    package_pricing.price_package_id, \n" +
+                    "    users.name AS designer_name\n" +
+                    "FROM \n" +
+                    "    proposals \n" +
+                    "JOIN \n" +
+                    "    jobs ON proposals.requestID = jobs.requestID \n" +
+                    "JOIN \n" +
+                    "    package_pricing ON proposals.packageId = package_pricing.package_id \n" +
+                    "                     AND proposals.pricingPackage = package_pricing.type\n" +
+                    "JOIN \n" +
+                    "    users ON proposals.designer_userID = users.userID\n" +
+                    "WHERE \n" +
+                    "    proposals.client_userID = ?;\n";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             result = preparedStatement.executeQuery();
@@ -67,6 +98,7 @@ public class ProposalGETSer {
             while (result.next()) {
                 ProposalModel proposal = new ProposalModel(result);
                 JsonObject jsonObject = gson.toJsonTree(proposal).getAsJsonObject();
+                jsonObject.addProperty("designer_name", result.getString("designer_name"));
                 jsonArray.add(jsonObject);
             }
 
@@ -85,7 +117,19 @@ public class ProposalGETSer {
         ResultSet result = null; // Add this line to initialize the result set
 
         try {
-            String query = "SELECT * FROM proposals WHERE userID = ? AND proposalID = ?";
+            String query = "SELECT \n" +
+                    "    proposals.*, \n" +
+                    "    jobs.discription, \n" +
+                    "    package_pricing.price_package_id \n" +
+                    "FROM \n" +
+                    "    proposals \n" +
+                    "JOIN \n" +
+                    "    jobs ON proposals.requestID = jobs.requestID \n" +
+                    "JOIN \n" +
+                    "    package_pricing ON proposals.packageId = package_pricing.package_id AND proposals.pricingPackage = package_pricing.type \n" +
+                    "WHERE \n" +
+                    "    proposals.userID = ? \n" +
+                    "    AND proposals.proposalID = ?\n";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userID); // Set the userID parameter
             preparedStatement.setString(2, proposalID); // Set the proposalID parameter

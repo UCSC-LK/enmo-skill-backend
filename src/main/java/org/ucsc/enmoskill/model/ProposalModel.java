@@ -11,7 +11,10 @@ public class ProposalModel {
     private String designerId;
     private String clientId;
 
-    public ProposalModel(String proposalID,String packageId,String pricingPackage, String duration, String budget , String userID, String date, String description ,String requestID, String designerId, String clientId){
+    private String discription;
+
+    private  int price_package_id;
+    public ProposalModel(String proposalID,String packageId,String pricingPackage, String duration, String budget , String userID, String date, String description ,String requestID, String designerId, String clientId , String discription, int price_package_id){
         this.proposalID = proposalID;
         this.deliveryDuration = duration;
         this.price = budget;
@@ -23,6 +26,8 @@ public class ProposalModel {
         this.pricingPackage = pricingPackage;
         this.designerId = designerId;
         this.clientId = clientId;
+        this.discription =discription;
+        this.price_package_id = price_package_id;
     }
 
     public ProposalModel(ResultSet resultSet) throws SQLException {
@@ -37,6 +42,29 @@ public class ProposalModel {
         this.packageId = resultSet.getString("packageId");
         this.designerId = resultSet.getString("designer_userID");
         this.clientId = resultSet.getString("client_userID");
+        this.price_package_id = resultSet.getInt("price_package_id");
+        this.discription = resultSet.getString("discription");
+    }
+
+
+    public int getPrice_package_id() {
+        return price_package_id;
+    }
+
+    public String getDiscription() {
+        return discription;
+    }
+
+    public String getRequestID() {
+        return requestID;
+    }
+
+    public void setPrice_package_id(int price_package_id) {
+        this.price_package_id = price_package_id;
+    }
+
+    public void setDiscription(String discription) {
+        this.discription = discription;
     }
 
     public String getClientId() {
