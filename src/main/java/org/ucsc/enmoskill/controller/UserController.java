@@ -174,6 +174,10 @@ public class UserController extends HttpServlet {
             // Read JSON data from the request body
             BufferedReader reader = req.getReader();
             User user = gson.fromJson(reader, User.class);
+            System.out.println(user.getCountry());
+            System.out.println(user.getName());
+
+
 
             // Debugging statements
             System.out.println("Email: " + user.getEmail());
@@ -191,7 +195,7 @@ public class UserController extends HttpServlet {
             String hashedPassword = Hash.hashPassword(user.getPassword());
 //            userID = (int)(Math.random()*(100000-10+1)+10);
             // Create a new User object with the username and hashed password
-            User newUser = new User(user.getEmail(),user.getUsername(), hashedPassword);
+            User newUser = new User(user.getEmail(),user.getUsername(), hashedPassword,user.getName(),user.getCountry());
 
             UserSer newuser = new UserSer();
             // Insert data into the database

@@ -30,7 +30,7 @@ public class Designer_verifyController extends HttpServlet {
             TokenService.TokenInfo tokenInfo = tokenService.getTokenInfo(token);
             if(tokenInfo.isAdmin()){
                 Connection connection = DatabaseConnection.initializeDatabase();
-                String query = "select fname,lname,email,phone_no,address,d.url,NIC,nic_front,nic_back,d.userid as userid from designer_additional_info join designer d on d.userid = designer_additional_info.userid join users u on u.userID = d.userid where designer_additional_info.status =0;";
+                String query = "select fname,lname,email,phone_no,address,u.url as url,NIC,nic_front,nic_back,d.userid as userid from designer_additional_info join designer d on d.userid = designer_additional_info.userid join users u on u.userID = d.userid where designer_additional_info.status =0;";
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(query);
                     ResultSet resultSet = preparedStatement.executeQuery();

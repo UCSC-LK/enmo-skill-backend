@@ -4,10 +4,7 @@ import org.ucsc.enmoskill.database.DatabaseConnection;
 import org.ucsc.enmoskill.model.User;
 import org.ucsc.enmoskill.model.UserFullModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +19,34 @@ public class UserSer {
 
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO users (email,username, password  ) VALUES (?, ?, ?)";
-            preparedStatement = con.prepareStatement(query);
+            String query = "INSERT INTO users (email,username, password,name  ) VALUES (?, ?, ?,?)";
+            preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPassword());
+            preparedStatement.setString(4, user.getName());
             int Rowaffected = preparedStatement.executeUpdate(); // Execute the INSERT operation
+            if(Rowaffected == 0){
+                return 0;
+            }
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1); // Assuming the user ID is of type INT
+                // Do something with the generated user ID
+                System.out.println("Generated User ID: " + userId);
 
+                String q2 = "INSERT INTO client (userid,country) VALUES (?,?)";
+                preparedStatement = con.prepareStatement(q2);
+                preparedStatement.setInt(1, userId);
+                preparedStatement.setString(2, user.getCountry());
+                preparedStatement.executeUpdate();
+
+            } else {
+                // Handle failure to retrieve generated keys
+                System.out.println("Failed to retrieve generated user ID.");
+            }
+
+//            System.out.println(user.getName()+user.getCountry());
 
 
             // If the execution reaches this point, the insertion was successful
