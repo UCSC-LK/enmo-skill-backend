@@ -128,14 +128,10 @@ public class Designer_verifyController extends HttpServlet {
                         preparedStatement.setInt(2, Integer.parseInt(designerID));
                         int Rowsaffected = preparedStatement.executeUpdate();
                         if (Rowsaffected > 0 && status.equals("1")) {
-                            PreparedStatement preparedStatement1 = connection.prepareStatement("UPDATE user_level_mapping SET userlevelID = 2 WHERE userid = ?");
-                            int rows = preparedStatement1.executeUpdate();
-                            if(rows>0) {
+
                                 resp.setStatus(HttpServletResponse.SC_OK);
-                            }
-                        } else if (Rowsaffected > 0 ) {
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                        }else {
+
+                        } else {
                             resp.setStatus(HttpServletResponse.SC_CONFLICT);
                         }
 
