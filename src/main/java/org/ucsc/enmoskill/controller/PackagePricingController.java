@@ -118,6 +118,7 @@ public class PackagePricingController extends HttpServlet {
                         pricing.setPricePackageId(result1);
 
                         DeliverablesModel deliverables = pricing.getDel();
+                        System.out.println(gson.toJson(deliverables));
                         deliverables.setPricePackageId(result1);
                         pricing.setDel(deliverables);
 
@@ -220,7 +221,7 @@ public class PackagePricingController extends HttpServlet {
                         deliverables.setPricePackageId(pricePackageId);
                         deliverables.setDeliverablesId(deliverablesId);
                         pricing.setDel(deliverables);
-
+                        System.out.println(gson.toJson(pricing.getDel()));
 
                         // update pricing data
                         PricePackageService pricePackageService = new PricePackageService();

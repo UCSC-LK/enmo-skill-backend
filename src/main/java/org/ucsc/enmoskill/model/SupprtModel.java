@@ -6,11 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SupprtModel {
-    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID,complainantID;
+    private int requesterID,ref_no,status,agentID,order,packages,urgent,roleID,complainantID,userId;
 
-    private String description,subject,date,role,email,userName,url,fileURL,admin;
+    private String description,subject,date,role,email,userName,url,fileURL,admin,comment;
 
-    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL,String admin,int complainantID) {
+    public SupprtModel(int requesterID, int ref_no, String description, String subject,String role,int agentID,int order,int packages,int urgent, String fileURL,String admin,int complainantID,int userId,String comment) {
         this.requesterID = requesterID;
         this.ref_no = ref_no;
         this.description = description;
@@ -23,6 +23,8 @@ public class SupprtModel {
         this.fileURL=fileURL;
         this.admin=admin;
         this.complainantID=complainantID;
+        this.userId=userId;
+        this.comment=comment;
 
     }
     public SupprtModel(ResultSet result) throws SQLException {
@@ -52,8 +54,8 @@ public class SupprtModel {
     }
 
     public SupprtModel(ResultSet result, String comment,boolean agent) throws SQLException {
-        this.agentID = result.getInt("agent_id");
-        this.date = result.getString("date");
+        this.agentID = result.getInt("agentID");
+        this.userId = result.getInt("userID");
         this.description = result.getString("comment");
     }
 
@@ -207,5 +209,22 @@ public class SupprtModel {
 
     public int getComplainantID() {
         return complainantID;
+    }
+
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

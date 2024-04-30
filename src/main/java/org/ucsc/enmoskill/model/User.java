@@ -18,6 +18,13 @@ public class User {
         this.username = username;
         this.password = password;
     }
+    public User(String email , String username, String password,String name,String country) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.country = country;
+    }
 
     public User(String email, String username, String password, int id, String user_role, String name, String contact_no, String description, String NIC, String country, String url) {
         this.email = email;

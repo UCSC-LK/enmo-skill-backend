@@ -131,15 +131,49 @@ public class UserController extends HttpServlet {
                     }
 
 
-                }else {
-                    resp.setContentType("application/json");
-                    if(tokenInfo.getRole().equals("1")||tokenInfo.getRole().equals("3")){
-                        UserGet userGet = new UserGet(tokenInfo);
-                        ResponsModel res = userGet.Run();
-                        resp.setStatus(res.getResStatus());
-                        resp.getWriter().write(res.getResMassage());
-                    }else {
-                        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                }else if(tokenInfo.isClient() || tokenInfo.isDesigner() || tokenInfo.isAdmin()) {
+                    // Check if the "userId" parameter is provided in the request
+                    String userIdParam = req.getParameter("userId");
+                    if (userIdParam != null && !userIdParam.isEmpty()) {
+                        try {
+                            int userId = Integer.parseInt(userIdParam);
+                            UserSer service = new UserSer();
+                            UserFullModel user = new UserFullModel();
+                            // Determine the type of user and fetch accordingly
+                            if (tokenInfo.isDesigner()) {
+                                user = service.getAclient(userId);
+                            } else if (tokenInfo.isClient()) {
+                                user = service.getAdesigner(userId);
+                            }
+
+                            // Check if a user object was successfully retrieved
+                            if (user != null) {
+                                System.out.println(user.getUser().getName());
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                out.write(gson.toJson(user));
+                                System.out.println("User data retrieved successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                out.write("User data retrieval unsuccessful");
+                                System.out.println("User data retrieval unsuccessful");
+                            }
+                        } catch (NumberFormatException e) {
+                            // Handle the case where 'userId' is not a valid integer
+                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.write("Invalid user ID format");
+                            System.out.println("Invalid user ID format");
+                        }
+                    } else {
+                        // Code for when 'userId' is not present in the request
+                        resp.setContentType("application/json");
+                        if(tokenInfo.getRole().equals("1") || tokenInfo.getRole().equals("3")) {
+                            UserGet userGet = new UserGet(tokenInfo);
+                            ResponsModel res = userGet.Run();
+                            resp.setStatus(res.getResStatus());
+                            resp.getWriter().write(res.getResMassage());
+                        } else {
+                            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        }
                     }
 
                 }
@@ -155,6 +189,7 @@ public class UserController extends HttpServlet {
         catch (JwtException | IllegalArgumentException e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
         }
 
 
@@ -174,6 +209,10 @@ public class UserController extends HttpServlet {
             // Read JSON data from the request body
             BufferedReader reader = req.getReader();
             User user = gson.fromJson(reader, User.class);
+            System.out.println(user.getCountry());
+            System.out.println(user.getName());
+
+
 
             // Debugging statements
             System.out.println("Email: " + user.getEmail());
@@ -191,7 +230,7 @@ public class UserController extends HttpServlet {
             String hashedPassword = Hash.hashPassword(user.getPassword());
 //            userID = (int)(Math.random()*(100000-10+1)+10);
             // Create a new User object with the username and hashed password
-            User newUser = new User(user.getEmail(),user.getUsername(), hashedPassword);
+            User newUser = new User(user.getEmail(),user.getUsername(), hashedPassword,user.getName(),user.getCountry());
 
             UserSer newuser = new UserSer();
             // Insert data into the database

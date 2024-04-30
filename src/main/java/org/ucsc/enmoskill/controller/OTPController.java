@@ -19,15 +19,22 @@ public class OTPController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
 
+        String phoneNumber=null;
         TokenService tokenService = new TokenService();
         String token = tokenService.getTokenFromHeader(req);
 
         if(tokenService.isTokenValidState(token)==1){
+            if(req.getParameter("phoneNumber")!=null){
+                phoneNumber=req.getParameter("phoneNumber");
+            }else{
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.getWriter().write("Phone number required");
+            }
             TokenService.TokenInfo tokenInfo =tokenService.getTokenInfo(token);
 
             OtpGET service = new OtpGET(tokenInfo);
 
-            ResponsModel responsModel=service.Run();
+            ResponsModel responsModel=service.Run(phoneNumber);
 
             res.getWriter().write(responsModel.getResMassage());
             res.setStatus(responsModel.getResStatus());

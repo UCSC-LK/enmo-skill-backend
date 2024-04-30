@@ -77,8 +77,8 @@ public class OrderService {
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id, price_package_id)"
-                    + "VALUES (?,?,?,?,?,?,?,?);";
+            String query = "INSERT INTO orders (requirements, status, client_userID, designer_userID, package_id, price, platform_fee_id, price_package_id, proposalID , deliveryDuration)"
+                    + "VALUES (?,?,?,?,?,?,?,?,?,?);";
             preparedStatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, order.getRequirements());
             preparedStatement.setInt(2,0);
@@ -86,22 +86,24 @@ public class OrderService {
             preparedStatement.setInt(4,order.getDesignerId());
             preparedStatement.setInt(5,order.getPackageId());
             preparedStatement.setInt(6,order.getPrice());
-            preparedStatement.setInt(7,order.getPlatformFeeId());
+            preparedStatement.setInt(7,1);
             preparedStatement.setInt(8,order.getPricePackageId());
+            preparedStatement.setInt(9,order.getProposalID());
+            preparedStatement.setInt(10,order.getDeliveryDuration());
 
-
-
+            System.out.println("test2");
 
             result = preparedStatement.executeUpdate();
-
+            System.out.println("result1" + result);
             if (result > 0){
+                System.out.println("result2" + result);
                 // Retrieve the auto-generated keys (including the primary key)
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         return generatedKeys.getInt(1);
 
                     } else {
-
+                        System.out.println("test3");
 //                        return 0;
                         throw new SQLException("Creating order failed, no ID obtained.");
                     }
@@ -110,6 +112,9 @@ public class OrderService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            // Ignore JWT String argument null or empty exception
+            return result; // Return the result, which would likely be 0
         } finally {
             try {
                 if (preparedStatement != null) preparedStatement.close();
@@ -120,45 +125,43 @@ public class OrderService {
         }
     }
 
-    public Order getOrderDetails(int orderId){
+    public void getOrderDetails(int orderId){
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         try{
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT * FROM orders WHERE order_id = ?;";
+            String query = "SELECT o.*, p.title AS package_title\n" +
+                    "FROM orders o\n" +
+                    "INNER JOIN package p ON o.package_id = p.package_id\n" +
+                    "WHERE o.order_id = ?;\n";;
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1,orderId);
 
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet!=null){
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
 
-                Order order = new Order();
-
-                while (resultSet.next()){
-                    order.setOrderId(resultSet.getInt("order_id"));
-                    order.setCreatedTime(resultSet.getTimestamp("created_time"));
-                    order.setRequirements(resultSet.getString("requirements"));
-                    order.setStatus(resultSet.getInt("status"));
-                    order.setClientId(resultSet.getInt("client_userID"));
-                    order.setDesignerId(resultSet.getInt("designer_userID"));
-                    order.setPackageId(resultSet.getInt("package_id"));
-                    order.setPrice(resultSet.getInt("price"));
-                    order.setPlatformFeeId(resultSet.getInt("platform_fee_id"));
-                }
-                return order;
-
+            while (resultSet.next()) {
+                Order order = new Order(resultSet);
+                JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                jsonObject.addProperty("package_title", resultSet.getString("package_title"));
+                jsonArray.add(jsonObject);
             }
-            return  null;
-        } catch (SQLException e) {
+
+            resp.getWriter().write(jsonArray.toString());
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (SQLException | IOException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
             throw new RuntimeException(e);
         }
 
     }
 
-    public void getAllDesignerOrderDetails(int designer_userID) {
+    public void getAllDesignerOrderDetails(int designer_userID) throws IOException {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -166,7 +169,12 @@ public class OrderService {
         Order order;
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT * FROM orders WHERE designer_userID = ?;";
+            String query = "SELECT o.*, p.title AS package_title, u.name AS designer_name\n" +
+                    "FROM orders o\n" +
+                    "INNER JOIN package p ON o.package_id = p.package_id\n" +
+                    "INNER JOIN users u ON o.designer_userID = u.userID\n" +
+                    "WHERE o.designer_userID = ?;\n";
+
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, designer_userID);
 
@@ -178,6 +186,9 @@ public class OrderService {
             while (resultSet.next()) {
                 order = new Order(resultSet);
                 JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                // Add package title to JSON object
+                jsonObject.addProperty("package_title", resultSet.getString("package_title"));
+                jsonObject.addProperty("designer_name", resultSet.getString("designer_name"));
                 jsonArray.add(jsonObject);
             }
 
@@ -186,11 +197,28 @@ public class OrderService {
             System.out.println("Orders : " + jsonArray);
 
         } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+            // Handle exceptions
+            e.printStackTrace(); // You might want to log the exception instead of printing stack trace
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("An error occurred while processing your request.");
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle closing resource exception
+            }
         }
     }
 
-    public void getAllClientOrderDetails(int client_userID) {
+    public void getAllClientOrderDetails(int client_userID ) throws IOException {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -198,7 +226,11 @@ public class OrderService {
         Order order;
         try {
             con = DatabaseConnection.initializeDatabase();
-            String query = "SELECT * FROM orders WHERE client_userID = ?;";
+            String query = "SELECT o.*, p.title AS package_title, u.name AS client_name\n" +
+                    "FROM orders o\n" +
+                    "INNER JOIN package p ON o.package_id = p.package_id\n" +
+                    "INNER JOIN users u ON o.client_userID = u.userID\n" +
+                    "WHERE o.client_userID = ?;\n";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, client_userID);
 
@@ -210,6 +242,9 @@ public class OrderService {
             while (resultSet.next()) {
                 order = new Order(resultSet);
                 JsonObject jsonObject = gson.toJsonTree(order).getAsJsonObject();
+                // Add package title to JSON object
+                jsonObject.addProperty("package_title", resultSet.getString("package_title"));
+                jsonObject.addProperty("client_name", resultSet.getString("client_name"));
                 jsonArray.add(jsonObject);
             }
 
@@ -218,7 +253,24 @@ public class OrderService {
             System.out.println("Orders : " + jsonArray);
 
         } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+            // Handle exceptions
+            e.printStackTrace(); // You might want to log the exception instead of printing stack trace
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("An error occurred while processing your request.");
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle closing resource exception
+            }
         }
     }
 

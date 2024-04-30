@@ -38,7 +38,6 @@ public class ProfileController extends HttpServlet {
 //            String json = reader.lines().collect(Collectors.joining());
 //            System.out.println(json);
                 ProfileModel profileModel = new Gson().fromJson(reader, ProfileModel.class);
-                System.out.println("01");
 
                 if(profileModel.getFname() != null && profileModel.getLname() != null && profileModel.getDisplay_name() != null && profileModel.getDescription() != null ){
                     ProfilePOST service = new ProfilePOST(profileModel,tokenInfo);

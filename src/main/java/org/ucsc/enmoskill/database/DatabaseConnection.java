@@ -37,18 +37,18 @@ public class DatabaseConnection {
     }
 
     public static Connection initializeDatabase() {
-        Boolean conection_status = true,conection_status2,conection_status3,conection_status4;
+        Boolean conection_status = true,conection_status2 = true,conection_status3,conection_status4;
         try {
             conection_status = connection.isClosed();
-//            conection_status2= connection.isValid(0);
+            conection_status2= connection.isValid(2);
 
             System.out.println("connection status :"+conection_status);
-//            System.out.println("connection status2 :"+conection_status2);
+            System.out.println("connection status2 :"+conection_status2);
 
         } catch (SQLException e) {
            e.printStackTrace();
         }
-        if(connection==null||conection_status) {
+        if(connection==null||!conection_status2) {
             System.out.println("request new connection");
             try {
 

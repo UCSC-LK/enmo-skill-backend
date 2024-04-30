@@ -48,6 +48,7 @@ public class PackageController extends HttpServlet {
                         // Fetch data based on designerUserId
                         List<Package> packageList = getPackageData(designerUserId);
 //                    handleGetResponse(packageList, out, resp);
+                        System.out.println(new Gson().toJson(packageList));
 
                         if (packageList != null){
                             resp.setStatus(HttpServletResponse.SC_OK);
@@ -135,6 +136,7 @@ public class PackageController extends HttpServlet {
 
                     BufferedReader reader =  req.getReader();
                     Package newPackage = gson.fromJson(reader,Package.class);
+                    System.out.println(gson.toJson(newPackage));
 
 //            newPackage.setPackageId(packageID);
                     newPackage.setDesignerUserId(designerUserId);

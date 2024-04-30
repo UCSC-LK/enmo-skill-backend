@@ -5,6 +5,7 @@ import org.ucsc.enmoskill.Services.OrderDetailsService;
 import org.ucsc.enmoskill.Services.ProposalGETSer;
 import org.ucsc.enmoskill.Services.ProposalPOSTSer;
 import org.ucsc.enmoskill.database.DatabaseConnection;
+import org.ucsc.enmoskill.model.OrderDetailsModel;
 import org.ucsc.enmoskill.model.Pro_CR;
 import org.ucsc.enmoskill.model.ProposalModel;
 import org.ucsc.enmoskill.utils.AuthorizationResults;
@@ -94,6 +95,7 @@ public class OrderDetailsController extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
 
         try {
             // Create a Gson instance
@@ -101,16 +103,15 @@ public class OrderDetailsController extends HttpServlet {
 
             // Read JSON data from the request body
             BufferedReader reader = req.getReader();
-            ProposalModel proposal = gson.fromJson(reader, ProposalModel.class);
+            OrderDetailsModel orderDetails = gson.fromJson(reader, OrderDetailsModel.class);
 
-            Pro_CR proBRlist = new Pro_CR(req);
 
-            out.println("Duration" + proposal.getDeliveryDuration());
-            out.println("getDescription: " + proposal.getDescription());
-            out.println("getPrice: " + proposal.getPrice());
-            out.println("getTitle: " + proposal.getTitle());
-            out.println("getPricingPackage: " + proposal.getPricingPackage());
-            out.println("getPackageId: " + proposal.getPackageId());
+            out.println("Duration" + orderDetails.getOrderID());
+            out.println("getDescription: " + orderDetails.getOrder_details_id());
+            out.println("getPrice: " + orderDetails.getClientId());
+            out.println("getTitle: " + orderDetails.getClient_message());
+            out.println("getPricingPackage: " + orderDetails.getDesigner_message());
+
 
             // Get the JWT token from the request header
             String jwtToken = req.getHeader("Authorization");
@@ -120,31 +121,51 @@ public class OrderDetailsController extends HttpServlet {
 
                 // Use the AuthorizationService to authorize the request
                 AuthorizationService authService = new AuthorizationService();
-                String[] expectedUserLevelID = {"2"}; // Set your expected userLevelID here
+                String[] expectedUserLevelID = {"1", "2"}; // Set your expected userLevelID here
 
                 AuthorizationResults authResult = authService.authorize(jwtToken, expectedUserLevelID);
 
                 if (authResult != null) {
-                    String designerID = authResult.getUserID();
+                    String userID = authResult.getUserID();
                     String userLevelID = authResult.getJwtUserLevelID();
 
-                    if (designerID != null && userLevelID != null && proposal.getBudget() != null
-                            && proposal.getDescription() != null && proposal.getDuration() != null) {
+                    out.println("authresultID: " + userID);
+                    out.println("AuthresultlevelID: " + userLevelID);
 
-                        proposal.setDesignerId(designerID);
-                        ProposalPOSTSer proposalPOSTSer = new ProposalPOSTSer();
-                        boolean isSuccess = proposalPOSTSer.isInsertionSuccessful(proposal, proBRlist);
+                    if (userLevelID != null && userID != null) {
+                        if ("2".equals(userLevelID)) {
+                            int designerId = Integer.parseInt(userID);
+                            orderDetails.setDesignerId(designerId);
+                            OrderDetailsService service = new OrderDetailsService(resp);
+                            boolean isSuccess = service.isDesignerOrderDetailsInsertionSuccessful(orderDetails);
 
-                        if (isSuccess) {
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resp.getWriter().write("Proposal submitted successfully");
-                        } else {
+                            if (isSuccess) {
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resp.getWriter().write("Order Details insert successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                resp.getWriter().write("Order Details insert unsuccessfully");
+                            }
+                        } else if ("1".equals(userLevelID)) {
+                            int clientID = Integer.parseInt(userID);
+                            orderDetails.setClientId(clientID);
+                            OrderDetailsService service = new OrderDetailsService(resp);
+                            boolean isSuccess = service.isClientOrderDetailsInsertionSuccessful(orderDetails);
+
+                            if (isSuccess) {
+                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resp.getWriter().write("Order Details insert successfully");
+                            } else {
+                                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                resp.getWriter().write("Order Details insert unsuccessfully");
+                            }
+                        }else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            resp.getWriter().write("Proposal submitted unsuccessfully");
+                            out.write("ERROR");
                         }
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        resp.getWriter().write("Required Field Missing");
+                        resp.getWriter().write("User ID or User Level ID is null!");
                     }
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
